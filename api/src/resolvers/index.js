@@ -1,34 +1,73 @@
 const { find, filter } = require("lodash");
 
-const authors = [
-  { id: 1, firstName: "Tom", lastName: "Coleman" },
-  { id: 2, firstName: "Sashko", lastName: "Stubailo" },
-  { id: 3, firstName: "Mikhail", lastName: "Novikov" }
-];
-
-const posts = [
-  { id: 1, authorId: 1, title: "Introduction to GraphQL", votes: 2 },
-  { id: 2, authorId: 2, title: "Welcome to Apollo", votes: 3 },
-  { id: 3, authorId: 2, title: "Advanced GraphQL", votes: 1 },
-  { id: 4, authorId: 3, title: "Launchpad is Cool", votes: 7 }
+const users = [
+  {
+    id: 0,
+    email: "zero@email.com",
+    firstName: "first0",
+    lastName: "last0",
+    middleName: "middle0",
+    privacySetting: "public"
+  },
+  {
+    id: 1,
+    email: "first@email.com",
+    firstName: "first1",
+    lastName: "last1",
+    middleName: "middle1",
+    privacySetting: "public"
+  },
+  {
+    id: 2,
+    email: "second@email.com",
+    firstName: "first2",
+    lastName: "last2",
+    middleName: "middle2",
+    privacySetting: "public"
+  },
+  {
+    id: 3,
+    email: "third@email.com",
+    firstName: "first3",
+    lastName: "last3",
+    middleName: "middle3",
+    privacySetting: "public"
+  },
+  {
+    id: 4,
+    email: "fourth@email.com",
+    firstName: "first4",
+    lastName: "last4",
+    middleName: "middle4",
+    privacySetting: "public"
+  },
+  {
+    id: 5,
+    email: "fifth@email.com",
+    firstName: "first5",
+    lastName: "last5",
+    middleName: "middle5",
+    privacySetting: "public"
+  }
 ];
 
 const rootResolvers = {
   Query: {
-    posts: () => posts,
-    author: (_, { id }) => find(authors, { id: id })
+    users: () => users
   },
-  Author: {
+  User: {
     id: ({ id }) => id,
+    email: ({ email }) => email,
     firstName: ({ firstName }) => firstName,
     lastName: ({ lastName }) => lastName,
-    posts: ({ id }) => filter(posts, { authorId: id })
-  },
-  Post: {
-    id: ({ id }) => id,
-    title: ({ title }) => title,
-    author: ({ authorId }) => find(authors, { id: authorId }),
-    votes: ({ votes }) => votes
+    middleName: ({ middleName }) => middleName,
+    privacySetting: ({ privacySetting }) => privacySetting,
+    organization: ({ organization }) => organization,
+    linkedIn: ({ linkedIn }) => linkedIn,
+    twitter: ({ twitter }) => twitter,
+    facebook: ({ facebook }) => facebook,
+    instagram: ({ instagram }) => instagram,
+    phoneNumber: ({ phoneNumber }) => phoneNumber
   }
 };
 

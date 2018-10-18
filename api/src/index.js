@@ -1,15 +1,6 @@
-var express = require("express");
-var express_graphql = require("express-graphql");
-
-const { makeExecutableSchema } = require("graphql-tools");
-const { SchemaDefinition, Author, Post } = require("./schema");
-const { rootResolvers } = require("./resolvers");
-const { mutations } = require("./mutations");
-
-const schema = makeExecutableSchema({
-  typeDefs: [SchemaDefinition, Author, Post],
-  resolvers: [rootResolvers, mutations]
-});
+const express = require("express");
+const express_graphql = require("express-graphql");
+const { schema } = require("./schema");
 
 // Create an express server and a GraphQL endpoint
 var app = express();
@@ -17,7 +8,6 @@ app.use(
   "/graphql",
   express_graphql({
     schema: schema,
-    rootValue: root,
     graphiql: true
   })
 );

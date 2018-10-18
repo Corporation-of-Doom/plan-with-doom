@@ -1,24 +1,24 @@
-// const { makeExecutableSchema } = require("graphql-tools");
-const { Author, Post } = require("./types");
+const { makeExecutableSchema } = require("graphql-tools");
+
+// const { User, Event, Seminar, Capacity } = require("./types");
+const { User } = require("./types");
+const { rootResolvers } = require("./resolvers");
+// const { mutations } = require("./mutations");
 
 const SchemaDefinition = `
   schema {
     query: Query
-    mutation: Mutation
   }
 
   # the schema allows the following query:
   type Query {
-    posts: [Post]
-    author(id: Int!): Author
-  }
-
-  # this schema allows the following mutation:
-  type Mutation {
-    upvotePost (
-      postId: Int!
-    ): Post
+    users: [User!]
   }
 `;
 
-module.exports = { SchemaDefinition, Author, Post };
+const schema = makeExecutableSchema({
+  typeDefs: [SchemaDefinition, User],
+  resolvers: [rootResolvers]
+});
+
+module.exports = { schema };
