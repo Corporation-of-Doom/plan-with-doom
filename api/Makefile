@@ -8,7 +8,7 @@ db:
 		"CREATE ROLE doom WITH LOGIN PASSWORD 'doomsday';" -c\
 		"ALTER ROLE doom SUPERUSER;"
 	node src/setup_db.js
-	psql -U doom -f src/migrations/*.sql doom-db
+	psql -f src/migrations/*.sql doom-db
 
 clean:
 	node src/delete_db.js
