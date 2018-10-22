@@ -13,6 +13,3 @@ db:
 clean:
 	node src/delete_db.js
 	psql postgres -c "DROP ROLE doom;"
-
-
-
