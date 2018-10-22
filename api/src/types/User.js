@@ -2,16 +2,16 @@ const User = `
 type User {
     id: Int!
     email: String!
-    firstName: String!
-    lastName: String!
-    middleName: String
+    first_name: String!
+    last_name: String!
+    middle_name: String
     organization: String
-    linkedIn: String
+    linked_in: String
     twitter: String
     facebook: String
     instagram: String
-    phoneNumber: String
-    privacySetting: String!
+    phone_number: String
+    privacy_settings: String!
 
     # still need to add photo
     # Will deal with that when we have DB set up

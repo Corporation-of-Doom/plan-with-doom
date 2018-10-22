@@ -9,8 +9,10 @@ CREATE TABLE IF NOT EXISTS Doom_User(
   facebook			        TEXT,
   instagram			        TEXT,
   phone_number		      VARCHAR(15),
-  privacy_settings	    TEXT,
+  privacy_settings	    TEXT                NOT NULL,
   picture_path		      TEXT,
+  password_hash         TEXT NOT NULL,
+  password_salt         TEXT NOT NULL,
 
   PRIMARY KEY (ID)
 );

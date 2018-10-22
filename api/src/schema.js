@@ -12,7 +12,7 @@ const SchemaDefinition = `
 
   # the schema allows the following query:
   type Query {
-    users: [User!]
+    user(id: Int!): User
   }
 `;
 
