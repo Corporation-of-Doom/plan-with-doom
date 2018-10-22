@@ -4,6 +4,11 @@ api:
 	nodemon src
 
 db:
-	npm install
-	docker-compose -f docker-compose.yml up
+	docker-compose -f docker-compose.yml up -V &
 
+destroy:
+	docker-compose down
+	docker system prune -a
+
+install:
+	npm install
