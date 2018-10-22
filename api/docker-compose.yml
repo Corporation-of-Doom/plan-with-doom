@@ -1,0 +1,12 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: doom
+      POSTGRES_DB: doom
+    ports:
+      - "5430:5432"
+    volumes:
+      - ./src/migrations:/docker-entrypoint-initdb.d/
