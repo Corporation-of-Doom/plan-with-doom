@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const { db } = require("../db");
 
-function createSalt(len = 16) {
+function createSalt(len = 12) {
   return bcrypt.genSaltSync(len);
 }
 
