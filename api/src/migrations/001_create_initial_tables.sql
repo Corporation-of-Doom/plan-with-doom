@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS Doom_User(
   linked_in	 		        TEXT,
   facebook			        TEXT,
   instagram			        TEXT,
+  twitter	  		        TEXT,
   phone_number		      VARCHAR(15),
   privacy_settings	    TEXT                NOT NULL,
   picture_path		      TEXT,
