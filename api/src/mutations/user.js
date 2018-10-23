@@ -98,6 +98,8 @@ async function registerUser(user) {
     privacy_settings
   };
 
+  // TODO: send email verification
+
   return newUser;
 }
 
