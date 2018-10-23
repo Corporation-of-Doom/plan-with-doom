@@ -22,6 +22,18 @@ const rootResolvers = {
     facebook: ({ facebook }) => facebook,
     instagram: ({ instagram }) => instagram,
     phone_number: ({ phone_number }) => phone_number
+  },
+  Event: {
+    id: ({ id }) => id,
+    creator_id: ({ creator_id }) => creator_id,
+    name: ({ name }) => name,
+    description: ({ description }) => description,
+    start_time: ({ start_time }) => start_time,
+    end_time: ({ end_time }) => end_time,
+    capacity_type: ({ capacity_type }) => capacity_type,
+    capacity: ({ capacity }) => capacity,
+    location: ({ location }) => location,
+    picture_path: ({ picture_path }) => picture_path
   }
 };
 

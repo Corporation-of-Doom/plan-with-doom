@@ -6,10 +6,10 @@ type Seminar {
     startDatetime: String!
     endDatetime: String!
     description: String!
-    capacityType: Capacity!
+    Capacity: Capacity!
     location: String!
 
-    """ If the capacityType is FCFS_P or  FCFS_P """
+    """ If the capacity_type is FCFS_P or  FCFS_P """
     capacity: Int
 
     # still need to add photo

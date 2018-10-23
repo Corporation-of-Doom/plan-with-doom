@@ -1,5 +1,7 @@
 const mutations = {
-  Mutation: {}
+  Mutation: {
+    async createEvent() {}
+  }
 };
 
 module.exports = { mutations };
