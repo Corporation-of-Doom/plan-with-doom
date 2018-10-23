@@ -13,7 +13,7 @@ const SchemaDefinition = `
 
   # the schema allows the following query:
   type Query {
-    user(id: Int!): User
+    login(email: String!, password: String!): User!
   }
 
   type Mutation {

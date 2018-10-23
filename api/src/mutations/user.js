@@ -1,4 +1,4 @@
-var bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const { db } = require("../db");
 
 function createSalt(len = 16) {
