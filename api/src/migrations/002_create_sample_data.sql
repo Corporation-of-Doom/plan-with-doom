@@ -19,6 +19,13 @@ insert into Seminar (event_id,name,start_time, end_time, capacity_type) values (
 insert into Seminar (event_id,name,start_time, end_time, capacity_type, capacity) values (2,'How to Weeb',TIMESTAMP '2019-10-22 12:30:00+02', TIMESTAMP '2019-01-22 13:30:00+02', 'FCFS_E',2);
 insert into Seminar (event_id,name,start_time, end_time, capacity_type, capacity) values (1,'Hackathon',TIMESTAMP '2019-10-24 8:30:00+02', TIMESTAMP '2019-01-24 10:30:00+02', 'FCFS_P',6);
 
+
+
+insert into Event_Participation (user_id,event_id,attending) values (2,2,True);
+insert into Event_Participation (user_id,event_id,attending) values (5,2,True);
+insert into Event_Participation (user_id,event_id,attending) values (3,2,True);
+
+
 insert into Seminar_Participation (user_id,seminar_id,attending) values (2,2,True);
 insert into Seminar_Participation (user_id,seminar_id,attending) values (5,2,True);
 insert into Seminar_Participation (user_id,seminar_id,following) values (3,2,True);
