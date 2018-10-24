@@ -39,9 +39,9 @@ async function registerUser(user) {
   const queryString = `
     INSERT INTO doom_user
       (first_name, last_name, email, privacy_settings, password_hash,
-        middle_name, organization, linked_in, twitter, facebook,
-        instagram, phone_number)
-      values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
+       middle_name, organization, linked_in, twitter, facebook,
+       instagram, phone_number)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
 
   const vals = [
     first_name,
