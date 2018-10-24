@@ -10,12 +10,13 @@ type Event {
 
   """ If the capacity_type is FCFS_P or  FCFS_P """
   capacity_type: capacity_type!
-  capacity: Int
+  max_capacity: Int
+  current_capacity: Int
 
-  location: String!
+  location: String
 
   # still need to add photo
-  picture_path: String!
+  picture_path: String
 
   # Will deal with that when we have DB set up
 }
@@ -29,15 +30,10 @@ input EventInput {
 
   """ If the capacity_type is FCFS_P or  FCFS_P """
   capacity_type: capacity_type!
-  capacity: Int
-
-  location: String!
-
-  # still need to add photo
-  picture_path: String!
-
-  # Will deal with that when we have DB set up
-
+  max_capacity: Int
+  organizer_ids: [Int!]
+  location: String
+  picture_path: String
 }`;
 
 module.exports = { Event };

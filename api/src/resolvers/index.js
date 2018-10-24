@@ -31,7 +31,8 @@ const rootResolvers = {
     start_time: ({ start_time }) => start_time,
     end_time: ({ end_time }) => end_time,
     capacity_type: ({ capacity_type }) => capacity_type,
-    capacity: ({ capacity }) => capacity,
+    max_capacity: ({ max_capacity }) => max_capacity,
+    current_capacity: ({ current_capacity }) => current_capacity,
     location: ({ location }) => location,
     picture_path: ({ picture_path }) => picture_path
   }

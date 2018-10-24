@@ -22,8 +22,8 @@ const SchemaDefinition = `
 `;
 
 const schema = makeExecutableSchema({
-  typeDefs: [SchemaDefinition, User, Event, Capacity],
-  resolvers: [rootResolvers]
+	typeDefs: [SchemaDefinition, User, Event, Capacity],
+	resolvers: [rootResolvers, mutations]
 });
 
 module.exports = { schema };
