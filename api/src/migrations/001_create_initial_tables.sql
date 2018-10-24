@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS Doom_User(
   privacy_settings	    TEXT                NOT NULL,
   picture_path		      TEXT,
   password_hash         TEXT NOT NULL,
-  password_salt         TEXT NOT NULL,
 
   PRIMARY KEY (ID)
 );
