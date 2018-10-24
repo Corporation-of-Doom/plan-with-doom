@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS Doom_User(
   privacy_settings	    TEXT                NOT NULL,
   picture_path		      TEXT,
   password_hash         TEXT NOT NULL,
-  password_salt         TEXT NOT NULL,
 
   PRIMARY KEY (ID)
 );
@@ -27,7 +26,8 @@ CREATE TABLE IF NOT EXISTS Event(
   start_time 			      TIMESTAMPTZ 		    NOT NULL,
   end_time 			        TIMESTAMPTZ 		    NOT NULL,
   capacity_type		      Capacity_Type,
-  capacity	 		        INT,
+  max_capacity	 		    INT,
+  current_capacity      INT,
   location			        TEXT,
   picture_path		      TEXT,
 
@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS Seminar(
   start_time 			      TIMESTAMPTZ 		    NOT NULL,
   end_time 			        TIMESTAMPTZ 		    NOT NULL,
   capacity_type		      Capacity_Type,
-  capacity	 		        INT,
+  max_capacity	 		    INT,
+  current_capacity      INT,
   location			        TEXT,
   picture_path		      TEXT,
 
