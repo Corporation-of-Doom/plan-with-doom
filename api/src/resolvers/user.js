@@ -1,18 +1,6 @@
 const { db } = require("../db");
 const bcrypt = require("bcrypt");
 
-async function getUser(id) {
-  return await db
-    .raw("select * from doom_user where id = ?;", [id])
-    .then(res => {
-      return res.rows;
-    })
-    .catch(err => {
-      console.log(err);
-      throw err;
-    });
-}
-
 async function signIn(emailToFind, password) {
   // check if email exists
   const res = await db.raw("SELECT * FROM doom_user WHERE email = ?", [
