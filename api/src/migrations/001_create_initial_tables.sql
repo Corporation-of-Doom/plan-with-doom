@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS Event(
   start_time 			      TIMESTAMPTZ 		    NOT NULL,
   end_time 			        TIMESTAMPTZ 		    NOT NULL,
   capacity_type		      Capacity_Type,
-  capacity	 		        INT,
+  max_capacity	 		    INT,
+  current_capacity      INT,
   location			        TEXT,
   picture_path		      TEXT,
 
@@ -44,7 +45,8 @@ CREATE TABLE IF NOT EXISTS Seminar(
   start_time 			      TIMESTAMPTZ 		    NOT NULL,
   end_time 			        TIMESTAMPTZ 		    NOT NULL,
   capacity_type		      Capacity_Type,
-  capacity	 		        INT,
+  max_capacity	 		    INT,
+  current_capacity      INT,
   location			        TEXT,
   picture_path		      TEXT,
 
