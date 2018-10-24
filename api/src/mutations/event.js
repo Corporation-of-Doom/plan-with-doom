@@ -1,7 +1,6 @@
 const { db } = require("../db");
 
 async function createEvent(eventInput) {
-  console.log("hello");
   let {
     creator_id,
     name,

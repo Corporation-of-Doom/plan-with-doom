@@ -13,17 +13,18 @@ const SchemaDefinition = `
 
   # the schema allows the following query:
   type Query {
-    user(id: Int!): User
+    login(email: String!, password: String!): User!
   }
 
   type Mutation {
+    signUp(user: UserInput!): User!
     createEvent(event: EventInput!): Event!
   }
 `;
 
 const schema = makeExecutableSchema({
-	typeDefs: [SchemaDefinition, User, Event, Capacity],
-	resolvers: [rootResolvers, mutations]
+  typeDefs: [SchemaDefinition, User, Event, Capacity],
+  resolvers: [rootResolvers, mutations]
 });
 
 module.exports = { schema };
