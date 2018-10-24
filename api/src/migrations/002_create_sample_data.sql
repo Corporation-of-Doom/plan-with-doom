@@ -27,6 +27,7 @@ insert into Seminar_Organizer (user_id, seminar_id) values (4,3);
 
 insert into Event_Participation (user_id, event_id, attending) values (2,2,True);
 insert into Event_Participation (user_id, event_id, attending) values (5,2,True);
+insert into Event_Participation (user_id, event_id, attending) values (3,2,True);
 
 
 insert into Seminar_Participation (user_id, seminar_id, attending) values (2,2,True);
