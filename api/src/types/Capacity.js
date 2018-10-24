@@ -1,5 +1,5 @@
 const Capacity = `
-  enum capacityType {
+  enum capacity_type {
     FCFS_P
     FCFS_E
     FFA
