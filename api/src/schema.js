@@ -17,7 +17,7 @@ const SchemaDefinition = `
   }
 
   type Mutation {
-    signUp(user: UserInput!): User
+    signUp(user: UserInput!): User!
   }
 `;
 

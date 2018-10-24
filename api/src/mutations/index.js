@@ -5,8 +5,7 @@ const mutations = {
     async signUp(_, args) {
       const { user } = args;
       try {
-        const newUser = await registerUser(user);
-        return newUser;
+        return await registerUser(user);
       } catch (err) {
         console.log(err);
         return new Error("A user with this email already exists");

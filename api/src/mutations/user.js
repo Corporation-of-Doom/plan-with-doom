@@ -61,7 +61,9 @@ async function registerUser(user) {
   const res = await db.raw(`${queryString}`, vals);
 
   const { id } = res.rows[0];
-  const newUser = {
+  // TODO: send email verification
+
+  return {
     id,
     email,
     first_name,
@@ -75,10 +77,6 @@ async function registerUser(user) {
     phone_number,
     privacy_settings
   };
-
-  // TODO: send email verification
-
-  return newUser;
 }
 
 module.exports = { registerUser };
