@@ -1,12 +1,16 @@
-const { getUser } = require("./user");
+const { signIn } = require("./user");
 
 const rootResolvers = {
   Query: {
-    async user(_, args) {
-      const id = args.id;
-      const res = await getUser(id);
-
-      return res[0];
+    async login(_, args) {
+      const { email, password } = args;
+      try {
+        const user = await signIn(email, password);
+        return user;
+      } catch (err) {
+        console.log(err);
+        return new Error("Incorrect password or email");
+      }
     }
   },
   User: {
