@@ -58,8 +58,6 @@ async function registerUser(user) {
     phone_number
   ];
 
-  console.log(`${queryString}`);
-
   const res = await db.raw(`${queryString}`, vals);
 
   const { id } = res.rows[0];
