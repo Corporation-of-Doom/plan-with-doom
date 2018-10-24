@@ -7,8 +7,8 @@ insert into doom_user (first_name, last_name, email, privacy_settings, password_
 
 
 -- 3 events
-insert into Event (creator_id, name, start_time, end_time, capacity_type, capacity) values (3,'CUSEC',TIMESTAMP '2019-10-23 8:30:00+02', TIMESTAMP '2019-11-27 10:30:00+02', 'FCFS_E',6);
-insert into Event (creator_id, name, start_time, end_time, capacity_type, capacity) values (2,'Animefest',TIMESTAMP '2019-10-21 12:30:00+02', TIMESTAMP '2019-11-29 10:30:00+02', 'FCFS_P',3);
+insert into Event (creator_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity) values (3,'CUSEC',TIMESTAMP '2019-10-23 8:30:00+02', TIMESTAMP '2019-11-27 10:30:00+02', 'FCFS_E',6,0);
+insert into Event (creator_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity) values (2,'Animefest',TIMESTAMP '2019-10-21 12:30:00+02', TIMESTAMP '2019-11-29 10:30:00+02', 'FCFS_P',3,2);
 insert into Event (creator_id, name, start_time, end_time, capacity_type) values (1,'Doomsday convention',TIMESTAMP '2019-10-19 10:30:00+02', TIMESTAMP '2019-11-24 10:30:00+02', 'FFA');
 
 insert into Event_Organizer (user_id, event_id) values (3,1);
@@ -18,8 +18,8 @@ insert into Event_Organizer (user_id, event_id) values (1,3);
 
 -- 3 Seminars
 insert into Seminar (event_id, name, start_time, end_time, capacity_type) values (3,'Preparing for your doom',TIMESTAMP '2019-10-20 10:30:00+02', TIMESTAMP '2019-11-20 12:30:00+02', 'FFA');
-insert into Seminar (event_id, name, start_time, end_time, capacity_type, capacity) values (2,'How to Weeb',TIMESTAMP '2019-10-22 12:30:00+02', TIMESTAMP '2019-11-22 13:30:00+02', 'FCFS_E',2);
-insert into Seminar (event_id, name, start_time, end_time, capacity_type, capacity) values (1,'Hackathon',TIMESTAMP '2019-10-24 8:30:00+02', TIMESTAMP '2019-11-24 10:30:00+02', 'FCFS_P',6);
+insert into Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity) values (2,'How to Weeb',TIMESTAMP '2019-10-22 12:30:00+02', TIMESTAMP '2019-11-22 13:30:00+02', 'FCFS_E',2,2);
+insert into Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity) values (1,'Hackathon',TIMESTAMP '2019-10-24 8:30:00+02', TIMESTAMP '2019-11-24 10:30:00+02', 'FCFS_P',6,0);
 
 insert into Seminar_Organizer (user_id, seminar_id) values (2,2);
 insert into Seminar_Organizer (user_id, seminar_id) values (3,1);
