@@ -1,9 +1,9 @@
 -- User insertion
-insert into doom_user (first_name,last_name,email, privacy_settings, password_hash, password_salt) values ('Vivian','Ng','vng05@uoguelph.ca', 'Private','summon','idie');
-insert into doom_user (first_name,last_name,email, privacy_settings, password_hash, password_salt) values ('Bhavanthy','Mod','bmodchal@uoguelph.ca', 'Public','hello','HI');
-insert into doom_user (first_name,last_name,email, privacy_settings, password_hash, password_salt) values ('Alliyya','Mo','alliyya@uoguelph.ca', 'Public','LOL','lool');
-insert into doom_user (first_name,last_name,email, privacy_settings, password_hash, password_salt) values ('Tamara','Charchoghlyan','tamaracharch@gmail.com', 'Private','arts','crafts');
-insert into doom_user (first_name,last_name,email, privacy_settings, password_hash, password_salt) values ('Tom','Riddle','alliyyamo.dev@gmail.com', 'Private','horcrux','harry');
+insert into doom_user (first_name,last_name,email, privacy_settings, password_hash) values ('Vivian','Ng','vng05@uoguelph.ca', 'Private','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
+insert into doom_user (first_name,last_name,email, privacy_settings, password_hash) values ('Bhavanthy','Mod','bmodchal@uoguelph.ca', 'Public',' $2b$12$Yk.24WAbgXMLmtCJY5EtEe8FaQc9bhauiwsS4ehMV1afZyglscgBC');
+insert into doom_user (first_name,last_name,email, privacy_settings, password_hash) values ('Alliyya','Mo','alliyya@uoguelph.ca', 'Public','LOL','$2b$12$UlcVFYuda1MuMTkXcLwE/e7s9DRHvOVbCTOIVErUIVW86344T1Wee');
+insert into doom_user (first_name,last_name,email, privacy_settings, password_hash) values ('Tamara','Charchoghlyan','tamaracharch@gmail.com', 'Private','$2b$12$V2hu3U6yjz2CQGsRy8Nz1O.NjyH6WzT7cb1ER18XUE4awupQcK62i');
+insert into doom_user (first_name,last_name,email, privacy_settings, password_hash) values ('Tom','Riddle','alliyyamo.dev@gmail.com', 'Private','$2b$12$oOaIeH6wBt0J8HWNCoQLhuRNWplsHO18jLZf3DWSQiU8uKaMivGca');
 
 
 -- 3 events
