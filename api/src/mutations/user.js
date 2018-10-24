@@ -29,17 +29,10 @@ async function registerUser(user) {
   const hashedPassword = hashPassword(password, salt);
   let queryStringStart = `
     INSERT INTO doom_user
-      (first_name, last_name, email, privacy_settings, password_hash, password_salt
+      (first_name, last_name, email, privacy_settings, password_hash
   `;
-  let queryStringEnd = `values (?, ?, ?, ?, ?, ?`;
-  const vals = [
-    first_name,
-    last_name,
-    email,
-    privacy_settings,
-    hashedPassword,
-    salt
-  ];
+  let queryStringEnd = `values (?, ?, ?, ?, ?`;
+  const vals = [first_name, last_name, email, privacy_settings, hashedPassword];
 
   if (middle_name) {
     queryStringStart = `${queryStringStart}, middle_name`;
