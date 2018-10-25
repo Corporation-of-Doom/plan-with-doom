@@ -1,4 +1,4 @@
-const { signIn } = require("./user");
+const { signIn, searchUsers } = require("./user");
 
 const rootResolvers = {
   Query: {
@@ -10,6 +10,15 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Incorrect password or email");
+      }
+    },
+    async searchUsersByName(_, args) {
+      const { searchString } = args;
+      try {
+        return await searchUsers(searchString);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to search users");
       }
     }
   },
