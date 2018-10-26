@@ -1,8 +1,8 @@
 const { db } = require("../db");
 
-async function getEvent(id) {
+async function getSeminar(id) {
   return await db
-    .raw("select * from Event where id = ?;", [id])
+    .raw("select * from Seminar where id = ?;", [id])
     .then(res => {
       return res.rows[0];
     })
@@ -12,4 +12,4 @@ async function getEvent(id) {
     });
 }
 
-module.exports = { getEvent };
+module.exports = { getSeminar };
