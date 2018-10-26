@@ -1,4 +1,5 @@
 const { createEvent } = require("./event");
+const { createSeminar } = require("./seminar");
 const { registerUser } = require("./user");
 
 const mutations = {
@@ -20,6 +21,16 @@ const mutations = {
 			} catch (err) {
 				console.log(err);
 				return new Error("Unable to create event");
+			}
+		},
+		async createSeminar(_, args) {
+			try {
+				const { seminar } = args;
+				const newSeminar = await createSeminar(seminar);
+				return newSeminar;
+			} catch (err) {
+				console.log(err);
+				return new Error("Unable to create seminar");
 			}
 		}
 	}
