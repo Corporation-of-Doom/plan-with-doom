@@ -17,7 +17,7 @@ const rootResolvers = {
     async getEvent(_, args) {
       try {
         const { id } = args;
-        const newEvent = await getEvent(event);
+        const newEvent = await getEvent(id);
         return newEvent;
       } catch (err) {
         console.log(err);
@@ -27,7 +27,7 @@ const rootResolvers = {
     async getSeminar(_, args) {
       try {
         const { id } = args;
-        const newSeminar = await getSeminar(seminar);
+        const newSeminar = await getSeminar(id);
         return newSeminar;
       } catch (err) {
         console.log(err);
