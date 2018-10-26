@@ -14,6 +14,7 @@ const SchemaDefinition = `
   # the schema allows the following query:
   type Query {
     login(email: String!, password: String!): User!
+    searchUsersByName(searchString: String!): [User!]
   }
 
   type Mutation {
