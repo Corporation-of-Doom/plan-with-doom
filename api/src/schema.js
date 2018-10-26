@@ -16,6 +16,7 @@ const SchemaDefinition = `
     login(email: String!, password: String!): User!
     getEvent(id: Int!): Event!
     getSeminar(id: Int!): Seminar!
+    searchUsersByName(searchString: String!): [User!]
   }
 
   type Mutation {
