@@ -1,20 +1,32 @@
 const Seminar = `
 type Seminar {
     id: Int!
-    event: Event!
+    event_id: Int!
     name: String!
-    startDatetime: String!
-    endDatetime: String!
     description: String!
-    Capacity: Capacity!
-    location: String!
+    start_time: String!
+    end_time: String!
+    capacity_type: capacity_type!
+    max_capacity: Int
+    current_capacity: Int
+    location: Int
+    picture_path: Int
 
-    """ If the capacity_type is FCFS_P or  FCFS_P """
-    capacity: Int
-
-    # still need to add photo
-    # Will deal with that when we have DB set up
   }
+
+input SeminarInput {
+  event_id: Int!
+  name: String!
+  description: String!
+  start_time: String!
+  end_time: String!
+  capacity_type: capacity_type!
+  max_capacity: Int
+  organizer_ids: [Int!]
+  location: String
+  picture_path: String
+}
+
 `;
 
 module.exports = { Seminar };
