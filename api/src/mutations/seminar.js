@@ -1,6 +1,6 @@
 const { db } = require("../db");
 
-async function createSeminar(seminarInput) {
+async function insertNewSeminar(seminarInput) {
   let {
     event_id,
     name,
@@ -14,17 +14,25 @@ async function createSeminar(seminarInput) {
     organizer_ids
   } = seminarInput;
 
-  // TODO add checks for capacity type
   /*
-  ffa --> maxcapacity & current capacity = null
+  REVIEW: checks for capacity type
+  Should I be setting current capacity = 0
+  */
+  if (capacity_type === "FFA") {
+    max_capacity = null;
+  }
 
-  Error
-  FCFS(p/e) --> max capacity
-    throw error needs max capacity
-*/
+  if (max_capacity == null && capacity_type != "FFA") {
+    return new Error(
+      "Unable to create Seminar: An seminar with " +
+        capacity_type +
+        " capacity type must have a max capacity"
+    );
+  }
 
   max_capacity = max_capacity || null;
   location = location || null;
+  description = description || null;
   picture_path = picture_path || null;
 
   organizer_ids = organizer_ids || [];
@@ -69,4 +77,4 @@ async function createSeminar(seminarInput) {
   };
 }
 
-module.exports = { createSeminar };
+module.exports = { insertNewSeminar };

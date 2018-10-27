@@ -3,7 +3,7 @@ type Seminar {
     id: Int!
     event_id: Int!
     name: String!
-    description: String!
+    description: String
     start_time: String!
     end_time: String!
     capacity_type: capacity_type!
@@ -17,7 +17,7 @@ type Seminar {
 input SeminarInput {
   event_id: Int!
   name: String!
-  description: String!
+  description: String
   start_time: String!
   end_time: String!
   capacity_type: capacity_type!

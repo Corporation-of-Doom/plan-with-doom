@@ -1,6 +1,6 @@
 const { db } = require("../db");
 
-async function getSeminar(id) {
+async function querySeminarByID(id) {
   return await db
     .raw("select * from Seminar where id = ?;", [id])
     .then(res => {
@@ -12,4 +12,4 @@ async function getSeminar(id) {
     });
 }
 
-module.exports = { getSeminar };
+module.exports = { querySeminarByID };
