@@ -15,6 +15,11 @@ import ForgotPassword from '../views/pages/authentication/ForgotPassword.vue'
 import Profile from '../views/pages/Profile.vue'
 import NotFound from '../views/pages/NotFound.vue'
 import Invoice from '../views/pages/Invoice.vue'
+import SearchPage from '../views/pages/Search.vue'
+import EventPage from '../views/pages/Event.vue'
+import SeminarPage from '../views/pages/Seminar.vue'
+import MyEventsPage from '../views/pages/MyEvents.vue'
+import MangeEventsPage from '../views/pages/ManageEvents.vue'
 
 //ui
 import Themes from '../views/ui/Themes.vue'
@@ -48,6 +53,62 @@ const router = new Router({
 				auth: true,
 				layout: layouts.navLeft,
 				searchable: true,
+				tags: ['app']
+			}
+		},
+		{
+			path: '/search',
+			name: 'search',
+			component: SearchPage,
+			meta: {
+				auth: true,
+				layout: layouts.navLeft,
+				searchable: true,
+				tags: ['app']
+			}
+		},
+		{
+			path: '/event',
+			name: 'event',
+			component: EventPage,
+			meta: {
+				auth: true,
+				layout: layouts.navLeft,
+				searchable: false,
+				tags: ['app']
+			}
+		},
+		{
+			path: '/seminar',
+			name: 'Seminar',
+			component: SeminarPage,
+			meta: {
+				auth: true,
+				layout: layouts.navLeft,
+				searchable: false,
+				tags: ['app']
+			}
+		},
+		{
+			path: '/manageevents',
+			name: 'manageevents',
+			component: MangeEventsPage,
+			meta: {
+				auth: true,
+				layout: layouts.navLeft,
+				searchable: false,
+				tags: ['app']
+			}
+		},
+		{
+			path: '/',
+			alias: '/myevents',
+			name: 'myevents',
+			component: MyEventsPage,
+			meta: {
+				auth: true,
+				layout: layouts.navLeft,
+				searchable: false,
 				tags: ['app']
 			}
 		},
@@ -225,8 +286,7 @@ const router = new Router({
 			}
 		},
 		{
-			path: '/',
-			alias: '/not-found',
+			path: '/not-found',
 			name: 'not-found',
 			component: NotFound,
 			meta: {
