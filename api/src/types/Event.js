@@ -4,7 +4,7 @@ type Event {
   id: Int!
   creator_id: Int!
   name: String!
-  description: String!
+  description: String
   start_time: String!
   end_time: String!
 
@@ -24,7 +24,7 @@ type Event {
 input EventInput {
   creator_id: Int!
   name: String!
-  description: String!
+  description: String
   start_time: String!
   end_time: String!
 

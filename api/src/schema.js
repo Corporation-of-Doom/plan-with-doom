@@ -14,7 +14,7 @@ const SchemaDefinition = `
   # the schema allows the following query:
   type Query {
     login(email: String!, password: String!): User!
-    getEvent(id: Int!): Event!
+    getEventByID(id: Int!): Event!
     getSeminar(id: Int!): Seminar!
     searchUsersByName(searchString: String!): [User!]
   }

@@ -24,6 +24,8 @@ async function createEvent(eventInput) {
 */
 
   max_capacity = max_capacity || null;
+  description = description || null;
+
   location = location || null;
   picture_path = picture_path || null;
 

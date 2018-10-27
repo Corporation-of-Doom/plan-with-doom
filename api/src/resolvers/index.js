@@ -1,5 +1,5 @@
 const { signIn, searchUsers } = require("./user");
-const { getEvent } = require("./event");
+const { queryEventByID } = require("./event");
 const { getSeminar } = require("./seminar");
 
 const rootResolvers = {
@@ -14,10 +14,10 @@ const rootResolvers = {
         return new Error("Incorrect password or email");
       }
     },
-    async getEvent(_, args) {
+    async getEventByID(_, args) {
       try {
         const { id } = args;
-        const newEvent = await getEvent(id);
+        const newEvent = await queryEventByID(id);
         return newEvent;
       } catch (err) {
         console.log(err);
