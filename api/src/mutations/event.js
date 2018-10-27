@@ -19,7 +19,6 @@ async function insertNewEvent(eventInput) {
   Should I be setting current capacity = 0
   */
   if (capacity_type === "FFA") {
-    console.log(capacity_type);
     max_capacity = null;
   }
 

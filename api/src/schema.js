@@ -15,7 +15,7 @@ const SchemaDefinition = `
   type Query {
     login(email: String!, password: String!): User!
     getEventByID(id: Int!): Event!
-    getSeminar(id: Int!): Seminar!
+    getSeminarByID(id: Int!): Seminar!
     searchUsersByName(searchString: String!): [User!]
   }
 

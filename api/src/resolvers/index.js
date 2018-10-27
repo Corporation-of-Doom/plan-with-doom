@@ -1,6 +1,6 @@
 const { signIn, searchUsers } = require("./user");
 const { queryEventByID } = require("./event");
-const { getSeminar } = require("./seminar");
+const { querySeminarByID } = require("./seminar");
 
 const rootResolvers = {
   Query: {
@@ -24,10 +24,10 @@ const rootResolvers = {
         return new Error("Unable to retrieve event");
       }
     },
-    async getSeminar(_, args) {
+    async getSeminarByID(_, args) {
       try {
         const { id } = args;
-        const newSeminar = await getSeminar(id);
+        const newSeminar = await querySeminarByID(id);
         return newSeminar;
       } catch (err) {
         console.log(err);
