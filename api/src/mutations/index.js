@@ -1,4 +1,4 @@
-const { createEvent } = require("./event");
+const { insertNewEvent } = require("./event");
 const { createSeminar } = require("./seminar");
 const { registerUser } = require("./user");
 
@@ -16,7 +16,7 @@ const mutations = {
 		async createEvent(_, args) {
 			try {
 				const { event } = args;
-				const newEvent = await createEvent(event);
+				const newEvent = await insertNewEvent(event);
 				return newEvent;
 			} catch (err) {
 				console.log(err);

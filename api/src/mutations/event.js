@@ -1,6 +1,6 @@
 const { db } = require("../db");
 
-async function createEvent(eventInput) {
+async function insertNewEvent(eventInput) {
   let {
     creator_id,
     name,
@@ -14,14 +14,22 @@ async function createEvent(eventInput) {
     organizer_ids
   } = eventInput;
 
-  // TODO add checks for capacity type
   /*
-  ffa --> maxcapacity & current capacity = null
+  REVIEW: checks for capacity type
+  Should I be setting current capacity = 0
+  */
+  if (capacity_type === "FFA") {
+    console.log(capacity_type);
+    max_capacity = null;
+  }
 
-  Error
-  FCFS(p/e) --> max capacity
-    throw error needs max capacity
-*/
+  if (max_capacity == null && capacity_type != "FFA") {
+    return new Error(
+      "Unable to create event: An Event with " +
+        capacity_type +
+        " capacity type must have a max capacity"
+    );
+  }
 
   max_capacity = max_capacity || null;
   description = description || null;
@@ -67,9 +75,16 @@ async function createEvent(eventInput) {
     capacity_type,
     max_capacity,
     location,
+    // if (capacity_type.equal("FFA")) {
+    //   max_capacity = null;
+    // current_capacity = 0;
+    // }
+
     picture_path,
     id
   };
 }
 
-module.exports = { createEvent };
+module.exports = {
+  insertNewEvent
+};
