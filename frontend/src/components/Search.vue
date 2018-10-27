@@ -29,25 +29,29 @@ export default {
 	data() {
 		return {
 			search: '',
-			list: []
+			list: ["test1", "test2", "test3"]
 		}
 	},
 	methods: {
 		querySearch(queryString, cb) {
-			var list = this.list;
-			var results = queryString ? list.filter(this.createFilter(queryString)) : list
+			// console.log(`queryString :${this.list} \n cb: ${cb}`)
+			// var list = this.list;
+			// var results = queryString ? list.filter(this.createFilter(queryString)) : list
 			// call callback function to return suggestions
-			cb(results);
+			cb(this.list);
 		},
 		createFilter(queryString) {
+			console.log("in createdFilter")
 			return (link) => {
 				return (link.meta.toLowerCase().indexOf(queryString.toLowerCase()) !== -1)
 			};
 		},
 		handleSelect(item) {
+			console.log("in handelSelect")
 			this.goto(item.name)
 		},
 		flattenObject(object) {
+			console.log("in flattenObject")
 			let obj = {};
 			Object.keys(object).forEach(key => {
 				if (typeof object[key] !== 'object') {
@@ -59,6 +63,7 @@ export default {
 			return obj;
 		},
 		flatten(list, key, cb) {
+			console.log("in flatten")
 			let newList = []
 
 			for(let k in list) {
@@ -87,6 +92,7 @@ export default {
 			return true
 		},
 		parseList(list) {
+			console.log("in parseList")
 			let parsed = []
 
 			for(let k in list) {
@@ -113,12 +119,14 @@ export default {
 			return parsed
 		},
 		goto(name) {
+			console.log("in goto")
 			this.$router.push({name})
 		}
     },
     mounted() {
+			console.log("in mounted")
 		//console.log(this.$router.options.routes)
-		this.flatten(this.$router.options.routes, 'children', (data)=>{
+		this.flatten(this.list, 'children', (data)=>{
 			this.list = this.parseList(data)
 		})
     }

@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import Search from '@/components/Search'
+import SearchBar from '@/components/Search'
 
 export default {
 	name: 'Toolbar',
@@ -70,7 +70,7 @@ export default {
 		}
 	},
 	components: {
-		Search
+		SearchBar
 	},
 	mounted() {
 		this.fullscreen = this.$fullscreen.getState()
