@@ -18,13 +18,23 @@ input SeminarInput {
   event_id: Int!
   name: String!
   description: String
+  """ Must be formatted as 2019-10-20 10:30 YYYY-MM-DD HH:MM"""
   start_time: String!
+  
+  """ Must be formatted as 2019-10-20 10:30 YYYY-MM-DD HH:MM"""
   end_time: String!
   capacity_type: capacity_type!
   max_capacity: Int
   organizer_ids: [Int!]
   location: String
   picture_path: String
+}
+
+input SeminarParticipationInput {
+  userid: Int!
+  eventid: Int!
+  participationType: participation_type!
+
 }
 
 `;
