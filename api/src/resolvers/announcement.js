@@ -32,7 +32,6 @@ async function queryAnnouncementByTypeID(
   }
 
   queryString += ";";
-  console.log(queryString);
 
   return await db
     .raw(queryString, vals)
