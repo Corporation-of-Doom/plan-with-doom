@@ -14,24 +14,13 @@ async function insertNewEvent(eventInput) {
     organizer_ids
   } = eventInput;
 
-<<<<<<< HEAD
-=======
-  /*
-  REVIEW: checks for capacity type
-  Should I be setting current capacity = 0
-  */
->>>>>>> c2971d69f3a5040a83b5564fc26a7376613ea395
   if (capacity_type === "FFA") {
     max_capacity = null;
   }
 
   if (max_capacity == null && capacity_type != "FFA") {
     return new Error(
-<<<<<<< HEAD
       "Unable to create a event: An Event with " +
-=======
-      "Unable to create event: An Event with " +
->>>>>>> c2971d69f3a5040a83b5564fc26a7376613ea395
         capacity_type +
         " capacity type must have a max capacity"
     );
@@ -83,21 +72,12 @@ async function insertNewEvent(eventInput) {
     capacity_type,
     max_capacity,
     location,
-<<<<<<< HEAD
     current_capacity,
-=======
-    // if (capacity_type.equal("FFA")) {
-    //   max_capacity = null;
-    // current_capacity = 0;
-    // }
-
->>>>>>> c2971d69f3a5040a83b5564fc26a7376613ea395
     picture_path,
     id
   };
 }
 
-<<<<<<< HEAD
 async function updateEventParticipation(
   EventParticipationInput,
   adding = true
@@ -123,8 +103,4 @@ async function updateEventParticipation(
 module.exports = {
   insertNewEvent,
   updateEventParticipation
-=======
-module.exports = {
-  insertNewEvent
->>>>>>> c2971d69f3a5040a83b5564fc26a7376613ea395
 };

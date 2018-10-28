@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 const { insertNewEvent, updateEventParticipation } = require("./event");
-=======
-const { insertNewEvent } = require("./event");
->>>>>>> c2971d69f3a5040a83b5564fc26a7376613ea395
 const { insertNewSeminar } = require("./seminar");
 const { registerUser } = require("./user");
 
@@ -36,7 +32,6 @@ const mutations = {
         console.log(err);
         return new Error("Unable to create seminar");
       }
-<<<<<<< HEAD
     },
     async addUserToEvent(_, args) {
       try {
@@ -55,8 +50,6 @@ const mutations = {
         console.log(err);
         return new Error("Unable to remove user to event");
       }
-=======
->>>>>>> c2971d69f3a5040a83b5564fc26a7376613ea395
     }
   }
 };

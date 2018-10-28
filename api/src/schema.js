@@ -14,12 +14,9 @@ const SchemaDefinition = `
   # the schema allows the following queries:
   type Query {
     login(email: String!, password: String!): User!
-<<<<<<< HEAD
     
 """ time is returned as a utc time, you can convert it back using
     new Date(1571567400000)"""
-=======
->>>>>>> c2971d69f3a5040a83b5564fc26a7376613ea395
     getEventByID(id: Int!): Event!
     getSeminarByID(id: Int!): Seminar!
     searchUsersByName(searchString: String!): [User!]

@@ -14,13 +14,6 @@ async function insertNewSeminar(seminarInput) {
     organizer_ids
   } = seminarInput;
 
-<<<<<<< HEAD
-=======
-  /*
-  REVIEW: checks for capacity type
-  Should I be setting current capacity = 0
-  */
->>>>>>> c2971d69f3a5040a83b5564fc26a7376613ea395
   if (capacity_type === "FFA") {
     max_capacity = null;
   }
