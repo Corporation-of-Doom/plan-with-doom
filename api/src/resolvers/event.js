@@ -12,7 +12,7 @@ async function queryEventByID(id) {
     });
 }
 
-async function searchEvents(searchString, limit, offset) {
+async function searchEvents(searchString, limit = null, offset = null) {
   searchTokens = searchString.toLowerCase().split(" ");
   const events = [];
 
@@ -29,8 +29,16 @@ async function searchEvents(searchString, limit, offset) {
     vals.push(token);
   });
 
-  queryString = `${queryString} LIMIT ? OFFSET ?;`;
-  vals.push(limit, offset);
+  if (limit) {
+    queryString = `${queryString} LIMIT ?`;
+    vals.push(limit);
+  }
+  if (offset) {
+    queryString = `${queryString} OFFSET ?`;
+    vals.push(offset);
+  }
+  queryString = `${queryString};`;
+
   const res = await db.raw(queryString, vals);
 
   res.rows.forEach(event => {
