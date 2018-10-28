@@ -1,6 +1,6 @@
 const { signIn, searchUsers } = require("./user");
 const { queryEventByID, searchEvents } = require("./event");
-const { querySeminarByID } = require("./seminar");
+const { querySeminarByID, searchSeminars } = require("./seminar");
 const { queryAnnouncementByTypeID } = require("./announcement");
 
 const rootResolvers = {
@@ -63,6 +63,15 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to search events");
+      }
+    },
+    async searchSeminarsByName(_, args) {
+      const { searchString, limit, offset } = args;
+      try {
+        return await searchSeminars(searchString, limit, offset);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to search seminars");
       }
     }
   },
