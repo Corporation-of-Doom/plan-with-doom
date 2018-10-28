@@ -18,8 +18,10 @@ type Event {
   
   # still need to add photo
   picture_path: String
-  
-  # Will deal with that when we have DB set up
+ 
+  #Testing attaching announcements to an event
+  announcements: [Announcement!]
+
 }
 
 input EventInput {

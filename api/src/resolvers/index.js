@@ -1,6 +1,7 @@
 const { signIn, searchUsers } = require("./user");
 const { queryEventByID } = require("./event");
 const { querySeminarByID } = require("./seminar");
+const { queryAnnouncementByTypeID } = require("./announcement");
 
 const rootResolvers = {
   Query: {
@@ -16,8 +17,14 @@ const rootResolvers = {
     },
     async getEventByID(_, args) {
       try {
-        const { id } = args;
+        const { id, offset, limit } = args;
         const newEvent = await queryEventByID(id);
+        newEvent.announcements = await queryAnnouncementByTypeID(
+          id,
+          "Event",
+          offset,
+          limit
+        );
         return newEvent;
       } catch (err) {
         console.log(err);
@@ -26,8 +33,14 @@ const rootResolvers = {
     },
     async getSeminarByID(_, args) {
       try {
-        const { id } = args;
+        const { id, offset, limit } = args;
         const newSeminar = await querySeminarByID(id);
+        newSeminar.announcements = await queryAnnouncementByTypeID(
+          id,
+          "Seminar",
+          offset,
+          limit
+        );
         return newSeminar;
       } catch (err) {
         console.log(err);
@@ -69,7 +82,8 @@ const rootResolvers = {
     max_capacity: ({ max_capacity }) => max_capacity,
     current_capacity: ({ current_capacity }) => current_capacity,
     location: ({ location }) => location,
-    picture_path: ({ picture_path }) => picture_path
+    picture_path: ({ picture_path }) => picture_path,
+    announcements: ({ announcements }) => announcements
   },
   Seminar: {
     id: ({ id }) => id,
@@ -82,7 +96,8 @@ const rootResolvers = {
     max_capacity: ({ max_capacity }) => max_capacity,
     current_capacity: ({ current_capacity }) => current_capacity,
     location: ({ location }) => location,
-    picture_path: ({ picture_path }) => picture_path
+    picture_path: ({ picture_path }) => picture_path,
+    announcements: ({ announcements }) => announcements
   }
 };
 
