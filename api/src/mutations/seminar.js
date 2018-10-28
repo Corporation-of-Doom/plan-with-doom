@@ -14,10 +14,6 @@ async function insertNewSeminar(seminarInput) {
     organizer_ids
   } = seminarInput;
 
-  /*
-  REVIEW: checks for capacity type
-  Should I be setting current capacity = 0
-  */
   if (capacity_type === "FFA") {
     max_capacity = null;
   }
@@ -30,6 +26,7 @@ async function insertNewSeminar(seminarInput) {
     );
   }
 
+  current_capacity = 0;
   max_capacity = max_capacity || null;
   location = location || null;
   description = description || null;
@@ -39,8 +36,8 @@ async function insertNewSeminar(seminarInput) {
 
   const queryString = `INSERT INTO Seminar
     (event_id, name, description, start_time, end_time, capacity_type, 
-    max_capacity, location, picture_path) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
+    max_capacity, location, picture_path,current_capacity) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
 
   const vals = [
     event_id,
@@ -51,7 +48,8 @@ async function insertNewSeminar(seminarInput) {
     capacity_type,
     max_capacity,
     location,
-    picture_path
+    picture_path,
+    current_capacity
   ];
 
   const res = await db.raw(`${queryString}`, vals);
@@ -73,6 +71,7 @@ async function insertNewSeminar(seminarInput) {
     max_capacity,
     location,
     picture_path,
+    current_capacity,
     id
   };
 }

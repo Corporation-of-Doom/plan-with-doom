@@ -14,22 +14,19 @@ async function insertNewEvent(eventInput) {
     organizer_ids
   } = eventInput;
 
-  /*
-  REVIEW: checks for capacity type
-  Should I be setting current capacity = 0
-  */
   if (capacity_type === "FFA") {
     max_capacity = null;
   }
 
   if (max_capacity == null && capacity_type != "FFA") {
     return new Error(
-      "Unable to create event: An Event with " +
+      "Unable to create a event: An Event with " +
         capacity_type +
         " capacity type must have a max capacity"
     );
   }
 
+  current_capacity = 0;
   max_capacity = max_capacity || null;
   description = description || null;
 
@@ -40,9 +37,9 @@ async function insertNewEvent(eventInput) {
   organizer_ids.push(creator_id);
 
   const queryString = `INSERT INTO Event
-    (creator_id, name, description, start_time, end_time, capacity_type, 
-    max_capacity, location, picture_path) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
+  (creator_id, name, description, start_time, end_time, capacity_type, 
+    max_capacity, location, picture_path, current_capacity) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
 
   const vals = [
     creator_id,
@@ -53,7 +50,8 @@ async function insertNewEvent(eventInput) {
     capacity_type,
     max_capacity,
     location,
-    picture_path
+    picture_path,
+    current_capacity
   ];
 
   const res = await db.raw(`${queryString}`, vals);
@@ -74,11 +72,7 @@ async function insertNewEvent(eventInput) {
     capacity_type,
     max_capacity,
     location,
-    // if (capacity_type.equal("FFA")) {
-    //   max_capacity = null;
-    // current_capacity = 0;
-    // }
-
+    current_capacity,
     picture_path,
     id
   };
