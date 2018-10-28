@@ -15,15 +15,11 @@ import ForgotPassword from '../views/pages/authentication/ForgotPassword.vue'
 import Profile from '../views/pages/Profile.vue'
 import NotFound from '../views/pages/NotFound.vue'
 import Invoice from '../views/pages/Invoice.vue'
-<<<<<<< HEAD
-import MyEvent from '../views/pages/MyEvent.vue'
-=======
 import SearchPage from '../views/pages/Search.vue'
 import EventPage from '../views/pages/Event.vue'
 import SeminarPage from '../views/pages/Seminar.vue'
 import MyEventsPage from '../views/pages/MyEvents.vue'
 import MangeEventsPage from '../views/pages/ManageEvents.vue'
->>>>>>> d7cef1b14422a05a63b4eac8c8bc89a36685fb58
 
 //ui
 import Themes from '../views/ui/Themes.vue'
@@ -293,16 +289,6 @@ const router = new Router({
 			path: '/not-found',
 			name: 'not-found',
 			component: NotFound,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				tags: ['pages']
-			}
-		},
-		{
-			path: '/my-event',
-			name: 'my-event',
-			component: MyEvent,
 			meta: {
 				auth: true,
 				layout: layouts.navLeft,
