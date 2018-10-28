@@ -15,6 +15,7 @@ import ForgotPassword from '../views/pages/authentication/ForgotPassword.vue'
 import Profile from '../views/pages/Profile.vue'
 import NotFound from '../views/pages/NotFound.vue'
 import Invoice from '../views/pages/Invoice.vue'
+import MyEvent from '../views/pages/MyEvent.vue'
 
 //ui
 import Themes from '../views/ui/Themes.vue'
@@ -234,7 +235,18 @@ const router = new Router({
 				layout: layouts.navLeft,
 				tags: ['pages']
 			}
+		},
+		{
+			path: '/my-event',
+			name: 'my-event',
+			component: MyEvent,
+			meta: {
+				auth: true,
+				layout: layouts.navLeft,
+				tags: ['pages']
+			}
 		}
+	
 	]
 })
 
