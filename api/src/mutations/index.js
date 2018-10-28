@@ -1,6 +1,7 @@
 const { insertNewEvent, updateEventParticipation } = require("./event");
 const { insertNewSeminar, updateSeminarParticipation } = require("./seminar");
 const { registerUser } = require("./user");
+const { insertNewAnnouncement } = require("./announcement");
 
 const mutations = {
   Mutation: {
@@ -67,6 +68,29 @@ const mutations = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to remove user from Seminar");
+      }
+    },
+    async createEventAnnouncement(_, args) {
+      try {
+        const { announcement } = args;
+        const newAnnouncement = await insertNewAnnouncement(announcement);
+        return newAnnouncement;
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to create event announcement");
+      }
+    },
+    async createSeminarAnnouncement(_, args) {
+      try {
+        const { announcement } = args;
+        const newAnnouncement = await insertNewAnnouncement(
+          announcement,
+          "Seminar"
+        );
+        return newAnnouncement;
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to create seminar announcement");
       }
     }
   }

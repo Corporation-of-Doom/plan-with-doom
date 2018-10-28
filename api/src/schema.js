@@ -1,7 +1,6 @@
 const { makeExecutableSchema } = require("graphql-tools");
 
-// const { User, Event, Capacity } = require("./types");
-const { User, Event, Capacity, Seminar } = require("./types");
+const { User, Event, Capacity, Seminar, Announcement } = require("./types");
 const { rootResolvers } = require("./resolvers");
 const { mutations } = require("./mutations");
 
@@ -33,11 +32,14 @@ const SchemaDefinition = `
 
     addUserToSeminar(SeminarParticipation: SeminarParticipationInput!): Int!
     removeUserFromSeminar(SeminarParticipation: SeminarParticipationInput!): Int!
+
+    createEventAnnouncement(announcement: AnnouncementInput!): Announcement!
+    createSeminarAnnouncement(announcement: AnnouncementInput!): Announcement!
   }
 `;
 
 const schema = makeExecutableSchema({
-  typeDefs: [SchemaDefinition, User, Event, Capacity, Seminar],
+  typeDefs: [SchemaDefinition, User, Event, Capacity, Seminar, Announcement],
   resolvers: [rootResolvers, mutations]
 });
 
