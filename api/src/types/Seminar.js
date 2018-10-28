@@ -32,7 +32,7 @@ input SeminarInput {
 
 input SeminarParticipationInput {
   userid: Int!
-  eventid: Int!
+  seminarid: Int!
   participationType: participation_type!
 
 }
