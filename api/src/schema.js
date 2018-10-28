@@ -30,6 +30,9 @@ const SchemaDefinition = `
     createSeminar(seminar: SeminarInput!): Seminar!
     addUserToEvent(EventParticipation: EventParticipationInput!): Int!
     removeUserFromEvent(EventParticipation: EventParticipationInput!): Int!
+
+    addUserToSeminar(SeminarParticipation: SeminarParticipationInput!): Int!
+    removeUserFromSeminar(SeminarParticipation: SeminarParticipationInput!): Int!
   }
 `;
 

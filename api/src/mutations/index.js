@@ -1,5 +1,5 @@
 const { insertNewEvent, updateEventParticipation } = require("./event");
-const { insertNewSeminar } = require("./seminar");
+const { insertNewSeminar, updateSeminarParticipation } = require("./seminar");
 const { registerUser } = require("./user");
 
 const mutations = {
@@ -48,7 +48,25 @@ const mutations = {
         return await updateEventParticipation(EventParticipation, false);
       } catch (err) {
         console.log(err);
-        return new Error("Unable to remove user to event");
+        return new Error("Unable to remove user from event");
+      }
+    },
+    async addUserToSeminar(_, args) {
+      try {
+        const { SeminarParticipation } = args;
+        return await updateSeminarParticipation(SeminarParticipation);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to add user to Seminar");
+      }
+    },
+    async removeUserFromSeminar(_, args) {
+      try {
+        const { SeminarParticipation } = args;
+        return await updateSeminarParticipation(SeminarParticipation, false);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to remove user from Seminar");
       }
     }
   }

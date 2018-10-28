@@ -76,4 +76,26 @@ async function insertNewSeminar(seminarInput) {
   };
 }
 
-module.exports = { insertNewSeminar };
+async function updateSeminarParticipation(
+  SeminarParticipationInput,
+  adding = true
+) {
+  let { userid, seminarid, participationType } = SeminarParticipationInput;
+
+  var queryString = null;
+
+  if (participationType === "ATTENDING") {
+    queryString = `INSERT INTO seminar_participation (user_id, seminar_id , attending ) VALUES( ? , ? , ?)
+    ON CONFLICT (user_id , seminar_id ) do update set attending = excluded.attending;`;
+  } else {
+    queryString = `INSERT INTO seminar_participation (user_id, seminar_id , following ) VALUES( ? , ? , ?)
+    ON CONFLICT (user_id , seminar_id ) do update set following = excluded.following;`;
+  }
+
+  const vals = [userid, seminarid, adding];
+
+  await db.raw(`${queryString}`, vals);
+  return true;
+}
+
+module.exports = { insertNewSeminar, updateSeminarParticipation };
