@@ -20,6 +20,8 @@ import EventPage from '../views/pages/Event.vue'
 import SeminarPage from '../views/pages/Seminar.vue'
 import MyEventsPage from '../views/pages/MyEvents.vue'
 import MangeEventsPage from '../views/pages/ManageEvents.vue'
+import CreateEvent from '../views/pages/CreateEvent.vue'
+
 
 //ui
 import Themes from '../views/ui/Themes.vue'
@@ -289,6 +291,16 @@ const router = new Router({
 			path: '/not-found',
 			name: 'not-found',
 			component: NotFound,
+			meta: {
+				auth: true,
+				layout: layouts.navLeft,
+				tags: ['pages']
+			}
+		},
+		{
+			path: '/CreateEvent',
+			name: 'CreateEvent',
+			component: CreateEvent,
 			meta: {
 				auth: true,
 				layout: layouts.navLeft,

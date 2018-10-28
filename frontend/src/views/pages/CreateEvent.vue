@@ -1,7 +1,7 @@
 <template>
 		<vue-scroll class="page-profile" id="affix-container">
 
-	<div class="my-event">
+	<div class="create-event">
 
 		<div id="eventForm">
 
@@ -84,7 +84,7 @@
 
 <script>
   export default {
-  	name: 'MyEvent',
+  	name: 'CreateEvent',
     data() {
       return {
 

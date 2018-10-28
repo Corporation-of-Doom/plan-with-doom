@@ -12,7 +12,7 @@
 		<el-menu-item index="/search">
 			<i class="mdi mdi-magnify"></i><span slot="title">Search</span>
 		</el-menu-item>
-		<el-menu-item index="/my-event">
+		<el-menu-item index="/myevents">
 			<i class="mdi mdi-calendar-check"></i><span slot="title">My Events</span>
 		</el-menu-item>
 		<el-menu-item index="/calendar">
