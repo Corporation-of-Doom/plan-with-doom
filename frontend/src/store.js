@@ -17,7 +17,8 @@ export default new Vuex.Store({
 			viewAnimation: 'fade-top' // fade-left, fade-right, fade-top, fade-top-in-out, fade-bottom, fade-bottom-in-out, fade, false
 		},
 		splashScreen: true,
-		logged: true
+		logged: true,
+		user:{}
 	},
 	mutations: {
 		setLayout(state, payload) {
