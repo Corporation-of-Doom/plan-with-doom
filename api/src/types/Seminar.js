@@ -12,6 +12,9 @@ type Seminar {
     location: Int
     picture_path: Int
 
+  #Testing attaching announcements to an seminar
+  announcements: [Announcement!]
+
   }
 
 input SeminarInput {
