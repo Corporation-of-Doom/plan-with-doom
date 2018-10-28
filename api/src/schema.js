@@ -11,18 +11,25 @@ const SchemaDefinition = `
     mutation: Mutation
   }
 
-  # the schema allows the following query:
+  # the schema allows the following queries:
   type Query {
     login(email: String!, password: String!): User!
+    
+""" time is returned as a utc time, you can convert it back using
+    new Date(1571567400000)"""
     getEventByID(id: Int!): Event!
     getSeminarByID(id: Int!): Seminar!
     searchUsersByName(searchString: String!): [User!]
   }
 
+  # The schema allows the following mutations:
   type Mutation {
     signUp(user: UserInput!): User!
+    # Creates a new event
     createEvent(event: EventInput!): Event!
     createSeminar(seminar: SeminarInput!): Seminar!
+    addUserToEvent(EventParticipation: EventParticipationInput!): Int!
+    removeUserFromEvent(EventParticipation: EventParticipationInput!): Int!
   }
 `;
 

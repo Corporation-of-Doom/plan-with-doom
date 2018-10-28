@@ -1,4 +1,4 @@
-const { insertNewEvent } = require("./event");
+const { insertNewEvent, updateEventParticipation } = require("./event");
 const { insertNewSeminar } = require("./seminar");
 const { registerUser } = require("./user");
 
@@ -31,6 +31,24 @@ const mutations = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to create seminar");
+      }
+    },
+    async addUserToEvent(_, args) {
+      try {
+        const { EventParticipation } = args;
+        return await updateEventParticipation(EventParticipation);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to add user to event");
+      }
+    },
+    async removeUserFromEvent(_, args) {
+      try {
+        const { EventParticipation } = args;
+        return await updateEventParticipation(EventParticipation, false);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to remove user to event");
       }
     }
   }

@@ -84,6 +84,29 @@ async function insertNewEvent(eventInput) {
   };
 }
 
+async function updateEventParticipation(
+  EventParticipationInput,
+  adding = true
+) {
+  let { userid, eventid, participationType } = EventParticipationInput;
+
+  var queryString = null;
+
+  if (participationType === "ATTENDING") {
+    queryString = `INSERT INTO event_participation (user_id, event_id , attending ) VALUES( ? , ? , ?)
+    ON CONFLICT (user_id , event_id ) do update set attending = excluded.attending;`;
+  } else {
+    queryString = `INSERT INTO event_participation (user_id, event_id , following ) VALUES( ? , ? , ?)
+    ON CONFLICT (user_id , event_id ) do update set following = excluded.following;`;
+  }
+
+  const vals = [userid, eventid, adding];
+
+  await db.raw(`${queryString}`, vals);
+  return true;
+}
+
 module.exports = {
-  insertNewEvent
+  insertNewEvent,
+  updateEventParticipation
 };
