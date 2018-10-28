@@ -20,6 +20,8 @@ const SchemaDefinition = `
     getEventByID(id: Int!): Event
     getSeminarByID(id: Int!): Seminar
     searchUsersByName(searchString: String!): [User!]
+
+    searchEventsByName(searchString: String!, limit: Int!, offset: Int!): [Event!]
   }
 
   # The schema allows the following mutations:
