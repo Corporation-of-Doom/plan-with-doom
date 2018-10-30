@@ -1,127 +1,237 @@
 <template>
-		<vue-scroll class="page-profile" id="affix-container">
+	<vue-scroll class="page-profile">
+		<div class="create-event">
+			<div class="eventForm">
 
-	<div class="create-event">
+				<!-- event image allow user to upload a photo -->
+				<div class="image-cropper" id="eventImg">
+						<img src="http://www.electricvelocity.com.au/upload/blogs/smart-e-bike-side_2.jpg" class="rounded" />
+				</div>
+				
+				<p>Name</p>
+				<el-input v-model="eventName" placeholder="Ex. Convention of Doom"></el-input>
 
-		<div id="eventForm">
+				<p>Date</p>
+				<el-date-picker
+					is-range
+					v-model="dateRange"
+					type="daterange"
+					align="right"
+					value-format="yyyy-MM-dd"
+					unlink-panels
+					range-separator="To"
+					start-placeholder="Start date"
+					end-placeholder="End date">
+				</el-date-picker>
 
-			<!-- event image 
-				 allow user to upload a photo -->
-			<div class="image-cropper">
-	    		<img src="http://www.electricvelocity.com.au/upload/blogs/smart-e-bike-side_2.jpg" class="rounded" />
+				<p>Time</p>
+				<el-time-picker
+					is-range
+					format="HH:mm"
+					v-model="timeRange"
+					range-separator="To"
+					start-placeholder="Start time"
+					end-placeholder="End time">
+				</el-time-picker>
+		
+				<p>Capcity Type</p>
+				<el-radio v-model="capacityType" label=1>Free for all</el-radio>
+				<el-radio v-model="capacityType" label=2>First come first serve (physically)</el-radio>
+				<el-radio v-model="capacityType" @click="toggleFCFSE" label=3>First come first serve (electronically)</el-radio>
+
+				<el-input-number
+					v-if="capacityType!=3"
+					disabled
+					v-model="capacityNum" 
+					@change="handleChange" 
+					:min="1" 
+					:max="9999">
+				</el-input-number>
+
+				<el-input-number
+					v-if="capacityType==3"
+					v-model="capacityNum" 
+					@change="handleChange" 
+					:min="1" 
+					:max="9999">
+				</el-input-number>
+
+				<p>Location</p>
+				<p>Country</p>
+				<el-input v-model="countryInput" placeholder="Canada" ></el-input>
+				<p>City</p>
+				<el-input v-model="cityInput" placeholder="Guelph"></el-input>
+				<p>Postal Code</p>	
+				<el-input v-model="postalInput" placeholder="N1G 2W1"></el-input>
+				<p>Address</p>	
+				<el-input v-model="addressInput" placeholder="50 Stone Rd E"></el-input>
+				
+				<p>Website</p>
+				<el-input v-model="urlInput" placeholder="www.planwithdoom.com"></el-input>
+
+				<p>Description</p>
+				<el-input
+					type="textarea"
+					autosize
+					placeholder="Ex. People gather to discuss their individual dooms"
+					v-model="descriptionInput">
+				</el-input>
+
+				<p>Add Event Organizer(s)</p>
+
+				<el-card @click.native="goContacts" class="box-card" style="margin:10px; text-align:center;" shadow="hover" >
+					<div >
+							Organizers
+					</div>
+				</el-card>
+
 			</div>
-			
-			<p>Name</p>
-			<el-input placeholder="Ex. Convention of Doom" v-model="input"></el-input>
 
-			<p>Date</p>
-		    <el-date-picker
-		    	is-range
-				v-model="value7"
-				type="daterange"
-				align="right"
-				unlink-panels
-				range-separator="To"
-				start-placeholder="Start date"
-				end-placeholder="End date">
-		    </el-date-picker>
-
-			<!-- Make sure the date and time uses a consistent form
-				 There should be a start time and end time form -->
-			<p>Time</p>
-			<el-time-picker
-			    is-range
-			    v-model="value4"
-			    range-separator="To"
-			    start-placeholder="Start time"
-			    end-placeholder="End time">
-  			</el-time-picker>
+			<!-- buttons -->
+			<el-button type="success" v-on:click="onSubmit" round >Create Event</el-button>	
+			<el-button type="danger" @click="onCancel" round>Cancel</el-button>
 	
-			<p>Location</p>
-			<p>Country</p>
-			<el-input placeholder="Canada" v-model="input"></el-input>
-			<p>City</p>
-			<el-input placeholder="Guelph" v-model="input"></el-input>
-			<p>Postal Code</p>	
-			<el-input placeholder="N1G 2W1" v-model="input"></el-input>
-			<p>Address</p>	
-			<el-input placeholder="50 Stone Rd E" v-model="input"></el-input>
+			<el-transfer
+			 	:titles="['Available', 'Selected']"
+				filterable
+				:filter-method="filterMethod"
+				filter-placeholder="Search Organizers"
+				v-model="organizerList"
+				:data="data2">
+			</el-transfer>
 
-
-			<p>Capcity Type</p>
-
-		    <el-radio-group v-model="form.resource">
-		      	<el-radio label="Free for all"></el-radio>
-		      	<el-radio label="First come first serve (physically)"></el-radio>
-		      	<el-radio label="First come first serve (electronically)"></el-radio>
-		    </el-radio-group>
-			
-			<p>Website</p>
-			<el-input placeholder="www.planwithdoom.com" v-model="input"></el-input>
-
-
-			<p>Description</p>
-			<el-input
-			  type="textarea"
-			  autosize
-			  placeholder="Ex. People gather to discuss their individual dooms"
-			  v-model="textarea2">
-			</el-input>
-
-			<p>Add Event Organizer(s)</p>
-
-			
-
-
-		</div>
-
-<!-- buttons -->
-<el-button type="success" round>Create Event</el-button>	
-<el-button type="danger" @click="open6" round>Cancel</el-button>
-	</div>
-		</vue-scroll>
+		</div>	
+	</vue-scroll>
 </template>
 
 <script>
   export default {
   	name: 'CreateEvent',
-    data() {
-      return {
+		
+		data() {
 
-      	value4: '',
-		enddate_value: '',
-		value7: '',      	
-
-      	form: {
-          resource: '',
-        }
-      
-      };
-    },
-
-    methods: {
-    		onSubmit() {
-        console.log('submit!');
-      }
-      ,
-      open6() {
-	this.$confirm('The event information will be discarded. Continue?', 'Warning', {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
-          type: 'warning',
-          center: true
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: 'Delete completed'
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: 'Delete canceled'
+		 var generateData2 = _ => {
+        var data = [];
+        var availableOrganizers = ['Alliyya', 'Tamara', 'Bhavanthy', 'Vivian', 'Ozzy', 'Colorado', 'Connecticut '];
+        var organizerNames = availableOrganizers;
+        availableOrganizers.forEach((names, index) => {
+          data.push({
+            label: names,
+            key: index,
+            initial: organizerNames[index]
           });
         });
-      }
+        return data;
+      };
+
+      return {
+				eventName: '',
+				dateRange: '',      	
+				timeRange: '',
+				capacityType: '',
+				capacityNum: 1,
+				countryInput: '',
+				cityInput: '',
+				postalInput: '',
+				addressInput: '',
+				urlInput: '',
+				descriptionInput: '',
+				organizerList: '',
+
+				data2: generateData2(),
+        value2: [],
+        filterMethod(query, item) {
+          return item.initial.toLowerCase().indexOf(query.toLowerCase()) > -1;
+        }
+
+						
+			};
+		},
+		
+    methods: {
+			onSubmit: function(event) {
+
+				if (this.eventName && this.dateRange && this.timeRange && this.capacityType)
+				{					
+					// extract date information needed
+					var temp = this.dateRange.toString().split(",")
+					// alert('date[0]: ' + dates[0] + 'date[1]' + dates[1])
+					var start_time = temp[0]
+					var end_time = temp[1]
+
+					// extract time information needed
+					var times = this.timeRange.toString().split(' ')
+					// alert('time[5]: ' + times[4] + 'time[12]: ' + times[12])
+					temp = times[4].split(':')
+					start_time = start_time + ' ' + temp[0] + ':' + temp[1]
+					temp = times[12].split(':')
+					end_time = end_time + ' ' + temp[0] + ':' + temp[1]
+				
+					// extract capacity type information needed
+					temp = this.capacityType
+					var capacity_type = ''
+					var capacity_num = null
+
+					if (temp == 1) {
+						capacity_type = 'FFA'
+					} else if (temp == 2) {
+						capacity_type = 'FCFS_P'
+					} else if (temp == 3) {
+						capacity_type = 'FCFS_E'
+						capacity_num = this.capacityNum
+					}
+						
+					alert('Event name: ' + this.eventName + '\nStart date: ' + start_time + '\nEnd date: ' + end_time + '\nCapacity type: ' + capacity_type + '\nCapacity number: ' + capacity_num)
+					alert(this.organizerList)
+					alert(this.data2)
+				}
+				
+				if (!this.eventName)
+					alert('Please enter a name for your event!')
+
+				if (!this.dateRange)
+					alert('Please select a date for your event!')
+
+				if (!this.timeRange)
+					alert('Please select a time for your event!')	
+
+				if (!this.capacityType)
+					alert('Please select a capacity type for your event!')
+			},
+			handleChange(value) {
+        console.log(value)
+      },
+			// onCancel: function(event) {
+			// 	alert('The event information will be discarded.')
+			// },
+
+			toggleFCFSE(event) {
+				alert("asdfasdfasdf")
+				  document.getElementById("capacityInput").disabled = true;
+			},
+
+			goContacts() {
+				this.$router.push('Contacts')
+			}
+      ,
+      onCancel() {
+				this.$confirm('The event information will be discarded. Continue?', 'Warning', {
+					confirmButtonText: 'OK',
+					cancelButtonText: 'Cancel',
+					type: 'warning',
+					center: true
+				}).then(() => {
+					this.$message({
+						type: 'success',
+						message: 'Delete completed'
+					});
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: 'Delete canceled'
+					});
+				});
+			}
 
 	}
   };
