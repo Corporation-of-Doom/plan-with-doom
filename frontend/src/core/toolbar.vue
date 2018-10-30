@@ -10,7 +10,7 @@
 				<i class="mdi mdi-fullscreen" v-if="!fullscreen"></i>
 				<i class="mdi mdi-fullscreen-exit" v-if="fullscreen"></i>
 			</button>
-			<span class="username"><router-link to="/profile">Aurora Shenton</router-link></span>
+			<span class="username">{{ user.first_name }} {{user.last_name}}</span>
 			<el-dropdown trigger="click" @command="onCommand">
 				<span class="el-dropdown-link">
 					<img src="../assets/images/avatar.jpg" class="avatar" alt="avatar">
@@ -39,7 +39,8 @@ export default {
 		return {
 			popoverWidth: 300,
 			fullscreen: false,
-			lang: 'us'
+			lang: 'us',
+			user: this.$store.state.user
 		}
 	},
 	methods: {
@@ -73,6 +74,7 @@ export default {
 		SearchBar
 	},
 	mounted() {
+		console.log(this.user)
 		this.fullscreen = this.$fullscreen.getState()
 		this.resizePopoverWidth();
 		window.addEventListener('resize', this.resizePopoverWidth);

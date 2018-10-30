@@ -5,7 +5,10 @@
 				<img class="image-logo" src="@/assets/images/logo.svg" alt="logo"/>
 				<span style="color: red;"> {{ form.error }} </span>
 				<float-label class="styled">
-					<input type="text" v-model="form.name" placeholder="Name">
+					<input type="text" v-model="form.firstName" placeholder="First Name">
+				</float-label>
+        <float-label class="styled">
+					<input type="text" v-model="form.lastName" placeholder="Last Name">
 				</float-label>
 				<float-label class="styled">
 					<input type="email" v-model="form.email" placeholder="E-mail">
@@ -23,13 +26,13 @@
 				</div>
 
 				<div class="flex text-center center pt-30 pb-20">			
-					<el-button plain size="small" @click="loginPage" class="signin-btn tada animated">
-						SIGN IN
+					<el-button plain size="small" @click="signUp" class="signin-btn tada animated">
+						SIGN UP
 					</el-button>
 				</div>
 
 				<div class="text-center login-box pt-10">
-					Already have an account? <a @click="loginPage">Login</a>
+					Already have an account? <a @click="login">Login</a>
 				</div>
 			</div>
 		</div>
@@ -37,12 +40,15 @@
 </template>
 
 <script>
+import { createApolloFetch } from "apollo-fetch"
+const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 export default {
   name: "Register",
   data() {
     return {
       form: {
-        name: "",
+        firstName: "",
+        lastName:"",
         email: "",
         password: "",
         passwordConfirm: "",
@@ -54,20 +60,55 @@ export default {
     };
   },
   methods: {
-    login() {
+    signUp() {
+      var form = this.form;
       if (this.checkForm()) {
-        this.$store.commit("setLogin");
-        this.$router.push("myevents");
+        fetch({
+          query: `mutation signUp($newUser: UserInput!){
+            signUp(user: $newUser){
+              id
+              email
+              first_name
+              middle_name
+              last_name
+              privacy_settings
+              linked_in
+              organization
+            }
+          }`,
+          variables: {
+            newUser: {
+              email: form.email,
+              password: form.password,
+              first_name: form.firstName,
+              last_name: form.lastName,
+              privacy_settings: "Public"
+            }
+          }
+        })
+        .then(res => {
+          if (res.data) {
+            this.$store.commit("setLogin", res.data.signUp);
+            this.$router.push("myevents");
+          } else {
+            form.error = res.errors[0].message;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
       }
     },
-    loginPage() {
+    login() {
       this.$router.push("login");
     },
     checkForm() {
       var form = this.form;
       // console.log("in check", form.password === form.passwordConfirm);
+      // console.log(form)
       if (
-        form.name &&
+        form.firstName &&
+        form.lastName &&
         form.email &&
         form.password &&
         form.passwordConfirm &&
@@ -76,13 +117,13 @@ export default {
       ) {
         return true;
       } else {
-        this.form.error = "Please complete full form";
+        form.error = "Please complete full form";
       }
       if (form.password !== form.passwordConfirm) {
-        this.form.errorPassword = "Passwords did not match";
+        form.errorPassword = "Passwords did not match";
       }
       if (!form.checked) {
-        this.form.errorChecked = "Must accept terms and conditions";
+        form.errorChecked = "Must accept terms and conditions";
       }
       return false;
     }

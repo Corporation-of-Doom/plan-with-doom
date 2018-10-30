@@ -14,7 +14,7 @@
 				
 				<div class="flex">
 					<div class="box grow"><el-checkbox>Remember Me </el-checkbox></div>
-					<div class="box grow text-right"><router-link to="/dashboard">Forgot Password?</router-link></div>
+					<!-- <div class="box grow text-right"><router-link to="/dashboard">Forgot Password?</router-link></div> -->
 				</div>
 
 				<div class="flex text-center center pt-30 pb-10">			
@@ -43,6 +43,9 @@
 </template>
 
 <script>
+// import gql from 'graphql-tag'
+import { createApolloFetch } from "apollo-fetch"
+const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 export default {
   name: "Login",
   data() {
@@ -56,21 +59,31 @@ export default {
   },
   methods: {
     login() {
-      if (this.form.email && this.form.password) {
-        fetch(`http://icy-frost-343.getsandbox.com/users/${this.form.email}/${this.form.password}`)
-        .then(res => res.json())
+      fetch({
+        query: `{
+          login(email: "${this.form.email}", password: "${this.form.password}"){
+            id
+            email
+            first_name
+            middle_name
+            last_name
+            privacy_settings
+            linked_in
+            organization
+          }
+        }`
+      })
         .then(res => {
-          console.log(res);
-          if (!res.error) {
-            this.$store.commit("setLogin", res);
+          if (res.data) {
+            this.$store.commit("setLogin", res.data.login);
             this.$router.push("myevents");
           } else {
-            this.form.error = "Email or password incorrect";
+            this.form.error = res.errors[0].message;
           }
+        })
+        .catch(err => {
+          console.log(err);
         });
-      } else {
-        this.form.errorEmail = "Please enter both email and password"
-      }
     },
     signup() {
       this.$router.push("register");
