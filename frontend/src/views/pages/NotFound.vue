@@ -10,9 +10,9 @@
 </template>
 
 <script>
-export default {
-	name: 'NotFound'
-}
+	export default {
+		name: 'NotFound'
+	}
 </script>
 
 <style lang="scss" scoped>
@@ -27,5 +27,6 @@ export default {
 		@include text-bordered-shadow();
 	}
 }
+
 </style>
 

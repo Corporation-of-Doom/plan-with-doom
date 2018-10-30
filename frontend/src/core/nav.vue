@@ -15,10 +15,10 @@
 		<el-menu-item index="/myevents">
 			<i class="mdi mdi-calendar-check"></i><span slot="title">My Events</span>
 		</el-menu-item>
-		<el-menu-item index="/not-found">
+		<el-menu-item index="/calendar">
 			<i class="mdi mdi-calendar"></i><span slot="title">Calendar</span>
 		</el-menu-item>
-		<el-menu-item index="/not-found">
+		<el-menu-item index="/timeline">
 			<i class="mdi mdi-newspaper"></i><span slot="title">News Feed</span>
 		</el-menu-item>
 		<el-menu-item index="/manageevents">

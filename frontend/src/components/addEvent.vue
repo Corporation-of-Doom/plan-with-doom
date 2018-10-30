@@ -17,7 +17,7 @@ export default {
 	},
 	methods: {
 		createEvent() {
-			this.$router.push('not-found')
+			this.$router.push('CreateEvent')
 		},
 	},
 }
