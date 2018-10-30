@@ -44,7 +44,7 @@ async function signIn(emailToFind, password) {
     };
   }
 
-  return new Error("Incorrect password");
+  throw new Error("Incorrect password");
 }
 
 async function searchUsers(searchString) {
