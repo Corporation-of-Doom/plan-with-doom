@@ -4,7 +4,7 @@
 		
 		<div class="contacts-root box grow flex gaps justify-center" :class="contactsClass">
 			<div class="card-base card-shadow--small search-card scrollable only-y">
-				<h1 class="mt-0">Contacts</h1>
+				<h1 class="mt-0">Organizers</h1>
 				
 				<el-input
 					prefix-icon="el-icon-search"
@@ -13,24 +13,16 @@
 					v-model="search">
 				</el-input>
 
-				<div class="o-050 text-right mt-10 mb-30"><strong>{{contactsFiltered.length}}</strong> contacts</div>
 			</div>
 			<div class="contacts-list box grow scrollable only-y">
-				<div v-for="c in contactsFiltered" :key="c.id" class="flex contact" @click="openDialog(c)">
-					<div class="star align-vertical p-10 fs-22">
-						<i class="mdi mdi-star align-vertical-middle" v-if="c.starred"></i>
-						<i class="mdi mdi-star-outline align-vertical-middle" v-if="!c.starred"></i>
-					</div>
+				<div v-for="c in contactsFiltered" :key="c.id" class="flex contact" @click="openDialog(c)">					<!-- <div class="star align-vertical p-10 fs-22"> -->
 					<div class="avatar align-vertical">
 						<img :src="'/static/images/users/user-'+c.id+'.jpg'" class="align-vertical-middle" alt="user avatar">
 					</div>
 					<div class="info box grow flex">
 						<div class="name box grow flex column justify-center p-10">
-							<div class="fullname fs-18"><strong>{{c.full_name}}</strong></div>
-							<div class="phone fs-14 secondary-text">{{c.phone}}</div>
-							<div class="email fs-14 secondary-text">{{c.email}}</div>
+							<div class="fullname fs-18"><strong>{{c.full_name}}</strong></div>							<!-- <div class="email fs-14 secondary-text">{{c.email}}</div> -->
 						</div>
-						<div class="phone align-vertical p-10"><span class="align-vertical-middle">{{c.phone}}</span></div>
 					</div>
 				</div>
 			</div>
