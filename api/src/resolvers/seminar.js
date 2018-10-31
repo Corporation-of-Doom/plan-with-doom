@@ -12,52 +12,35 @@ async function querySeminarByID(id) {
     });
 }
 
-async function searchSeminars(searchString, limit = null, offset = null) {
-  searchTokens = searchString.toLowerCase().split(" ");
-  const seminars = [];
-
-  let queryString = `
-    SELECT  *
-    FROM seminar
-    WHERE LOWER(name) LIKE '%' || ? || '%'`;
-  const vals = [searchTokens[0]];
-  searchTokens.pop();
-
-  searchTokens.forEach(token => {
-    queryString = `${queryString}
-      AND LOWER(name) LIKE '%' || ? || '%'`;
-    vals.push(token);
-  });
-
+async function querySeminarsByEventID(id, offset = null, limit = null) {
+  var queryStringEnding = "";
+  var vals = [id];
   if (limit) {
-    queryString = `${queryString} LIMIT ?`;
+    queryStringEnding += "LIMIT ? ";
     vals.push(limit);
   }
   if (offset) {
-    queryString = `${queryString} OFFSET ?`;
+    queryStringEnding += "OFFSET ? ";
     vals.push(offset);
   }
-  queryString = `${queryString};`;
 
-  const res = await db.raw(queryString, vals);
+  var queryString = "select * from Seminar where event_id = ? ";
 
-  res.rows.forEach(seminar => {
-    seminars.push({
-      id: seminar.id,
-      event_id: seminar.event_id,
-      name: seminar.name,
-      description: seminar.description,
-      start_time: seminar.start_time,
-      end_time: seminar.end_time,
-      capacity_type: seminar.capacity_type,
-      max_capacity: seminar.max_capacity,
-      current_capacity: seminar.current_capacity,
-      location: seminar.location,
-      picture_path: seminar.picture_path
+  if (queryStringEnding) {
+    queryString += queryStringEnding;
+  }
+
+  queryString += ";";
+
+  return await db
+    .raw(queryString, vals)
+    .then(res => {
+      return res.rows;
+    })
+    .catch(err => {
+      console.log(err);
+      throw err;
     });
-  });
-
-  return seminars;
 }
 
-module.exports = { querySeminarByID, searchSeminars };
+module.exports = { querySeminarByID, querySeminarsByEventID };

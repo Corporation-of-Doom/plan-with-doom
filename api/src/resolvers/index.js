@@ -1,9 +1,22 @@
 const { signIn, searchUsers } = require("./user");
-const { queryEventByID, searchEvents } = require("./event");
-const { querySeminarByID, searchSeminars } = require("./seminar");
+const { queryEventByID } = require("./event");
+const { querySeminarByID, querySeminarsByEventID } = require("./seminar");
 const { queryAnnouncementByTypeID } = require("./announcement");
+const {
+  searchEventsAndSeminars,
+  getTotalCount,
+  queryOrganizerByTypeID
+} = require("./searchResults");
 
 const rootResolvers = {
+  SearchResult: {
+    __resolveType(obj) {
+      if (obj.creator_id) {
+        return "Event";
+      }
+      return "Seminar";
+    }
+  },
   Query: {
     async login(_, args) {
       const { email, password } = args;
@@ -13,6 +26,33 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Incorrect password or email");
+      }
+    },
+    async getTotal(_, args) {
+      const { type } = args;
+      try {
+        return await getTotalCount(type);
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error("Could not get total number of events and seminar");
+        return new Error(`Could not get total number of ${type}s`);
+      }
+    },
+    async getTotalSearchResults(_, args) {
+      const { searchString, type } = args;
+      try {
+        const searchResults = await searchEventsAndSeminars(searchString, type);
+        return searchResults.length;
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error(
+            "Could not get total number of search results for events and seminar"
+          );
+        return new Error(
+          `Could not get total number of search results for ${type}s`
+        );
       }
     },
     async getEventByID(_, args) {
@@ -25,6 +65,13 @@ const rootResolvers = {
           offset,
           limit
         );
+        newEvent.organizers = await queryOrganizerByTypeID(
+          id,
+          "Event",
+          offset,
+          limit
+        );
+        newEvent.seminars = await querySeminarsByEventID(id, offset, limit);
         return newEvent;
       } catch (err) {
         console.log(err);
@@ -36,6 +83,12 @@ const rootResolvers = {
         const { id, offset, limit } = args;
         const newSeminar = await querySeminarByID(id);
         newSeminar.announcements = await queryAnnouncementByTypeID(
+          id,
+          "Seminar",
+          offset,
+          limit
+        );
+        newSeminar.organizers = await queryOrganizerByTypeID(
           id,
           "Seminar",
           offset,
@@ -56,22 +109,14 @@ const rootResolvers = {
         return new Error("Unable to search users");
       }
     },
-    async searchEventsByName(_, args) {
-      const { searchString, limit, offset } = args;
+    async searchByName(_, args) {
+      const { searchString, type, limit, offset } = args;
       try {
-        return await searchEvents(searchString, limit, offset);
+        return await searchEventsAndSeminars(searchString, type, limit, offset);
       } catch (err) {
         console.log(err);
-        return new Error("Unable to search events");
-      }
-    },
-    async searchSeminarsByName(_, args) {
-      const { searchString, limit, offset } = args;
-      try {
-        return await searchSeminars(searchString, limit, offset);
-      } catch (err) {
-        console.log(err);
-        return new Error("Unable to search seminars");
+        if (!type) return new Error("Unable to search events and seminars.");
+        return new Error(`Unable to search ${type}s.`);
       }
     }
   },
@@ -101,7 +146,9 @@ const rootResolvers = {
     current_capacity: ({ current_capacity }) => current_capacity,
     location: ({ location }) => location,
     picture_path: ({ picture_path }) => picture_path,
-    announcements: ({ announcements }) => announcements
+    announcements: ({ announcements }) => announcements,
+    organizers: ({ organizers }) => organizers,
+    seminars: ({ seminars }) => seminars
   },
   Seminar: {
     id: ({ id }) => id,
@@ -115,7 +162,8 @@ const rootResolvers = {
     current_capacity: ({ current_capacity }) => current_capacity,
     location: ({ location }) => location,
     picture_path: ({ picture_path }) => picture_path,
-    announcements: ({ announcements }) => announcements
+    announcements: ({ announcements }) => announcements,
+    organizers: ({ organizers }) => organizers
   }
 };
 

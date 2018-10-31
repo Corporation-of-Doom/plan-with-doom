@@ -10,9 +10,14 @@ const SchemaDefinition = `
     mutation: Mutation
   }
 
+  union SearchResult = Event | Seminar
+
   # the schema allows the following queries:
   type Query {
     login(email: String!, password: String!): User!
+
+    getTotal(type: String): Int!
+    getTotalSearchResults(searchString: String!, type: String): Int!
 
 """ time is returned as a utc time, you can convert it back using
     new Date(1571567400000)"""
@@ -20,8 +25,8 @@ const SchemaDefinition = `
     getSeminarByID(id: Int! offset: Int limit: Int): Seminar
     searchUsersByName(searchString: String!): [User!]
 
-    searchEventsByName(searchString: String!, limit: Int, offset: Int): [Event!]
-    searchSeminarsByName(searchString: String!, limit: Int, offset: Int): [Seminar!]
+    """ Search for events of seminars by name """
+    searchByName(searchString: String!, type: String, limit: Int, offset: Int): [SearchResult!]
   }
 
   # The schema allows the following mutations:

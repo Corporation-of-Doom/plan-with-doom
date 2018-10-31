@@ -14,6 +14,7 @@ type Seminar {
 
   #Testing attaching announcements to an seminar
   announcements: [Announcement!]
+  organizers: [User!]
 
   }
 
