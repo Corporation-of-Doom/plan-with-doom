@@ -43,7 +43,6 @@
 					v-if="capacityType==1"
 					disabled
 					v-model="capacityNum" 
-					@change="handleChange" 
 					:min="1" 
 					:max="9999">
 				</el-input-number>
@@ -51,7 +50,6 @@
 				<el-input-number
 					v-if="capacityType!=1"
 					v-model="capacityNum" 
-					@change="handleChange" 
 					:min="1" 
 					:max="9999">
 				</el-input-number>
@@ -81,10 +79,9 @@
 				<el-transfer
 					filterable
 					:titles="['Available', 'Selected']"
-					:filter-method="filterMethod"
 					filter-placeholder="Available organizers"
 					v-model="organizerList"
-					:data="data2">
+					:data="transferData">
 				</el-transfer>
 
 			</div>
@@ -104,54 +101,58 @@ const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 var availableOrganizers = []
 var organizerid = []
 
-fetch({
-	query: `{
-		searchUsersByName(searchString: "") {
-			id
-				first_name
-				middle_name
-				last_name
-		}
-	}`}).then(res => {
+	fetch({
+		query: `{
+				searchUsersByName(searchString: "") {
+					id
+					first_name
+					middle_name
+					last_name
+				}
+			}`
+		}).then(res => {
 		if (res.data) {
-			// console.log(res.data)
+			
 			console.log(res.data.searchUsersByName)
-
+			
 			res.data.searchUsersByName.forEach(element => {
+				
 				availableOrganizers.push(element.first_name)	
 				organizerid.push(element.id)
-			console.log("organizerid: " + element.id);
+			
 			});
 
 		} else {
 			console.log(res.errors)
 		}		
-	})
-	.catch(err => {
+	}).catch(err => {
 		console.log(err);
-});
+	}); 
 
 
-  export default {
+export default {
   	name: 'CreateEvent',
 		
 		data() {
 
-		  var generateData2 = _ => {
+			var populateTranfer = _ => {
 				var data = []
-        var initials = availableOrganizers
-        availableOrganizers.forEach((names, index) => {
-          data.push({
-            label: names,
-            key: index,
-            initial: initials[index]
-          });
-        });
-        return data;
-      };
+				var initials = availableOrganizers
+				
+				availableOrganizers.forEach((names, index) => {
+					
+					data.push({
+						label: names,
+						key: index,
+						initial: initials[index]
+					});
+				});
+				return data;
+      		};
 
-      return {
-				eventName: 'Jokes',
+			return {
+				user: this.$store.state.user,
+				eventName: '',
 				dateRange: '',      	
 				timeRange: '',
 				capacityType: '',
@@ -162,136 +163,116 @@ fetch({
 				addressInput: '',
 				urlInput: '',
 				descriptionInput: '',
-				organizerList: '',
-				user: this.$store.state.user,
-
-				data2: generateData2(),
-        organizerList: [],
-        filterMethod(query, item) {
-          return item.initial.toLowerCase().indexOf(query.toLowerCase()) > -1;
-        }
-
-						
+				transferData: populateTranfer(),
+				organizerList: []			
 			};
 		},
 	
     methods: {
-			onSubmit: function(event) {
+		onSubmit: function(event) {
 
-				if (this.eventName && this.dateRange && this.timeRange && this.capacityType)
-				{					
-					// extract date information needed
-					var temp = this.dateRange.toString().split(",")
-					// alert('date[0]: ' + dates[0] + 'date[1]' + dates[1])
-					var start_time = temp[0]
-					var end_time = temp[1]
+			if (this.eventName && this.dateRange && this.timeRange && this.capacityType)
+			{					
+				var temp = this.dateRange.toString().split(",")
+				var start_time = temp[0]
+				var end_time = temp[1]
 
-					// extract time information needed
-					var times = this.timeRange.toString().split(' ')
-					// alert('time[5]: ' + times[4] + 'time[12]: ' + times[12])
-					temp = times[4].split(':')
-					start_time = start_time + ' ' + temp[0] + ':' + temp[1]
-					temp = times[12].split(':')
-					end_time = end_time + ' ' + temp[0] + ':' + temp[1]
-				
-					// extract capacity type information needed
-					temp = this.capacityType
-					var capacity_type = ''
-					var capacity_num = null
+				var times = this.timeRange.toString().split(' ')
+				temp = times[4].split(':')
+				start_time = start_time + ' ' + temp[0] + ':' + temp[1]
+				temp = times[12].split(':')
+				end_time = end_time + ' ' + temp[0] + ':' + temp[1]
+			
+				temp = this.capacityType
+				var capacity_type = ''
+				var capacity_num = null
 
-					if (temp == 1) {
-						capacity_type = 'FFA'
-					} else if (temp == 2) {
-						capacity_type = 'FCFS_P'
-						capacity_num = this.capacityNum
-					} else if (temp == 3) {
-						capacity_type = 'FCFS_E'
-						capacity_num = this.capacityNum
-					}
-						
-					// alert('Event name: ' + this.eventName + '\nStart date: ' + start_time + '\nEnd date: ' + end_time + '\nCapacity type: ' + capacity_type + '\nCapacity number: ' + capacity_num)
-					console.log("organizerList: " + this.organizerList)
+				if (temp == 1) {
+					capacity_type = 'FFA'
+				} else if (temp == 2) {
+					capacity_type = 'FCFS_P'
+					capacity_num = this.capacityNum
+				} else if (temp == 3) {
+					capacity_type = 'FCFS_E'
+					capacity_num = this.capacityNum
+				}
+									
+				var selectedOrganizer = []
 
-					fetch({
-						query: `mutation createEvent($event: EventInput!){
-							createEvent(event: $event){
-							id
-							}
-						}`,
-							variables: {
-								event: {		
-												creator_id: this.user.id,
-												name: this.eventName,
-												description: this.descriptionInput,
-												start_time: start_time,
-												end_time: end_time,
-												capacity_type: capacity_type,
-												max_capacity: capacity_num,
-												location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput
-								}
-										}
-										
-									})
-				.then(res => {
-          if (res.data) {
-						alert("Event created successfully!")
-						console.log(res.data)
-						this.$router.push('ManageEvents')
-          } else {
-						console.log(res.errors)
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+				for (var i = 0; i < this.organizerList.length; i++) {
+					console.log(i + ": " + this.organizerList[i] )
+					selectedOrganizer.push(organizerid[this.organizerList[i]])
 				}
 
-			
-				
-				if (!this.eventName)
-					alert('Please enter a name for your event!')
+				console.log('Event name: ' + this.eventName + '\nStart date: ' + start_time + '\nEnd date: ' + end_time + '\nCapacity type: ' + capacity_type + '\nCapacity number: ' + capacity_num)
 
-				if (!this.dateRange)
-					alert('Please select a date for your event!')
+				fetch({
+					query: `mutation createEvent($event: EventInput!){
+						createEvent(event: $event){
+						id
+						}
+					}`,
+					variables: {
+						event: {		
+							creator_id: this.user.id,
+							name: this.eventName,
+							description: this.descriptionInput,
+							start_time: start_time,
+							end_time: end_time,
+							capacity_type: capacity_type,
+							max_capacity: capacity_num,
+							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput,
+							organizer_ids: selectedOrganizer
+						}
 
-				if (!this.timeRange)
-					alert('Please select a time for your event!')	
-
-				if (!this.capacityType)
-					alert('Please select a capacity type for your event!')
-			},
-			handleChange(value) {
-        console.log(value)
-      },
-			// onCancel: function(event) {
-			// 	alert('The event information will be discarded.')
-			// },
-
-			goContacts() {
-				this.$router.push('Contacts')
-			}
-      ,
-      onCancel() {
-				this.$confirm('The event information will be discarded. Continue?', 'Warning', {
-					confirmButtonText: 'OK',
-					cancelButtonText: 'Cancel',
-					type: 'warning',
-					center: true
-				}).then(() => {
-					this.$message({
-						type: 'success',
-						message: 'Delete completed'
-					});
-				}).catch(() => {
-					this.$message({
-						type: 'info',
-						message: 'Delete canceled'
-					});
+					}			
+				}).then(res => {
+					if (res.data) {
+						alert("Event created successfully!")
+						this.$router.push('ManageEvents')
+					} else {
+						console.log(res.errors)
+					}
+				}).catch(err => {
+					console.log(err);
 				});
 			}
 
-	}
+			if (!this.eventName)
+				alert('Please enter a name for your event!')
+
+			if (!this.dateRange)
+				alert('Please select a date for your event!')
+
+			if (!this.timeRange)
+				alert('Please select a time for your event!')	
+
+			if (!this.capacityType)
+				alert('Please select a capacity type for your event!')
+		
+		},
+	  
+		onCancel() {
+			this.$confirm('The event information will be discarded. Continue?', 'Warning', {
+				confirmButtonText: 'OK',
+				cancelButtonText: 'Cancel',
+				type: 'warning',
+				center: true
+			}).then(() => {
+				this.$message({
+					type: 'success',
+					message: 'Delete completed'
+				});
+			}).catch(() => {
+				this.$message({
+					type: 'info',
+					message: 'Delete canceled'
+				});
+			});
+		}
+	} //METHODS
   };
+
 </script>
 
 <style lang="scss" scoped>
