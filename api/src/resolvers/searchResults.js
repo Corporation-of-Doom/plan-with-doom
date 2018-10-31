@@ -212,8 +212,6 @@ async function getMySchedule(
 
   queryString = `${queryString} ORDER BY start_time DESC`;
 
-  queryString = `${queryString} ORDER BY start_time DESC`;
-
   if (limit) {
     queryString = `${queryString} LIMIT ?`;
     vals.push(limit);
