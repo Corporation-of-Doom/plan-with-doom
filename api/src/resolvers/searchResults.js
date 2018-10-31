@@ -132,7 +132,52 @@ async function getTotalCount(type = null) {
   }
 }
 
+async function queryOrganizerByTypeID(
+  id,
+  type = "Event",
+  offset = null,
+  limit = null
+) {
+  var queryStringEnding = "";
+  var vals = [id];
+  if (limit) {
+    queryStringEnding += "LIMIT ?";
+    vals.push(limit);
+  }
+  if (offset) {
+    queryStringEnding += "OFFSET ? ";
+    vals.push(offset);
+  }
+
+  var queryString = null;
+
+  if (type === "Event") {
+    queryString =
+      "select * from Event_Organizer join doom_user on event_organizer.user_id = doom_user.id where event_organizer.event_id = ?";
+  } else {
+    queryString =
+      "select * from Seminar_Organizer join doom_user on seminar_organizer.user_id = doom_user.id where seminar_organizer.seminar_id = ?";
+  }
+
+  if (queryStringEnding) {
+    queryString += queryStringEnding;
+  }
+
+  queryString += ";";
+
+  return await db
+    .raw(queryString, vals)
+    .then(res => {
+      return res.rows;
+    })
+    .catch(err => {
+      console.log(err);
+      throw err;
+    });
+}
+
 module.exports = {
   searchEventsAndSeminars,
-  getTotalCount
+  getTotalCount,
+  queryOrganizerByTypeID
 };
