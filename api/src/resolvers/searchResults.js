@@ -60,7 +60,7 @@ async function searchEventsAndSeminars(
     vals.push(...likeVals);
   }
 
-  queryString = `${queryString} ORDER BY start_time`;
+  queryString = `${queryString} ORDER BY start_time DESC`;
 
   if (limit) {
     queryString = `${queryString} LIMIT ?`;
