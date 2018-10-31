@@ -29,6 +29,9 @@ const SchemaDefinition = `
     searchByName(searchString: String!, type: String, limit: Int, offset: Int): [SearchResult!]
 
     getMyEventsAndSeminars(userID: Int!, type: String, limit: Int, offset: Int, participationType: participation_type): [SearchResult!]
+    getMyAnnouncements(userID: Int!, limit: Int, offset: Int): [Announcement!]
+    # getMyAnnouncements(userID: Int!, type: String, limit: Int, offset: Int, participationType: participation_type): [SearchResult!]
+    
   }
 
   # The schema allows the following mutations:
