@@ -13,12 +13,22 @@
 				<el-input v-model="seminarName" placeholder="Ex. Seminar of Doom"></el-input>
 
                 <p>Related Event</p>
-                <el-input
-                    placeholder="Search event here"
-					clearable
-                    @change="onSearch"
-                    v-model="relatedEvent">
-                </el-input>
+
+				
+				<el-card class="box-card">
+					<el-input
+						placeholder="Search event here"
+						clearable
+						@change="onSearch"
+						v-model="relatedEvent">
+					</el-input>
+					
+					<select v-for="(i,key) in eventNames" :key="key" v-model="eventSelected">
+						<option>{{ i }}</option>
+					</select>
+
+				</el-card>
+
 
 				<p>Date</p>
 				<el-date-picker
@@ -173,10 +183,12 @@ export default {
 				descriptionInput: '',
 				transferData: populateTranfer(),
                 organizerList: [],	
-                relatedEvent: ''
+				relatedEvent: '',
+				eventNames: [],
+				eventSelected: ''
 			};
 		},
-	
+
     methods: {
 
         onSearch(event) {
@@ -192,9 +204,11 @@ export default {
                 variables: {eventStr: event}
             }).then(res => {
                 if (res.data) {
-                                        
-                    for (var i = 0; i < res.data.searchByName.length; i++) {
-                        console.log("res.data: " + res.data.searchByName[i].name)
+					this.eventNames = []
+
+					for (var i = 0; i < res.data.searchByName.length; i++) {
+						console.log("res.data: " + res.data.searchByName[i].name)
+						this.eventNames.push(res.data.searchByName[i].name)
                     }
 
                 } else {

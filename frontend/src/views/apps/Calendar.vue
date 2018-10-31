@@ -60,34 +60,6 @@ import 'fullcalendar'
 import 'fullcalendar/dist/fullcalendar.css'
 var event = []
 
-fetch({
-	query: `{
-			searchUsersByName(searchString: "") {
-				id
-				first_name
-				middle_name
-				last_name
-			}
-		}`
-	}).then(res => {
-	if (res.data) {
-		
-		console.log(res.data.searchUsersByName)
-		
-		res.data.searchUsersByName.forEach(element => {
-			
-			availableOrganizers.push(element.first_name)	
-			organizerid.push(element.id)
-		
-		});
-
-	} else {
-		console.log(res.errors)
-	}		
-}).catch(err => {
-	console.log(err);
-}); 
-
 export default {
 	name: 'Calendar',
 	data() {
