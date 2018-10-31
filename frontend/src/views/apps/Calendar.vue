@@ -52,10 +52,40 @@
 </template>
 
 <script>
+import { createApolloFetch } from "apollo-fetch"
+const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 import moment from 'moment-timezone'
 import $ from 'jquery'
 import 'fullcalendar'
 import 'fullcalendar/dist/fullcalendar.css'
+
+fetch({
+	query: `{
+			searchUsersByName(searchString: "") {
+				id
+				first_name
+				middle_name
+				last_name
+			}
+		}`
+}).then(res => {
+	if (res.data) {
+		
+		console.log(res.data.searchUsersByName)
+		
+		res.data.searchUsersByName.forEach(element => {
+			
+			availableOrganizers.push(element.first_name)	
+			organizerid.push(element.id)
+		
+		});
+
+	} else {
+		console.log(res.errors)
+	}		
+}).catch(err => {
+	console.log(err);
+}); 
 
 export default {
 	name: 'Calendar',
@@ -217,13 +247,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-@import '../../assets/scss/_variables';
-
-/*.page-calendar {
-	.calendar-wrap {
-		//background: white;
-	}
-}*/
-</style>
 
