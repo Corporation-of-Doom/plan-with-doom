@@ -210,6 +210,8 @@ async function getMySchedule(
     vals.push("seminar_participation");
   }
 
+  queryString = `${queryString} ORDER BY start_time DESC`;
+
   if (limit) {
     queryString = `${queryString} LIMIT ?`;
     vals.push(limit);
