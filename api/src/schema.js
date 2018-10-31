@@ -19,7 +19,7 @@ const SchemaDefinition = `
     getTotal(type: String): Int!
     getTotalSearchResults(searchString: String!, type: String): Int!
 
-""" time is returned as a utc time, you can convert it back using
+    """ time is returned as a utc time, you can convert it back using
     new Date(1571567400000)"""
     getEventByID(id: Int! offset: Int limit: Int): Event
     getSeminarByID(id: Int! offset: Int limit: Int): Seminar
@@ -27,6 +27,8 @@ const SchemaDefinition = `
 
     """ Search for events of seminars by name """
     searchByName(searchString: String!, type: String, limit: Int, offset: Int): [SearchResult!]
+
+    getMyEventsAndSeminars(userID: Int!, type: String, limit: Int, offset: Int, participationType: participation_type): [SearchResult!]
   }
 
   # The schema allows the following mutations:

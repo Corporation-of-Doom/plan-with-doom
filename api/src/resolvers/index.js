@@ -5,6 +5,7 @@ const { queryAnnouncementByTypeID } = require("./announcement");
 const {
   searchEventsAndSeminars,
   getTotalCount,
+  getMySchedule,
   queryOrganizerByTypeID
 } = require("./searchResults");
 
@@ -117,6 +118,22 @@ const rootResolvers = {
         console.log(err);
         if (!type) return new Error("Unable to search events and seminars.");
         return new Error(`Unable to search ${type}s.`);
+      }
+    },
+    async getMyEventsAndSeminars(_, args) {
+      const { userID, type, limit, offset, participationType } = args;
+      try {
+        return await getMySchedule(
+          userID,
+          type,
+          limit,
+          offset,
+          participationType
+        );
+      } catch (err) {
+        console.log(err);
+        if (!type) return new Error("Unable to My Events and My Seminars.");
+        return new Error(`Unable to get My ${type}s.`);
       }
     }
   },
