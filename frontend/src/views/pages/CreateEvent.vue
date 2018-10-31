@@ -37,10 +37,10 @@
 				<p>Capcity Type</p>
 				<el-radio v-model="capacityType" label=1>Free for all</el-radio>
 				<el-radio v-model="capacityType" label=2>First come first serve (physically)</el-radio>
-				<el-radio v-model="capacityType" @click="toggleFCFSE" label=3>First come first serve (electronically)</el-radio>
+				<el-radio v-model="capacityType" label=3>First come first serve (electronically)</el-radio>
 
 				<el-input-number
-					v-if="capacityType!=3"
+					v-if="capacityType==1"
 					disabled
 					v-model="capacityNum" 
 					@change="handleChange" 
@@ -49,7 +49,7 @@
 				</el-input-number>
 
 				<el-input-number
-					v-if="capacityType==3"
+					v-if="capacityType!=1"
 					v-model="capacityNum" 
 					@change="handleChange" 
 					:min="1" 
@@ -101,6 +101,37 @@
 <script>
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
+var availableOrganizers = []
+var organizerid = []
+
+fetch({
+	query: `{
+		searchUsersByName(searchString: "") {
+			id
+				first_name
+				middle_name
+				last_name
+		}
+	}`}).then(res => {
+		if (res.data) {
+			// console.log(res.data)
+			console.log(res.data.searchUsersByName)
+
+			res.data.searchUsersByName.forEach(element => {
+				availableOrganizers.push(element.first_name)	
+				organizerid.push(element.id)
+			console.log("organizerid: " + element.id);
+			});
+
+		} else {
+			console.log(res.errors)
+		}		
+	})
+	.catch(err => {
+		console.log(err);
+});
+
+
   export default {
   	name: 'CreateEvent',
 		
@@ -108,9 +139,6 @@ const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
 		  var generateData2 = _ => {
 				var data = []
-				//query
-				//construct list of full names
-				var availableOrganizers = ['Vivian', 'Alliyya', 'Bhavanthy', 'Tamara', 'Ozzinton', 'Ironman']
         var initials = availableOrganizers
         availableOrganizers.forEach((names, index) => {
           data.push({
@@ -146,33 +174,7 @@ const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 						
 			};
 		},
-		mounted() {
-				fetch({
-          query: `{
-						searchUsersByName(searchString: "") {
-							id
-							first_name
-							middle_name
-							last_name
-						}
-					}`}).then(res => {
-						if (res.data) {
-							alert("List returned successfully!")
-							console.log(res.data)
-						} else {
-							console.log(res.errors)
-						}
-						
-						console.log(res.data.searchUsersByName)
-					})
-					.catch(err => {
-						console.log(err);
-					});
-								
-				// availableOrganizers = ['Vivian', 'Alliyya', 'Bhavanthy', 'Tamara', 'Ozzinton', 'Ironman', 'Dr Strange']
-        // initials = availableOrganizers
-
-		},
+	
     methods: {
 			onSubmit: function(event) {
 
@@ -201,35 +203,35 @@ const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 						capacity_type = 'FFA'
 					} else if (temp == 2) {
 						capacity_type = 'FCFS_P'
+						capacity_num = this.capacityNum
 					} else if (temp == 3) {
 						capacity_type = 'FCFS_E'
 						capacity_num = this.capacityNum
 					}
 						
-					alert('Event name: ' + this.eventName + '\nStart date: ' + start_time + '\nEnd date: ' + end_time + '\nCapacity type: ' + capacity_type + '\nCapacity number: ' + capacity_num)
-					alert(this.organizerList)
-					alert(this.data2)
+					// alert('Event name: ' + this.eventName + '\nStart date: ' + start_time + '\nEnd date: ' + end_time + '\nCapacity type: ' + capacity_type + '\nCapacity number: ' + capacity_num)
+					console.log("organizerList: " + this.organizerList)
 
 					fetch({
-          query: `mutation createEvent($event: EventInput!){
-            createEvent(event: $event){
-              id
-            }
-          }`,
-          variables: {
-            event: {		
-							creator_id: this.user.id,
-							name: this.eventName,
-							description: this.descriptionInput,
-							start_time: start_time,
-							end_time: end_time,
-							capacity_type: capacity_type,
-							max_capacity: capacity_num,
-							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput
-            }
-					}
-					
-				})
+						query: `mutation createEvent($event: EventInput!){
+							createEvent(event: $event){
+							id
+							}
+						}`,
+							variables: {
+								event: {		
+												creator_id: this.user.id,
+												name: this.eventName,
+												description: this.descriptionInput,
+												start_time: start_time,
+												end_time: end_time,
+												capacity_type: capacity_type,
+												max_capacity: capacity_num,
+												location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput
+								}
+										}
+										
+									})
 				.then(res => {
           if (res.data) {
 						alert("Event created successfully!")
@@ -264,11 +266,6 @@ const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 			// onCancel: function(event) {
 			// 	alert('The event information will be discarded.')
 			// },
-
-			toggleFCFSE(event) {
-				alert("asdfasdfasdf")
-				  document.getElementById("capacityInput").disabled = true;
-			},
 
 			goContacts() {
 				this.$router.push('Contacts')
