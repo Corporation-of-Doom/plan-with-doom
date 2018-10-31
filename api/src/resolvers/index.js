@@ -1,7 +1,10 @@
 const { signIn, searchUsers } = require("./user");
 const { queryEventByID } = require("./event");
 const { querySeminarByID, querySeminarsByEventID } = require("./seminar");
-const { queryAnnouncementByTypeID } = require("./announcement");
+const {
+  queryAnnouncementByTypeID,
+  queryMyAnnouncements
+} = require("./announcement");
 const {
   searchEventsAndSeminars,
   getTotalCount,
@@ -146,6 +149,21 @@ const rootResolvers = {
         if (!type)
           return new Error("Unable to Managing Events and Managing Seminars.");
         return new Error(`Unable to get Managing ${type}s.`);
+      }
+    },
+    async getMyAnnouncements(_, args) {
+      try {
+        const { userID, type, offset, limit } = args;
+        const announcements = await queryMyAnnouncements(
+          userID,
+          type,
+          offset,
+          limit
+        );
+        return announcements;
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to retrieve announcements");
       }
     }
   },
