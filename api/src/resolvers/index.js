@@ -5,6 +5,19 @@ const { queryAnnouncementByTypeID } = require("./announcement");
 const { searchEventsAndSeminars, getTotalCount } = require("./searchResults");
 
 const rootResolvers = {
+  SearchResult: {
+    __resolveType(obj) {
+      if (obj.creator_id) {
+        return "Event";
+      }
+
+      if (obj.event_id) {
+        return "Seminar";
+      }
+
+      return null;
+    }
+  },
   Query: {
     async login(_, args) {
       const { email, password } = args;
@@ -100,6 +113,16 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to search seminars");
+      }
+    },
+    async searchByName(_, args) {
+      const { searchString, type, limit, offset } = args;
+      try {
+        return await searchEventsAndSeminars(searchString, type, limit, offset);
+      } catch (err) {
+        console.log(err);
+        if (!type) return new Error("Unable to search events and seminars.");
+        return new Error(`Unable to search ${type}s.`);
       }
     }
   },

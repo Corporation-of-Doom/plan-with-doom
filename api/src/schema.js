@@ -10,6 +10,8 @@ const SchemaDefinition = `
     mutation: Mutation
   }
 
+  union SearchResult = Event | Seminar
+
   # the schema allows the following queries:
   type Query {
     login(email: String!, password: String!): User!
@@ -22,6 +24,9 @@ const SchemaDefinition = `
     getEventByID(id: Int! offset: Int limit: Int): Event
     getSeminarByID(id: Int! offset: Int limit: Int): Seminar
     searchUsersByName(searchString: String!): [User!]
+
+    """ Search for events of seminars by name """
+    searchByName(searchString: String!, type: String, limit: Int, offset: Int): [SearchResult!]
 
     searchEventsByName(searchString: String!, limit: Int, offset: Int): [Event!]
     searchSeminarsByName(searchString: String!, limit: Int, offset: Int): [Seminar!]
