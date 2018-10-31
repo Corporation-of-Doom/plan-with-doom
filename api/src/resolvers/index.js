@@ -2,6 +2,7 @@ const { signIn, searchUsers } = require("./user");
 const { queryEventByID, searchEvents } = require("./event");
 const { querySeminarByID, searchSeminars } = require("./seminar");
 const { queryAnnouncementByTypeID } = require("./announcement");
+const { searchEventsAndSeminars, getTotalCount } = require("./searchResults");
 
 const rootResolvers = {
   Query: {
@@ -13,6 +14,33 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Incorrect password or email");
+      }
+    },
+    async getTotal(_, args) {
+      const { type } = args;
+      try {
+        return await getTotalCount(type);
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error("Could not get total number of events and seminar");
+        return new Error(`Could not get total number of ${type}s`);
+      }
+    },
+    async getTotalSearchResults(_, args) {
+      const { searchString, type } = args;
+      try {
+        const searchResults = await searchEventsAndSeminars(searchString, type);
+        return searchResults.length;
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error(
+            "Could not get total number of search results for events and seminar"
+          );
+        return new Error(
+          `Could not get total number of search results for ${type}s`
+        );
       }
     },
     async getEventByID(_, args) {

@@ -14,6 +14,9 @@ const SchemaDefinition = `
   type Query {
     login(email: String!, password: String!): User!
 
+    getTotal(type: String): Int!
+    getTotalSearchResults(searchString: String!, type: String): Int!
+
 """ time is returned as a utc time, you can convert it back using
     new Date(1571567400000)"""
     getEventByID(id: Int! offset: Int limit: Int): Event
