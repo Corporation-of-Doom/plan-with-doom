@@ -21,6 +21,8 @@ type Event {
  
   #Testing attaching announcements to an event
   announcements: [Announcement!]
+  organizers: [User!]
+  seminars: [Seminar!]
 
 }
 

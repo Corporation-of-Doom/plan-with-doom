@@ -1,11 +1,12 @@
 const { signIn, searchUsers } = require("./user");
 const { queryEventByID } = require("./event");
-const { querySeminarByID } = require("./seminar");
+const { querySeminarByID, querySeminarsByEventID } = require("./seminar");
 const { queryAnnouncementByTypeID } = require("./announcement");
 const {
   searchEventsAndSeminars,
   getTotalCount,
-  getMySchedule
+  getMySchedule,
+  queryOrganizerByTypeID
 } = require("./searchResults");
 
 const rootResolvers = {
@@ -65,6 +66,13 @@ const rootResolvers = {
           offset,
           limit
         );
+        newEvent.organizers = await queryOrganizerByTypeID(
+          id,
+          "Event",
+          offset,
+          limit
+        );
+        newEvent.seminars = await querySeminarsByEventID(id, offset, limit);
         return newEvent;
       } catch (err) {
         console.log(err);
@@ -76,6 +84,12 @@ const rootResolvers = {
         const { id, offset, limit } = args;
         const newSeminar = await querySeminarByID(id);
         newSeminar.announcements = await queryAnnouncementByTypeID(
+          id,
+          "Seminar",
+          offset,
+          limit
+        );
+        newSeminar.organizers = await queryOrganizerByTypeID(
           id,
           "Seminar",
           offset,
@@ -149,7 +163,9 @@ const rootResolvers = {
     current_capacity: ({ current_capacity }) => current_capacity,
     location: ({ location }) => location,
     picture_path: ({ picture_path }) => picture_path,
-    announcements: ({ announcements }) => announcements
+    announcements: ({ announcements }) => announcements,
+    organizers: ({ organizers }) => organizers,
+    seminars: ({ seminars }) => seminars
   },
   Seminar: {
     id: ({ id }) => id,
@@ -163,7 +179,8 @@ const rootResolvers = {
     current_capacity: ({ current_capacity }) => current_capacity,
     location: ({ location }) => location,
     picture_path: ({ picture_path }) => picture_path,
-    announcements: ({ announcements }) => announcements
+    announcements: ({ announcements }) => announcements,
+    organizers: ({ organizers }) => organizers
   }
 };
 
