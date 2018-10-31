@@ -58,6 +58,7 @@ import moment from 'moment-timezone'
 import $ from 'jquery'
 import 'fullcalendar'
 import 'fullcalendar/dist/fullcalendar.css'
+var event = []
 
 fetch({
 	query: `{
@@ -68,7 +69,7 @@ fetch({
 				last_name
 			}
 		}`
-}).then(res => {
+	}).then(res => {
 	if (res.data) {
 		
 		console.log(res.data.searchUsersByName)
@@ -159,6 +160,7 @@ export default {
 			}
 		}
 	},
+
 	methods: {
 		closeEventDialog() {
 			this.$refs.form.resetFields()
