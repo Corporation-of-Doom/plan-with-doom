@@ -58,7 +58,7 @@ async function searchUsers(searchString) {
            LOWER(middle_name) LIKE '%' || ? || '%' OR
            LOWER(last_name) LIKE '%' || ? || '%')`;
   const vals = [searchTokens[0], searchTokens[0], searchTokens[0]];
-  searchTokens.pop();
+  searchTokens.shift();
 
   searchTokens.forEach(token => {
     queryString = `${queryString}
