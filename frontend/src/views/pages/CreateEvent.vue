@@ -3,12 +3,14 @@
 		<div class="create-event">
 			<div class="eventForm">
 
+				<h1>Creating an event</h1>
+
 				<!-- event image allow user to upload a photo -->
 				<div class="image-cropper" id="eventImg">
 					<img src="http://www.electricvelocity.com.au/upload/blogs/smart-e-bike-side_2.jpg" class="rounded" />
 				</div>
 				
-				<p>Name</p>
+				<p>Event Name</p>
 				<el-input v-model="eventName" placeholder="Ex. Convention of Doom"></el-input>
 
 				<p>Date</p>
