@@ -14,22 +14,13 @@
 
                 <p>Related Event</p>
 
-				
-				<el-card class="box-card">
-					<el-input
-						placeholder="Search event here"
-						clearable
-						@change="onSearch"
-						v-model="relatedEvent">
-					</el-input>
-					
-					<select v-for="(i,key) in eventNames" :key="key" v-model="eventSelected">
-						<option>{{ i }}</option>
-					</select>
-
-				</el-card>
-
-
+				<el-select v-model="eventSelected" placeholder="Select event">
+					<el-option
+					v-for="(i,key) in eventNames" :key="key" :value="key">
+					{{ i }}
+					</el-option>
+				</el-select>
+			
 				<p>Date</p>
 				<el-date-picker
 					is-range
@@ -185,30 +176,33 @@ export default {
                 organizerList: [],	
 				relatedEvent: '',
 				eventNames: [],
-				eventSelected: ''
+				eventids: [],
+				eventSelected: '',
+				// temp1: []
 			};
 		},
-
-    methods: {
-
-        onSearch(event) {
+		mounted() {
 			// console.log(event);
             fetch({
-                query: `query searchByName($eventStr: String!){
-                    searchByName(searchString: $eventStr, type: "event") {
-                        ... on Event {
-                            name
-                        }
-                    }
-                }`,
-                variables: {eventStr: event}
+                query: `query getMyManagingEventsAndSeminars($ID: Int!){
+  							getMyManagingEventsAndSeminars(userID: $ID, type: "event") {
+    							... on Event {
+      								id
+      								name
+    							}
+  							}
+						}`
+				,
+                variables: {ID: this.user.id}
             }).then(res => {
                 if (res.data) {
-					this.eventNames = []
 
-					for (var i = 0; i < res.data.searchByName.length; i++) {
-						console.log("res.data: " + res.data.searchByName[i].name)
-						this.eventNames.push(res.data.searchByName[i].name)
+					for (var i = 0; i < res.data.getMyManagingEventsAndSeminars.length; i++) {
+						console.log("res.data: " + res.data.getMyManagingEventsAndSeminars[i].name)
+						console.log("res.data: " + res.data.getMyManagingEventsAndSeminars[i].id)
+
+						this.eventNames.push(res.data.getMyManagingEventsAndSeminars[i].name)
+						this.eventids.push(res.data.getMyManagingEventsAndSeminars[i].id)
                     }
 
                 } else {
@@ -217,12 +211,23 @@ export default {
             }).catch(err => {
                 console.log(err);
             });
-        },
+		},
+
+    methods: {
 
 		onSubmit: function(event) {
 
-			if (this.seminarName && this.dateRange && this.timeRange && this.capacityType)
-			{					
+			if (this.seminarName && this.dateRange && this.timeRange && this.capacityType && this.eventSelected)
+			{	
+				console.log("eventSelected: " + this.eventSelected);
+				for (var i; i < this.eventNames.length; i++) {
+					if (this.eventSelected == i) {
+						this.eventSelected = thiseventids[i]
+					}
+
+				}
+
+				
 				var temp = this.dateRange.toString().split(",")
 				var start_time = temp[0]
 				var end_time = temp[1]
@@ -267,7 +272,7 @@ export default {
 					}`,
 					variables: {
 						seminar: {		
-							creator_id: this.user.id,
+							event_id: this.eventSelected,
 							name: this.seminarName,
 							description: this.descriptionInput,
 							start_time: start_time,
