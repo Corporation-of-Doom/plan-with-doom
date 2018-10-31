@@ -12,4 +12,4 @@ async function querySeminarByID(id) {
     });
 }
 
-module.exports = { querySeminarByID, searchSeminars };
+module.exports = { querySeminarByID };

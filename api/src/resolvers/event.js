@@ -30,4 +30,4 @@ async function queryEventByID(id) {
 }
 
 */
-module.exports = { queryEventByID, searchEvents };
+module.exports = { queryEventByID };
