@@ -178,13 +178,14 @@ async function getMySchedule(
       userID,
       "event_participation"
     );
+
+    if (!participationType) {
+      vals.push("event_participation");
+    }
   }
 
   if (!type) {
     queryString = `${queryString} UNION ALL ${queryString}`;
-  }
-  if (!participationType) {
-    vals.push("event_participation");
   }
 
   if (!type || type.toLowerCase() === "seminar") {
@@ -204,10 +205,9 @@ async function getMySchedule(
       userID,
       "seminar_participation"
     );
-  }
-
-  if (!participationType) {
-    vals.push("seminar_participation");
+    if (!participationType) {
+      vals.push("seminar_participation");
+    }
   }
 
   queryString = `${queryString} ORDER BY start_time DESC`;
