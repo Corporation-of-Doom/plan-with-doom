@@ -1,8 +1,18 @@
 const { signIn, searchUsers } = require("./user");
-const { getEvent } = require("./event");
-const { getSeminar } = require("./seminar");
+const { queryEventByID } = require("./event");
+const { querySeminarByID } = require("./seminar");
+const { queryAnnouncementByTypeID } = require("./announcement");
+const { searchEventsAndSeminars, getTotalCount } = require("./searchResults");
 
 const rootResolvers = {
+  SearchResult: {
+    __resolveType(obj) {
+      if (obj.creator_id) {
+        return "Event";
+      }
+      return "Seminar";
+    }
+  },
   Query: {
     async login(_, args) {
       const { email, password } = args;
@@ -14,20 +24,59 @@ const rootResolvers = {
         return new Error("Incorrect password or email");
       }
     },
-    async getEvent(_, args) {
+    async getTotal(_, args) {
+      const { type } = args;
       try {
-        const { id } = args;
-        const newEvent = await getEvent(id);
+        return await getTotalCount(type);
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error("Could not get total number of events and seminar");
+        return new Error(`Could not get total number of ${type}s`);
+      }
+    },
+    async getTotalSearchResults(_, args) {
+      const { searchString, type } = args;
+      try {
+        const searchResults = await searchEventsAndSeminars(searchString, type);
+        return searchResults.length;
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error(
+            "Could not get total number of search results for events and seminar"
+          );
+        return new Error(
+          `Could not get total number of search results for ${type}s`
+        );
+      }
+    },
+    async getEventByID(_, args) {
+      try {
+        const { id, offset, limit } = args;
+        const newEvent = await queryEventByID(id);
+        newEvent.announcements = await queryAnnouncementByTypeID(
+          id,
+          "Event",
+          offset,
+          limit
+        );
         return newEvent;
       } catch (err) {
         console.log(err);
         return new Error("Unable to retrieve event");
       }
     },
-    async getSeminar(_, args) {
+    async getSeminarByID(_, args) {
       try {
-        const { id } = args;
-        const newSeminar = await getSeminar(id);
+        const { id, offset, limit } = args;
+        const newSeminar = await querySeminarByID(id);
+        newSeminar.announcements = await queryAnnouncementByTypeID(
+          id,
+          "Seminar",
+          offset,
+          limit
+        );
         return newSeminar;
       } catch (err) {
         console.log(err);
@@ -41,6 +90,16 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to search users");
+      }
+    },
+    async searchByName(_, args) {
+      const { searchString, type, limit, offset } = args;
+      try {
+        return await searchEventsAndSeminars(searchString, type, limit, offset);
+      } catch (err) {
+        console.log(err);
+        if (!type) return new Error("Unable to search events and seminars.");
+        return new Error(`Unable to search ${type}s.`);
       }
     }
   },
@@ -69,7 +128,8 @@ const rootResolvers = {
     max_capacity: ({ max_capacity }) => max_capacity,
     current_capacity: ({ current_capacity }) => current_capacity,
     location: ({ location }) => location,
-    picture_path: ({ picture_path }) => picture_path
+    picture_path: ({ picture_path }) => picture_path,
+    announcements: ({ announcements }) => announcements
   },
   Seminar: {
     id: ({ id }) => id,
@@ -82,7 +142,8 @@ const rootResolvers = {
     max_capacity: ({ max_capacity }) => max_capacity,
     current_capacity: ({ current_capacity }) => current_capacity,
     location: ({ location }) => location,
-    picture_path: ({ picture_path }) => picture_path
+    picture_path: ({ picture_path }) => picture_path,
+    announcements: ({ announcements }) => announcements
   }
 };
 

@@ -4,6 +4,10 @@ const Capacity = `
     FCFS_E
     FFA
   }
+  enum participation_type {
+    ATTENDING
+    FOLLOWING
+  }
 `;
 
 module.exports = { Capacity };

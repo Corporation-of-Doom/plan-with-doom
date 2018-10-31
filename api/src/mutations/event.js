@@ -1,6 +1,6 @@
 const { db } = require("../db");
 
-async function createEvent(eventInput) {
+async function insertNewEvent(eventInput) {
   let {
     creator_id,
     name,
@@ -14,16 +14,22 @@ async function createEvent(eventInput) {
     organizer_ids
   } = eventInput;
 
-  // TODO add checks for capacity type
-  /*
-  ffa --> maxcapacity & current capacity = null
+  if (capacity_type === "FFA") {
+    max_capacity = null;
+  }
 
-  Error
-  FCFS(p/e) --> max capacity
-    throw error needs max capacity
-*/
+  if (max_capacity == null && capacity_type != "FFA") {
+    return new Error(
+      "Unable to create a event: An Event with " +
+        capacity_type +
+        " capacity type must have a max capacity"
+    );
+  }
 
+  current_capacity = 0;
   max_capacity = max_capacity || null;
+  description = description || null;
+
   location = location || null;
   picture_path = picture_path || null;
 
@@ -31,9 +37,9 @@ async function createEvent(eventInput) {
   organizer_ids.push(creator_id);
 
   const queryString = `INSERT INTO Event
-    (creator_id, name, description, start_time, end_time, capacity_type, 
-    max_capacity, location, picture_path) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
+  (creator_id, name, description, start_time, end_time, capacity_type, 
+    max_capacity, location, picture_path, current_capacity) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
 
   const vals = [
     creator_id,
@@ -44,7 +50,8 @@ async function createEvent(eventInput) {
     capacity_type,
     max_capacity,
     location,
-    picture_path
+    picture_path,
+    current_capacity
   ];
 
   const res = await db.raw(`${queryString}`, vals);
@@ -65,9 +72,35 @@ async function createEvent(eventInput) {
     capacity_type,
     max_capacity,
     location,
+    current_capacity,
     picture_path,
     id
   };
 }
 
-module.exports = { createEvent };
+async function updateEventParticipation(
+  EventParticipationInput,
+  adding = true
+) {
+  let { userid, eventid, participationType } = EventParticipationInput;
+
+  var queryString = null;
+
+  if (participationType === "ATTENDING") {
+    queryString = `INSERT INTO event_participation (user_id, event_id , attending ) VALUES( ? , ? , ?)
+    ON CONFLICT (user_id , event_id ) do update set attending = excluded.attending;`;
+  } else {
+    queryString = `INSERT INTO event_participation (user_id, event_id , following ) VALUES( ? , ? , ?)
+    ON CONFLICT (user_id , event_id ) do update set following = excluded.following;`;
+  }
+
+  const vals = [userid, eventid, adding];
+
+  await db.raw(`${queryString}`, vals);
+  return true;
+}
+
+module.exports = {
+  insertNewEvent,
+  updateEventParticipation
+};

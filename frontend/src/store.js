@@ -17,7 +17,8 @@ export default new Vuex.Store({
 			viewAnimation: 'fade-top' // fade-left, fade-right, fade-top, fade-top-in-out, fade-bottom, fade-bottom-in-out, fade, false
 		},
 		splashScreen: true,
-		logged: true
+		logged: false,
+		user:{}
 	},
 	mutations: {
 		setLayout(state, payload) {
@@ -41,7 +42,7 @@ export default new Vuex.Store({
 		},
 		setLogin(state, payload) {
 			state.logged = true
-			console.log("in setLoging", payload)
+			state.user = payload
 		},
 		setLogout(state, payload) {
 			state.layout.navPos = null

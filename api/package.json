@@ -15,18 +15,17 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^3.0.2",
+    "cors": "^2.8.4",
     "docker": "^1.0.0",
     "dotenv": "^6.1.0",
     "es6": "0.0.7",
     "express": "^4.16.4",
     "express-graphql": "^0.6.12",
     "graphql": "^14.0.2",
-    "graphql-tools": "^4.0.1",
+    "graphql-tools": "^4.0.3",
     "knex": "^0.15.2",
-    "pg": "^7.5.0",
+    "nodemon": "^1.18.4",
+    "pg": "^7.6.0",
     "pgtools": "^0.3.0"
-  },
-  "devDependencies": {
-    "nodemon": "^1.18.4"
   }
 }

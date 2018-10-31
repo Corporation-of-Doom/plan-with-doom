@@ -60,6 +60,12 @@ import router from './router/'
 import store from './store' 
 import i18n_messages from './i18n.json' 
 
+import seminarCard from './components/seminarCard.vue'
+import eventCard from './components/eventCard.vue'
+import addEvent from './components/addEvent.vue'
+import addSeminar from './components/addSeminar.vue'
+
+
 Vue.config.productionTip = false
 
 
@@ -115,6 +121,17 @@ Vue.component('l-map', Vue2Leaflet.LMap)
 Vue.component('l-marker', Vue2Leaflet.LMarker)
 Vue.component('l-tile-layer', Vue2Leaflet.LTileLayer)
 const i18n = new VueI18n({ locale: 'us', messages:i18n_messages })
+
+// const apolloProvider = new VueApollo({
+// 	defaultClient: new ApolloClient({
+// 		uri: "http://localhost:4000/graphql"
+// 	})
+// })
+// Vue.use(VueApollo)
+Vue.component('seminar-card',seminarCard)
+Vue.component('event-card',eventCard)
+Vue.component('add-event',addEvent)
+Vue.component('add-seminar',addSeminar)
 
 new Vue({
 	i18n,
