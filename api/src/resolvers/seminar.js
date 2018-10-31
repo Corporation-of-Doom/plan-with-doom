@@ -21,7 +21,7 @@ async function searchSeminars(searchString, limit = null, offset = null) {
     FROM seminar
     WHERE LOWER(name) LIKE '%' || ? || '%'`;
   const vals = [searchTokens[0]];
-  searchTokens.pop();
+  searchTokens.shift();
 
   searchTokens.forEach(token => {
     queryString = `${queryString}
