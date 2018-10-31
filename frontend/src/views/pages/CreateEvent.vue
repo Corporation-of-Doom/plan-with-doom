@@ -91,34 +91,36 @@
 			<el-button type="success" v-on:click="onSubmit" round >Create Event</el-button>	
 			<el-button type="danger" @click="onCancel" round>Cancel</el-button>
 	
-			<el-transfer
-			 	:titles="['Available', 'Selected']"
-				filterable
-				:filter-method="filterMethod"
-				filter-placeholder="Search Organizers"
-				v-model="organizerList"
-				:data="data2">
-			</el-transfer>
+  <el-transfer
+    filterable
+		:titles="['Available', 'Selected']"
+    :filter-method="filterMethod"
+    filter-placeholder="Available organizers"
+    v-model="organizerList"
+    :data="data2">
+  </el-transfer>
 
 		</div>	
 	</vue-scroll>
 </template>
 
 <script>
+import { createApolloFetch } from "apollo-fetch"
+const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
   export default {
   	name: 'CreateEvent',
 		
 		data() {
 
-		 var generateData2 = _ => {
-        var data = [];
-        var availableOrganizers = ['Alliyya', 'Tamara', 'Bhavanthy', 'Vivian', 'Ozzy', 'Colorado', 'Connecticut '];
-        var organizerNames = availableOrganizers;
+		  var generateData2 = _ => {
+        var data = []
+        var availableOrganizers = ['Vivian', 'Alliyya', 'Bhavanthy', 'Tamara', 'Ozzinton', 'Ironman']
+        var initials = availableOrganizers
         availableOrganizers.forEach((names, index) => {
           data.push({
             label: names,
             key: index,
-            initial: organizerNames[index]
+            initial: initials[index]
           });
         });
         return data;
@@ -137,9 +139,10 @@
 				urlInput: '',
 				descriptionInput: '',
 				organizerList: '',
+				user: this.$store.state.user,
 
 				data2: generateData2(),
-        value2: [],
+        organizerList: [],
         filterMethod(query, item) {
           return item.initial.toLowerCase().indexOf(query.toLowerCase()) > -1;
         }
@@ -184,6 +187,39 @@
 					alert('Event name: ' + this.eventName + '\nStart date: ' + start_time + '\nEnd date: ' + end_time + '\nCapacity type: ' + capacity_type + '\nCapacity number: ' + capacity_num)
 					alert(this.organizerList)
 					alert(this.data2)
+
+					fetch({
+          query: `mutation createEvent($event: EventInput!){
+            createEvent(event: $event){
+              id
+            }
+          }`,
+          variables: {
+            event: {		
+							creator_id: this.user.id,
+							name: this.eventName,
+							description: this.descriptionInput,
+							start_time: start_time,
+							end_time: end_time,
+							capacity_type: capacity_type,
+							max_capacity: capacity_num,
+							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput
+            }
+					}
+					
+				})
+				.then(res => {
+          if (res.data) {
+						alert("Event created successfully!")
+						console.log(res.data)
+						this.$router.push('ManageEvents')
+          } else {
+						console.log(res.errors)
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
 				}
 				
 				if (!this.eventName)
