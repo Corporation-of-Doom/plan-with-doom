@@ -27,9 +27,6 @@ const SchemaDefinition = `
 
     """ Search for events of seminars by name """
     searchByName(searchString: String!, type: String, limit: Int, offset: Int): [SearchResult!]
-
-    searchEventsByName(searchString: String!, limit: Int, offset: Int): [Event!]
-    searchSeminarsByName(searchString: String!, limit: Int, offset: Int): [Seminar!]
   }
 
   # The schema allows the following mutations:
