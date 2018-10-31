@@ -196,15 +196,18 @@ export default {
 					capacity_type = 'FCFS_E'
 					capacity_num = this.capacityNum
 				}
-									
+					
+				// console.log('Event name: ' + this.eventName + '\nStart date: ' + start_time + '\nEnd date: ' + end_time + '\nCapacity type: ' + capacity_type + '\nCapacity number: ' + capacity_num)
+				
 				var selectedOrganizer = []
+				console.log("organizerListlength: " + this.organizerList.length)
 
 				for (var i = 0; i < this.organizerList.length; i++) {
 					console.log(i + ": " + this.organizerList[i] )
 					selectedOrganizer.push(organizerid[this.organizerList[i]])
 				}
 
-				console.log('Event name: ' + this.eventName + '\nStart date: ' + start_time + '\nEnd date: ' + end_time + '\nCapacity type: ' + capacity_type + '\nCapacity number: ' + capacity_num)
+				console.log("selectedOrganizer: " + selectedOrganizer)
 
 				fetch({
 					query: `mutation createEvent($event: EventInput!){
@@ -224,7 +227,6 @@ export default {
 							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput,
 							organizer_ids: selectedOrganizer
 						}
-
 					}			
 				}).then(res => {
 					if (res.data) {
