@@ -210,6 +210,8 @@ async function getMySchedule(
     vals.push("seminar_participation");
   }
 
+  queryString = `${queryString} ORDER BY start_time DESC`;
+
   if (limit) {
     queryString = `${queryString} LIMIT ?`;
     vals.push(limit);
@@ -289,9 +291,100 @@ async function queryOrganizerByTypeID(
     });
 }
 
+async function getMyManagingSchedule(
+  userID,
+  type = null,
+  limit = null,
+  offset = null
+) {
+  if (
+    type &&
+    type.toLowerCase() !== "event" &&
+    type.toLowerCase() !== "seminar"
+  ) {
+    return new Error("Valid inputs for type are 'event' and 'seminar'");
+  }
+
+  const results = [];
+  const vals = [];
+  var queryString = `
+    SELECT *, ? AS type
+    FROM ??
+      JOIN ?? ON (??.?? = ??.id)
+    WHERE user_id = ?`;
+
+  if (!type || type.toLowerCase() === "event") {
+    // do both types. Start w/ event and UION ALL w/ seminar
+    vals.push(
+      "event_type",
+      "event_organizer",
+      "event",
+      "event_organizer",
+      "event_id",
+      "event",
+      userID
+    );
+  }
+
+  if (!type) {
+    queryString = `${queryString} UNION ALL ${queryString}`;
+  }
+
+  if (!type || type.toLowerCase() === "seminar") {
+    vals.push(
+      "seminar_type",
+      "seminar_organizer",
+      "seminar",
+      "seminar_organizer",
+      "seminar_id",
+      "seminar",
+      userID
+    );
+  }
+
+  queryString = `${queryString} ORDER BY start_time DESC`;
+
+  if (limit) {
+    queryString = `${queryString} LIMIT ?`;
+    vals.push(limit);
+  }
+  if (offset) {
+    queryString = `${queryString} OFFSET ?`;
+    vals.push(offset);
+  }
+  queryString = `${queryString};`;
+
+  const res = await db.raw(queryString, vals);
+
+  res.rows.forEach(result => {
+    const eventOrSeminar = {
+      id: result.id,
+      name: result.name,
+      description: result.description,
+      start_time: result.start_time,
+      end_time: result.end_time,
+      capacity_type: result.capacity_type,
+      max_capacity: result.max_capacity,
+      current_capacity: result.current_capacity,
+      location: result.location,
+      picture_path: result.picture_path
+    };
+
+    if (result.type === "event_type")
+      eventOrSeminar.creator_id = result.creator_id;
+    else if (result.type === "seminar_type")
+      eventOrSeminar.event_id = result.event_id;
+
+    results.push(eventOrSeminar);
+  });
+
+  return results;
+}
+
 module.exports = {
   searchEventsAndSeminars,
   getTotalCount,
   getMySchedule,
-  queryOrganizerByTypeID
+  queryOrganizerByTypeID,
+  getMyManagingSchedule
 };
