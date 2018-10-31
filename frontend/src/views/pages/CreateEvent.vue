@@ -5,7 +5,7 @@
 
 				<!-- event image allow user to upload a photo -->
 				<div class="image-cropper" id="eventImg">
-						<img src="http://www.electricvelocity.com.au/upload/blogs/smart-e-bike-side_2.jpg" class="rounded" />
+					<img src="http://www.electricvelocity.com.au/upload/blogs/smart-e-bike-side_2.jpg" class="rounded" />
 				</div>
 				
 				<p>Name</p>
@@ -78,28 +78,22 @@
 				</el-input>
 
 				<p>Add Event Organizer(s)</p>
-
-				<el-card @click.native="goContacts" class="box-card" style="margin:10px; text-align:center;" shadow="hover" >
-					<div >
-							Organizers
-					</div>
-				</el-card>
+				<el-transfer
+					filterable
+					:titles="['Available', 'Selected']"
+					:filter-method="filterMethod"
+					filter-placeholder="Available organizers"
+					v-model="organizerList"
+					:data="data2">
+				</el-transfer>
 
 			</div>
 
 			<!-- buttons -->
+			<br>
 			<el-button type="success" v-on:click="onSubmit" round >Create Event</el-button>	
 			<el-button type="danger" @click="onCancel" round>Cancel</el-button>
 	
-  <el-transfer
-    filterable
-		:titles="['Available', 'Selected']"
-    :filter-method="filterMethod"
-    filter-placeholder="Available organizers"
-    v-model="organizerList"
-    :data="data2">
-  </el-transfer>
-
 		</div>	
 	</vue-scroll>
 </template>
@@ -113,8 +107,10 @@ const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 		data() {
 
 		  var generateData2 = _ => {
-        var data = []
-        var availableOrganizers = ['Vivian', 'Alliyya', 'Bhavanthy', 'Tamara', 'Ozzinton', 'Ironman']
+				var data = []
+				//query
+				//construct list of full names
+				var availableOrganizers = ['Vivian', 'Alliyya', 'Bhavanthy', 'Tamara', 'Ozzinton', 'Ironman']
         var initials = availableOrganizers
         availableOrganizers.forEach((names, index) => {
           data.push({
@@ -127,7 +123,7 @@ const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
       };
 
       return {
-				eventName: '',
+				eventName: 'Jokes',
 				dateRange: '',      	
 				timeRange: '',
 				capacityType: '',
@@ -150,7 +146,33 @@ const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 						
 			};
 		},
-		
+		mounted() {
+				fetch({
+          query: `{
+						searchUsersByName(searchString: "") {
+							id
+							first_name
+							middle_name
+							last_name
+						}
+					}`}).then(res => {
+						if (res.data) {
+							alert("List returned successfully!")
+							console.log(res.data)
+						} else {
+							console.log(res.errors)
+						}
+						
+						console.log(res.data.searchUsersByName)
+					})
+					.catch(err => {
+						console.log(err);
+					});
+								
+				// availableOrganizers = ['Vivian', 'Alliyya', 'Bhavanthy', 'Tamara', 'Ozzinton', 'Ironman', 'Dr Strange']
+        // initials = availableOrganizers
+
+		},
     methods: {
 			onSubmit: function(event) {
 
@@ -221,6 +243,8 @@ const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
           console.log(err);
         });
 				}
+
+			
 				
 				if (!this.eventName)
 					alert('Please enter a name for your event!')
