@@ -6,7 +6,8 @@ const {
   searchEventsAndSeminars,
   getTotalCount,
   getMySchedule,
-  queryOrganizerByTypeID
+  queryOrganizerByTypeID,
+  getMyManagingSchedule
 } = require("./searchResults");
 
 const rootResolvers = {
@@ -134,6 +135,17 @@ const rootResolvers = {
         console.log(err);
         if (!type) return new Error("Unable to My Events and My Seminars.");
         return new Error(`Unable to get My ${type}s.`);
+      }
+    },
+    async getMyManagingEventsAndSeminars(_, args) {
+      const { userID, type, limit, offset } = args;
+      try {
+        return await getMyManagingSchedule(userID, type, limit, offset);
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error("Unable to Managing Events and Managing Seminars.");
+        return new Error(`Unable to get Managing ${type}s.`);
       }
     }
   },
