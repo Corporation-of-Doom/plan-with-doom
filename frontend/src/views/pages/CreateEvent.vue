@@ -34,7 +34,7 @@
 					end-placeholder="End time">
 				</el-time-picker>
 		
-				<p>Capcity Type</p>
+				<p>Capacity Type</p>
 				<el-radio v-model="capacityType" label=1>Free for all</el-radio>
 				<el-radio v-model="capacityType" label=2>First come first serve (physically)</el-radio>
 				<el-radio v-model="capacityType" label=3>First come first serve (electronically)</el-radio>
