@@ -10,12 +10,7 @@ const rootResolvers = {
       if (obj.creator_id) {
         return "Event";
       }
-
-      if (obj.event_id) {
-        return "Seminar";
-      }
-
-      return null;
+      return "Seminar";
     }
   },
   Query: {
