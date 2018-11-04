@@ -25,7 +25,7 @@
     <p> {{info.discription}} </p>
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="News" name="news">
-        <el-card v-for="(announcement,key) in announcements" :key="key" class="box-card" style="margin:10px" shadow="never">
+        <el-card v-for="(announcement,key) in info.announcements" :key="key" class="box-card" style="margin:10px" shadow="never">
         <div slot="header" class="clearfix">
           <span>{{announcement.date_modified}}</span>
         </div>
@@ -40,6 +40,9 @@
 </template>
 
 <script>
+import { createApolloFetch } from "apollo-fetch"
+const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
+
 export default {
   name: "SeminarPage",
   data() {
@@ -61,38 +64,42 @@ export default {
   },
   methods: {
     follow() {
-      
-      fetch({query: `mutation addUserToSeminar($newUser: EventParticipationInput!) {
-              addUserToEvent(EventParticipation: $newUser)   
-            }`,
-          variables: {
-            newUser: {
-              userid: this.userid,
-              seminarid: this.info.id,
-              participationType: "FOLLOWING"
-            }
+      console.log("in follow")
+      fetch({query: `mutation addreUserToSeminar($newUser: SeminarParticipationInput!) {
+          addUserToSeminar(SeminarParticipation: $newUser)
+        }`,
+        variables: {
+          newUser: {
+            userid: this.userid,
+            seminarid: this.info.id,
+            participationType: "FOLLOWING"
           }
-        })
+        }
+      })
       .then(res =>{
-          console.log(res)
+        console.log(res)
         if(res.data){
           this.followInfo.status = !this.followInfo.status
         }
       })
+      .catch(err =>{
+        console.log(err)
+      })
     },
     attend() {
-      fetch({query: `mutation addUserToSeminar($newUser: EventParticipationInput!) {
-              addUserToEvent(EventParticipation: $newUser)   
-            }`,
-          variables: {
-            newUser: {
-              userid: this.userid,
-              seminarid: this.info.id,
-              participationType: "ATTENDING"
-            }
+      fetch({query: `mutation addreUserToSeminar($newUser: SeminarParticipationInput!) {
+          addUserToSeminar(SeminarParticipation: $newUser)
+        }`,
+        variables: {
+          newUser: {
+            userid: this.userid,
+            seminarid: this.info.id,
+            participationType: "ATTENDING"
           }
-        })
+        }
+      })
       .then(res =>{
+        console.log(res)
         if(res.data){
           this.attendInfo.status = !this.attendInfo.status;     
         }
@@ -102,36 +109,38 @@ export default {
         console.log(tab, event);
       },
       unfollow(){
-      fetch({query: `mutation emoveUserFromSeminar($newUser: EventParticipationInput!) {
-              addUserToEvent(EventParticipation: $newUser)   
-            }`,
-          variables: {
-            newUser: {
-              userid: this.userid,
-              seminarid: this.info.id,
-              participationType: "FOLLOWING"
-            }
+      fetch({query: `mutation removeUserFromSeminar($newUser: SeminarParticipationInput!) {
+          removeUserFromSeminar(SeminarParticipation: $newUser)
+        }`,
+        variables: {
+          newUser: {
+            userid: this.userid,
+            seminarid: this.info.id,
+            participationType: "FOLLOWING"
           }
-        })
+        }
+      })
       .then(res =>{
+        console.log(res)
         if(res.data){
           this.followInfo.status = !this.followInfo.status
         }
       })
     },
     unattend(){
-      fetch({query: `mutation removeUserFromSeminar($newUser: EventParticipationInput!) {
-              removeUserToEvent(EventParticipation: $newUser)   
-            }`,
-          variables: {
-            newUser: {
-              userid: this.userid,
-              seminarid: this.info.id,
-              participationType: "ATTENDING"
-            }
+      fetch({query: `mutation removeUserFromSeminar($newUser: SeminarParticipationInput!) {
+          removeUserFromSeminar(SeminarParticipation: $newUser)
+        }`,
+        variables: {
+          newUser: {
+            userid: this.userid,
+            seminarid: this.info.id,
+            participationType: "ATTENDING"
           }
-        })
+        }
+      })
       .then(res =>{
+        console.log(res)
         if(res.data){
           this.attendInfo.status = !this.attendInfo.status;     
         }

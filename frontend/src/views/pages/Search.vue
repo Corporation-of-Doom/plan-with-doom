@@ -8,7 +8,7 @@
               placeholder="Search"
               prefix-icon="el-icon-search"
               v-model="searchInput"
-              @change="onChange"
+              @change="onSearch"
             />
           <div class="block">
               <div v-for="(item,key) in currentList" :key="key">
@@ -38,7 +38,7 @@
               placeholder="Search"
               prefix-icon="el-icon-search"
               v-model="searchInput"
-              @change="onChange"
+              @change="onSearch"
             />
           <div class="block">
               <div v-for="(item,key) in currentList" :key="key">
@@ -64,7 +64,7 @@
               placeholder="Search"
               prefix-icon="el-icon-search"
               v-model="searchInput"
-              @change="onChange"
+              @change="onSearch"
             />
           <div class="block">
               <div v-for="(item,key) in currentList" :key="key">
@@ -94,6 +94,7 @@ import seminarCard from '@/components/seminarCard.vue'
 import eventCard from '@/components/eventCard.vue'
 import Search from '@/components/Search.vue'
 import { createApolloFetch } from "apollo-fetch"
+import * as moment from 'moment'
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
 export default {
@@ -109,6 +110,7 @@ export default {
       };
     },
    mounted() {
+    //  gets all the cards for events and seminars
       fetch({
         query: `{
           searchByName(searchString: "", limit: 10, offset: 0) {
@@ -135,6 +137,8 @@ export default {
         if (res.data) {
           this.currentList = res.data.searchByName
           this.currentList.forEach((element,key) => {
+            element.start_time =  moment(parseInt(element.start_time,10)).format("MMMM Do YYYY, h:mm a")
+            element.end_time =  moment(parseInt(element.end_time,10)).format("MMMM Do YYYY, h:mm a")
             if(element.event_id){
               fetch({
                 query: `{
@@ -187,6 +191,7 @@ export default {
       .catch(err => {
         console.log(err);
       });
+      // gets the total number of cards and sets the total variable for pagination
       fetch({
         query: `{
           getTotalSearchResults(searchString: "") 
@@ -207,6 +212,7 @@ export default {
         this.activeName = tab.label
         this.searchInput = ""
         if (tab.label === "All") {
+          // get cards for the "All" section of the search page
           fetch({
             query: `{
               searchByName(searchString: "", limit: 10, offset: 0) {
@@ -231,9 +237,13 @@ export default {
           })
           .then(res => {
             if (res.data) {
+              // formating the cards
               this.currentList = res.data.searchByName
               this.currentList.forEach((element,key) => {
+                element.start_time =  moment(parseInt(element.start_time,10)).format("MMMM Do YYYY, h:mm a")
+                element.end_time =  moment(parseInt(element.end_time,10)).format("MMMM Do YYYY, h:mm a")
                 if(element.event_id){
+                  // adding event names to seminars
                   fetch({
                     query: `{
                     getEventByID(id:${element.event_id}){
@@ -249,7 +259,7 @@ export default {
                     }
                   })
                 } else {
-                  console.log(element)
+                  // getting creator of the events
                   fetch({
                     query: `{
                       getEventByID(id:${element.id}){
@@ -286,6 +296,8 @@ export default {
           .catch(err => {
             console.log(err);
           });
+
+          // Getting total number of cards for pagination
           fetch({
             query: `{
               getTotalSearchResults(searchString: "") 
@@ -300,6 +312,7 @@ export default {
             console.log(err)
           })
         } else if (tab.label === "Event"){
+          // gets all the events for thr "Events" tb on search
           fetch({
             query: `{
               searchByName(searchString: "", type:"event", limit: 10, offset: 0) {
@@ -316,35 +329,40 @@ export default {
           })
           .then(res => {
             if (res.data) {
+              // formats the cards
               this.currentList = res.data.searchByName
               this.currentList.forEach((element,key) => {
-              fetch({
-                query: `{
-                  getEventByID(id:${element.id}){
-                    organizers {
-                      id
-                      first_name
-                      middle_name
-                      last_name
+                element.start_time =  moment(parseInt(element.start_time,10)).format("MMMM Do YYYY, h:mm a")
+                element.end_time =  moment(parseInt(element.end_time,10)).format("MMMM Do YYYY, h:mm a")
+                // gets the event organizors names
+                fetch({
+                  query: `{
+                    getEventByID(id:${element.id}){
+                      organizers {
+                        id
+                        first_name
+                        middle_name
+                        last_name
+                      }
+                    }
+                  }`
+                })
+                .then(organizerRes => {
+                  if(organizerRes.data){
+                    // formats creator id into something readable
+                    var result = organizerRes.data.getEventByID.organizers.filter(organizer => organizer.id === element.creator_id)[0]
+                    element.creator_id = null
+                    if (result.first_name) {
+                      element.creator_id = result.first_name
+                    }
+                    if (result.middle_name) {
+                      element.creator_id +=  " " + result.middle_name
+                    }
+                    if (result.last_name) {
+                      element.creator_id +=  " " + result.last_name
                     }
                   }
-                }`
-              })
-              .then(organizerRes => {
-                if(organizerRes.data){
-                  var result = organizerRes.data.getEventByID.organizers.filter(organizer => organizer.id === element.creator_id)[0]
-                  element.creator_id = null
-                  if (result.first_name) {
-                    element.creator_id = result.first_name
-                  }
-                  if (result.middle_name) {
-                    element.creator_id +=  " " + result.middle_name
-                  }
-                  if (result.last_name) {
-                    element.creator_id +=  " " + result.last_name
-                  }
-                }
-              })
+                })
               });
             } else {
               this.form.error = res.errors[0].message;
@@ -353,6 +371,7 @@ export default {
           .catch(err => {
             console.log(err);
           });
+          // get total number of evetns for pagination
           fetch({
             query: `{
               getTotalSearchResults(searchString: "", type:"event") 
@@ -367,6 +386,7 @@ export default {
             console.log(err)
           })
         } else {
+          // gets all the seminars
           fetch({
             query: `{
               searchByName(searchString: "", type:"seminar", limit: 10, offset: 0) {
@@ -383,8 +403,12 @@ export default {
           })
           .then(res => {
             if (res.data) {
+              // formats the semianr cards
               this.currentList = res.data.searchByName
               this.currentList.forEach((element,key) => {
+                element.start_time =  moment(parseInt(element.start_time,10)).format("MMMM Do YYYY, h:mm a")
+                element.end_time =  moment(parseInt(element.end_time,10)).format("MMMM Do YYYY, h:mm a")
+                // gets events name
                 fetch({
                   query: `{
                   getEventByID(id:${element.event_id}){
@@ -407,6 +431,7 @@ export default {
           .catch(err => {
             console.log(err);
           });
+          // gets total number of seminars for pagination
           fetch({
             query: `{
               getTotalSearchResults(searchString: "", type: "seminar") 
@@ -423,7 +448,7 @@ export default {
         }
       },
       loadEvent(id){
-        console.log(id)
+        // gets all the information about an event
         fetch({
           query: `{
             getEventByID(id:${id}){
@@ -462,7 +487,17 @@ export default {
         })
         .then(res => {
           if(res.data){
+            // formats event for Events page
             var eventInfo = res.data.getEventByID
+            eventInfo.start_time =  moment(parseInt(eventInfo.start_time,10)).format("MMMM Do YYYY, h:mm a")
+            eventInfo.end_time =  moment(parseInt(eventInfo.end_time,10)).format("MMMM Do YYYY, h:mm a")
+            eventInfo.announcements.forEach(event => {
+              event.date_modified =  moment(parseInt(event.date_modified,10)).format("MMMM Do YYYY, h:mm a")
+            });
+            eventInfo.seminars.forEach(seminar => {
+              seminar.start_time =  moment(parseInt(seminar.start_time,10)).format("MMMM Do YYYY, h:mm a")
+              seminar.end_time =  moment(parseInt(seminar.end_time,10)).format("MMMM Do YYYY, h:mm a")
+            })
             eventInfo.organizers.forEach(organizer => {
               organizer.name = ''
               if (organizer.first_name) {
@@ -476,6 +511,7 @@ export default {
               }
               
             })
+            // checks to see if the user is following the event
             fetch({
               query: `{
                 getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:FOLLOWING){
@@ -498,6 +534,7 @@ export default {
               } else {
                 eventInfo.follow = false
               }
+              // checks to see if the user is attending the vent
               fetch({
                 query: `{
                   getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:ATTENDING){
@@ -533,6 +570,7 @@ export default {
           
       },
       loadSeminar(id){
+        // gets all the information about a seminar
         fetch({
           query: `{
             getSeminarByID(id:${id}){
@@ -557,9 +595,15 @@ export default {
           }`
         })
         .then(res => {
-          // console.log
+          // formats the seminars information
           if(res.data){
             var seminarInfo = res.data.getSeminarByID
+            seminarInfo.start_time =  moment(parseInt(seminarInfo.start_time,10)).format("MMMM Do YYYY, h:mm a")
+            seminarInfo.end_time =  moment(parseInt(seminarInfo.end_time,10)).format("MMMM Do YYYY, h:mm a")
+            seminarInfo.announcements.forEach(seminar => {
+              seminar.date_modified =  moment(parseInt(seminar.date_modified,10)).format("MMMM Do YYYY, h:mm a")
+            });
+            // get the event the semianr is rom
             fetch({
               query: `{
               getEventByID(id:${seminarInfo.event_id}){
@@ -571,6 +615,8 @@ export default {
               if(nameRes.data){
                 seminarInfo.event_id = nameRes.data.getEventByID.name
               }
+              // chekcs if user is following the event
+              console.log(this.$store.state.user.id)
               fetch({
               query: `{
                 getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:FOLLOWING){
@@ -582,7 +628,7 @@ export default {
               })
             .then(res => {
               if (res.data.getMyEventsAndSeminars.length > 0) {
-                console.log(res.data.getMyEventsAndSeminars, id)
+                console.log(res.data, id)
                 var result = res.data.getMyEventsAndSeminars.filter(event => event.id === id)
                 console.log(result)
                 if (result.length>0) {
@@ -593,6 +639,7 @@ export default {
               } else {
                 seminarInfo.follow = false
               }
+              // checks to see if the user is attending the event
               fetch({
                 query: `{
                   getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:ATTENDING){
@@ -606,7 +653,6 @@ export default {
                 console.log(res.data.getMyEventsAndSeminars)
                 if (res.data.getMyEventsAndSeminars.length > 0) {
                   var result = res.data.getMyEventsAndSeminars.filter(event => event.id === id)
-                  console.log(result)
                   if (result.length>0) {
                     seminarInfo.attend = true
                   } else{
@@ -615,23 +661,23 @@ export default {
                 } else {
                   seminarInfo.attend = false
                 }
-              seminarInfo.id=id
-              this.$store.commit("setSeminar",seminarInfo)
+                seminarInfo.id=id
+                this.$store.commit("setSeminar",seminarInfo)
                 this.$router.push("seminar")
                 })
-            })
-            
+              })
             })
           }
         })
-        // this.$store.commit(setEventID,id)
-        // this.$router.push("event")
       },
       nextPage(event){
-        console.log(event)
+        console.log(event, this.keyword)
+        // simailar to onSearch
+        // use key word 
       }, 
-      onChange(event){
+      onSearch(event){
         if(this.activeName === 'All'){
+          // seach all events and semina based on key word
           fetch({
             query: `{
               searchByName(searchString: "${event}", limit: 10, offset: 0) {
@@ -657,7 +703,11 @@ export default {
           .then(res => {
             if (res.data) {
               this.currentList = res.data.searchByName
+              // formats each card
               this.currentList.forEach((element,key) => {
+                element.start_time =  moment(parseInt(element.start_time,10)).format("MMMM Do YYYY, h:mm a")
+                element.end_time =  moment(parseInt(element.end_time,10)).format("MMMM Do YYYY, h:mm a")
+                // gets name of event the seminar is in
                 if(element.event_id){
                   fetch({
                     query: `{
@@ -674,6 +724,7 @@ export default {
                     }
                   })
                 } else {
+                  // get the name of the creator of the event
                   fetch({
                     query: `{
                       getEventByID(id:${element.id}){
@@ -689,6 +740,7 @@ export default {
                   .then(organizerRes => {
                     if(organizerRes.data){
                       var result = organizerRes.data.getEventByID.organizers.filter(organizer => organizer.id === element.creator_id)[0]
+                      // makes the name of creator more readable
                       element.creator_id = null
                       if (result.first_name) {
                         element.creator_id = result.first_name
@@ -710,6 +762,7 @@ export default {
           .catch(err => {
             console.log(err);
           });
+          // gets total number events and seminar for pagination
           fetch({
             query: `{
               getTotalSearchResults(searchString: "${event}") 
@@ -724,6 +777,7 @@ export default {
             console.log(err)
           })
         } else if (this.activeName === 'Event'){
+          // gets events when searched by key word
           fetch({
             query: `{
               searchByName(searchString: "${event}", type:"event" limit: 10, offset: 0) {
@@ -740,8 +794,12 @@ export default {
           })
           .then(res => {
             if (res.data) {
+              // fomats event
               this.currentList = res.data.searchByName
               this.currentList.forEach((element,key) => {
+                element.start_time =  moment(parseInt(element.start_time,10)).format("MMMM Do YYYY, h:mm a")
+                element.end_time =  moment(parseInt(element.end_time,10)).format("MMMM Do YYYY, h:mm a")
+                // gets cerator name 
                 fetch({
                   query: `{
                     getEventByID(id:${element.id}){
@@ -757,6 +815,7 @@ export default {
                 .then(organizerRes => {
                   if(organizerRes.data){
                     var result = organizerRes.data.getEventByID.organizers.filter(organizer => organizer.id === element.creator_id)[0]
+                    // formats creator name
                     element.creator_id = null
                     if (result.first_name) {
                       element.creator_id = result.first_name
@@ -777,6 +836,7 @@ export default {
           .catch(err => {
             console.log(err);
           });
+          // gets total events for pagination
           fetch({
             query: `{
               getTotalSearchResults(searchString: "${event}") 
@@ -791,6 +851,7 @@ export default {
             console.log(err)
           })
         } else {
+          // gets all the semianrs based on key word
           fetch({
             query: `{
               searchByName(searchString: "${event}", type:"seminar" limit: 10, offset: 0) {
@@ -807,8 +868,12 @@ export default {
           })
           .then(res => {
             if (res.data) {
+              // formats the semianrs
               this.currentList = res.data.searchByName
               this.currentList.forEach((element,key) => {
+                element.start_time =  moment(parseInt(element.start_time,10)).format("MMMM Do YYYY, h:mm a")
+                element.end_time =  moment(parseInt(element.end_time,10)).format("MMMM Do YYYY, h:mm a")
+                // get the event the seminar is from
                 fetch({
                   query: `{
                   getEventByID(id:${element.event_id}){
@@ -831,6 +896,7 @@ export default {
           .catch(err => {
             console.log(err);
           });
+          // gets totsl for pagination
           fetch({
             query: `{
               getTotalSearchResults(searchString: "${event}", type: "seminar") 

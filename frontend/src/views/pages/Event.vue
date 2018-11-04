@@ -65,6 +65,8 @@
 
 <script>
 import { createApolloFetch } from "apollo-fetch"
+import * as moment from 'moment'
+
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 export default {
   name: "EventPage",
@@ -101,7 +103,6 @@ export default {
         })
       .then(res =>{
         if(res.data){
-          console.log(res.data)
           this.followInfo.status = !this.followInfo.status
         } else {
           console.log("not following")
@@ -154,21 +155,23 @@ export default {
           }`
         })
         .then(res => {
-          // console.log
           if(res.data){
             var seminarInfo = res.data.getSeminarByID
             seminarInfo.event_id = this.info.name
             seminarInfo.id=id
-            console.log(seminarInfo)
+            seminarInfo.start_time =  moment(parseInt(seminarInfo.start_time,10)).format("MMMM Do YYYY, h:mm a")
+            seminarInfo.end_time =  moment(parseInt(seminarInfo.end_time,10)).format("MMMM Do YYYY, h:mm a")
+            seminarInfo.announcements.forEach(seminar => {
+              seminar.date_modified =  moment(parseInt(seminar.date_modified,10)).format("MMMM Do YYYY, h:mm a")
+            });
             this.$store.commit("setSeminar",seminarInfo)
             this.$router.push("seminar")
           }
         })
     },
     unfollow(){
-      console.log("unfollow")
       fetch({query: `mutation removeUserFromEvent($newUser: EventParticipationInput!) {
-              addUserToEvent(EventParticipation: $newUser)   
+              removeUserFromEvent(EventParticipation: $newUser)   
             }`,
           variables: {
             newUser: {
@@ -186,7 +189,7 @@ export default {
     },
     unattend(){
       fetch({query: `mutation removeUserFromEvent($newUser: EventParticipationInput!) {
-              removeUserToEvent(EventParticipation: $newUser)   
+              removeUserFromEvent(EventParticipation: $newUser)   
             }`,
           variables: {
             newUser: {
