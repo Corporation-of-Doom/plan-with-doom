@@ -144,31 +144,34 @@ async function getMySchedule(
 
   const results = [];
   const vals = [];
-  var queryString = `
+  var queryString = ``;
+
+  var selectQueryString = `
   SELECT ??.id AS id, ??.name AS name,
          ??.description AS description, ??.start_time AS start_time,
          ??.end_time AS end_time, ??.capacity_type AS capacity_type,
          ??.max_capacity AS max_capacity, ??.current_capacity AS current_capacity,
-         ??.location AS location, ??.picture_path AS picture_path, ? AS creator_id, ? AS event_id
-  FROM ?? JOIN ?? ON (??.?? = ??.id)
-  WHERE ??.user_id = ?`;
+         ??.location AS location, ??.picture_path AS picture_path,`;
+  var whereQueryString = `WHERE ??.user_id = ?`;
 
   if (!participationType) {
-    queryString = `${queryString} AND (??.following IS TRUE OR ??.attending IS TRUE)`;
+    whereQueryString = `${whereQueryString} AND (??.following IS TRUE OR ??.attending IS TRUE)`;
   } else if (participationType === "FOLLOWING") {
-    queryString = `${queryString} AND ??.following IS TRUE`;
+    whereQueryString = `${whereQueryString} AND ??.following IS TRUE`;
   } else if (participationType === "ATTENDING") {
-    queryString = `${queryString} AND ??.attending IS TRUE`;
+    whereQueryString = `${whereQueryString} AND ??.attending IS TRUE`;
   }
 
   if (!type || type.toLowerCase() === "event") {
     // do both types. Start w/ event and UION ALL w/ seminar
+    queryString = `
+      ${selectQueryString} "event".creator_id AS creator_id, NULL AS event_id
+      FROM ?? JOIN ?? ON (??.?? = ??.id) ${whereQueryString}`;
+
     for (let i = 0; i < 10; i++) {
       vals.push("event");
     }
     vals.push(
-      "event.creator_id",
-      "NULL",
       "event_participation",
       "event",
       "event_participation",
@@ -185,17 +188,19 @@ async function getMySchedule(
   }
 
   if (!type) {
-    queryString = `${queryString} UNION ALL ${queryString}`;
+    queryString = `${queryString} UNION ALL`;
   }
 
   if (!type || type.toLowerCase() === "seminar") {
     // do both types. Start w/ event and UION ALL w/ seminar
+    queryString = `
+      ${queryString} ${selectQueryString} NULL AS creator_id, "seminar".event_id AS event_id
+      FROM ?? JOIN ?? ON (??.?? = ??.id) ${whereQueryString}`;
+
     for (let i = 0; i < 10; i++) {
       vals.push("seminar");
     }
     vals.push(
-      "NULL",
-      "seminar.event_id",
       "seminar_participation",
       "seminar",
       "seminar_participation",
