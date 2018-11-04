@@ -166,7 +166,6 @@ export default {
               .then(organizerRes => {
                 if(organizerRes.data){
                   var result = organizerRes.data.getEventByID.organizers.filter(organizer => organizer.id === element.creator_id)[0]
-                  console.log(result)
                   element.creator_id = null
                   if (result.first_name) {
                     element.creator_id = result.first_name
@@ -195,7 +194,6 @@ export default {
       })
       .then(res=> {
         if(res.data){
-          console.log(res.data)
           this.total = res.data.getTotalSearchResults;
         }
       })
@@ -203,6 +201,7 @@ export default {
         console.log(err)
       })
     },
+
     methods: {
       handleClick(tab, event) {
         this.activeName = tab.label
@@ -250,6 +249,7 @@ export default {
                     }
                   })
                 } else {
+                  console.log(element)
                   fetch({
                     query: `{
                       getEventByID(id:${element.id}){
@@ -293,7 +293,6 @@ export default {
           })
           .then(res=> {
             if(res.data){
-              console.log(res.data)
               this.total = res.data.getTotalSearchResults;
             }
           })
@@ -334,7 +333,6 @@ export default {
               .then(organizerRes => {
                 if(organizerRes.data){
                   var result = organizerRes.data.getEventByID.organizers.filter(organizer => organizer.id === element.creator_id)[0]
-                  console.log(result)
                   element.creator_id = null
                   if (result.first_name) {
                     element.creator_id = result.first_name
@@ -362,7 +360,6 @@ export default {
           })
           .then(res=> {
             if(res.data){
-              console.log(res.data)
               this.total = res.data.getTotalSearchResults;
             }
           })
@@ -417,7 +414,6 @@ export default {
           })
           .then(res=> {
             if(res.data){
-              console.log(res.data)
               this.total = res.data.getTotalSearchResults;
             }
           })
@@ -427,10 +423,207 @@ export default {
         }
       },
       loadEvent(id){
-        // this.$store.commit(setEventID,id)
-        // this.$router.push("event")
+        console.log(id)
+        fetch({
+          query: `{
+            getEventByID(id:${id}){
+              name
+              creator_id
+              description
+              start_time
+              end_time
+              location
+              announcements{
+                date_modified
+                message
+              }
+              seminars{
+                id
+                name
+                description
+                start_time
+                end_time
+                location
+                organizers{
+                  id
+                  first_name
+                  middle_name
+                  last_name
+                }
+              }
+              organizers{
+                id
+                first_name
+                middle_name
+                last_name
+              }
+            }
+          }`
+        })
+        .then(res => {
+          if(res.data){
+            var eventInfo = res.data.getEventByID
+            eventInfo.organizers.forEach(organizer => {
+              organizer.name = ''
+              if (organizer.first_name) {
+                organizer.name = organizer.first_name
+              }
+              if (organizer.middle_name) {
+                organizer.name +=  " " + organizer.middle_name
+              }
+              if (organizer.last_name) {
+                organizer.name +=  " " + organizer.last_name
+              }
+              
+            })
+            fetch({
+              query: `{
+                getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:FOLLOWING){
+                  ...on Event{
+                    id
+                  }
+                }
+              }`
+              })
+            .then(res => {
+              if (res.data.getMyEventsAndSeminars.length > 0) {
+                console.log(res.data.getMyEventsAndSeminars, id)
+                var result = res.data.getMyEventsAndSeminars.filter(event => event.id === id)
+                console.log(result)
+                if (result.length>0) {
+                  eventInfo.follow = true
+                } else{
+                  eventInfo.follow = false
+                }
+              } else {
+                eventInfo.follow = false
+              }
+              fetch({
+                query: `{
+                  getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:ATTENDING){
+                    ...on Event{
+                      id
+                    }
+                  }
+                }`
+                })
+              .then(res => {
+                console.log(res.data.getMyEventsAndSeminars)
+                if (res.data.getMyEventsAndSeminars.length > 0) {
+                  var result = res.data.getMyEventsAndSeminars.filter(event => event.id === id)
+                  console.log(result)
+                  if (result.length>0) {
+                    eventInfo.attend = true
+                  } else{
+                    eventInfo.attend = false
+                  }
+                } else {
+                  eventInfo.attend = false
+                }
+                eventInfo.creator_id = eventInfo.organizers.filter(organizer => organizer.id === eventInfo.creator_id)[0].name
+                eventInfo.id = id
+                console.log(eventInfo)
+                this.$store.commit("setEvent",eventInfo)
+                this.$router.push("event")
+              })
+            })
+            
+          }
+        })
+          
       },
       loadSeminar(id){
+        fetch({
+          query: `{
+            getSeminarByID(id:${id}){
+              announcements{
+                date_modified
+                message
+              }
+              id
+              name
+              event_id
+              description
+              start_time
+              end_time
+              location
+              organizers{
+                id
+                first_name
+                middle_name
+                last_name
+              }
+            }
+          }`
+        })
+        .then(res => {
+          // console.log
+          if(res.data){
+            var seminarInfo = res.data.getSeminarByID
+            fetch({
+              query: `{
+              getEventByID(id:${seminarInfo.event_id}){
+                  name
+                }
+              }`
+            })
+            .then(nameRes => {
+              if(nameRes.data){
+                seminarInfo.event_id = nameRes.data.getEventByID.name
+              }
+              fetch({
+              query: `{
+                getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:FOLLOWING){
+                  ...on Seminar{
+                    id
+                  }
+                }
+              }`
+              })
+            .then(res => {
+              if (res.data.getMyEventsAndSeminars.length > 0) {
+                console.log(res.data.getMyEventsAndSeminars, id)
+                var result = res.data.getMyEventsAndSeminars.filter(event => event.id === id)
+                console.log(result)
+                if (result.length>0) {
+                  seminarInfo.follow = true
+                } else{
+                  seminarInfo.follow = false
+                }
+              } else {
+                seminarInfo.follow = false
+              }
+              fetch({
+                query: `{
+                  getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:ATTENDING){
+                    ...on Seminar{
+                      id
+                    }
+                  }
+                }`
+                })
+              .then(res => {
+                console.log(res.data.getMyEventsAndSeminars)
+                if (res.data.getMyEventsAndSeminars.length > 0) {
+                  var result = res.data.getMyEventsAndSeminars.filter(event => event.id === id)
+                  console.log(result)
+                  if (result.length>0) {
+                    seminarInfo.attend = true
+                  } else{
+                    seminarInfo.attend = false
+                  }
+                } else {
+                  seminarInfo.attend = false
+                }
+              seminarInfo.id=id
+              this.$store.commit("setSeminar",seminarInfo)
+                this.$router.push("seminar")
+                })
+            })
+            
+            })
+          }
+        })
         // this.$store.commit(setEventID,id)
         // this.$router.push("event")
       },
@@ -438,7 +631,6 @@ export default {
         console.log(event)
       }, 
       onChange(event){
-        console.log(event, this.activeName)
         if(this.activeName === 'All'){
           fetch({
             query: `{
@@ -525,7 +717,6 @@ export default {
           })
           .then(res=> {
             if(res.data){
-              console.log(res.data)
               this.total = res.data.getTotalSearchResults;
             }
           })
@@ -593,7 +784,6 @@ export default {
           })
           .then(res=> {
             if(res.data){
-              console.log(res.data)
               this.total = res.data.getTotalSearchResults;
             }
           })
@@ -648,7 +838,6 @@ export default {
           })
           .then(res=> {
             if(res.data){
-              console.log(res.data)
               this.total = res.data.getTotalSearchResults;
             }
           })
