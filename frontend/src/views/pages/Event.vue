@@ -57,7 +57,11 @@
           </div>
         </el-card>
       </el-tab-pane>
-      <el-tab-pane label="Organizers" name="organizers" v-for="(organizer,key) in info.organizers" :key="key" >{{organizer.name}}</el-tab-pane>
+      <el-tab-pane label="Organizers" name="organizers">
+        <div v-for="(organizer,key) in info.organizers" :key="key">
+          {{organizer.name}}
+        </div>
+      </el-tab-pane>
     </el-tabs>
   </div>
     </vue-scroll>

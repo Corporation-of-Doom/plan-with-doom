@@ -1,5 +1,5 @@
 <template>
-  <vue-scroll>
+  <vue-scroll style="overflow:hidden">
     <div>
       <el-tabs type="border-card" style="width:100%" @tab-click="handleClick">
         <!-- All seminars and event -->
@@ -10,7 +10,7 @@
               v-model="searchInput"
               @change="onSearch"
             />
-          <div class="block">
+          <div>
               <div v-for="(item,key) in currentList" :key="key">
                 <div v-if="item" >
                   <seminar-card v-if="item.event_id" 
@@ -40,7 +40,7 @@
               v-model="searchInput"
               @change="onSearch"
             />
-          <div class="block">
+          <div>
               <div v-for="(item,key) in currentList" :key="key">
                 <div v-if="item" >
                   
@@ -66,7 +66,7 @@
               v-model="searchInput"
               @change="onSearch"
             />
-          <div class="block">
+          <div>
               <div v-for="(item,key) in currentList" :key="key">
                 <div v-if="item" >
                   <seminar-card
@@ -113,7 +113,7 @@ export default {
     //  gets all the cards for events and seminars
       fetch({
         query: `{
-          searchByName(searchString: "", limit: 10, offset: 0) {
+          searchByName(searchString: "") {
             ... on Event {
               id
               start_time
@@ -564,7 +564,6 @@ export default {
                 this.$router.push("event")
               })
             })
-            
           }
         })
           
