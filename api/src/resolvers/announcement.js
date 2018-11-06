@@ -52,7 +52,7 @@ async function queryMyAnnouncements(
 ) {
   const results = [];
   var queryStringEnding = "";
-  var vals = [id];
+  var vals = [id, id];
   if (limit) {
     queryStringEnding += "LIMIT ?";
     vals.push(limit);
@@ -62,8 +62,10 @@ async function queryMyAnnouncements(
     vals.push(offset);
   }
 
-  var queryString = `SELECT *, 'event_type' as type FROM (Event_Announcement inner join Event_Participation on Event_Announcement.event_id = Event_Participation.event_id ) where user_id=1 and ("attending" = true or "following" = true) union
-  SELECT *, 'seminar_type' as type FROM(Seminar_Announcement inner join Seminar_Participation on Seminar_Announcement.seminar_id = Seminar_Participation.seminar_id) where user_id = ? and("attending" = true or "following" = true) order by date_modified desc `;
+  var queryString = `SELECT *, 'event_type' as type FROM (Event_Announcement inner join Event_Participation on Event_Announcement.event_id = Event_Participation.event_id ) inner join Event on Event.id = Event_Participation.event_id  where user_id = ? and ("attending" = true or "following" = true) 
+union
+SELECT *, 'seminar_type' as type FROM(Seminar_Announcement inner join Seminar_Participation on Seminar_Announcement.seminar_id = Seminar_Participation.seminar_id) inner join seminar on seminar.id = Seminar_Participation.seminar_id where user_id = ? and("attending" = true or "following" = true) order by date_modified desc 
+`;
 
   if (queryStringEnding) {
     queryString += queryStringEnding;
@@ -80,7 +82,8 @@ async function queryMyAnnouncements(
       message: result.message,
       date_created: result.date_created,
       date_modified: result.date_modified,
-      type: result.type
+      type: result.type,
+      name: result.name
     };
 
     results.push(announcement);
