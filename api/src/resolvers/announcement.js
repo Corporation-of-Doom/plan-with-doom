@@ -83,7 +83,7 @@ SELECT *, 'seminar_type' as type FROM(Seminar_Announcement inner join Seminar_Pa
       date_created: result.date_created,
       date_modified: result.date_modified,
       type: result.type,
-      name: result.name
+      type_name: result.name
     };
 
     results.push(announcement);
