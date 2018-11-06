@@ -62,10 +62,21 @@ async function queryMyAnnouncements(
     vals.push(offset);
   }
 
-  var queryString = `SELECT *, 'event_type' as type FROM (Event_Announcement inner join Event_Participation on Event_Announcement.event_id = Event_Participation.event_id ) inner join Event on Event.id = Event_Participation.event_id  where user_id = ? and ("attending" = true or "following" = true) 
-union
-SELECT *, 'seminar_type' as type FROM(Seminar_Announcement inner join Seminar_Participation on Seminar_Announcement.seminar_id = Seminar_Participation.seminar_id) inner join seminar on seminar.id = Seminar_Participation.seminar_id where user_id = ? and("attending" = true or "following" = true) order by date_modified desc 
-`;
+  var queryString = `
+SELECT Event_Announcement.event_id as type_id, Event_Announcement.id as id,Event_Announcement.message as message, 
+    Event_Announcement.date_created as date_created, Event_Announcement.date_modified as date_modified, Event.name as type_name,'event_type' as type 
+	FROM (Event_Announcement INNER JOIN Event_Participation ON Event_Announcement.event_id = Event_Participation.event_id ) 
+		INNER JOIN Event ON Event.id = Event_Participation.event_id  
+	WHERE user_id = ? AND ("attending" = true or "following" = true) 
+UNION
+SELECT Seminar_Announcement.seminar_id as type_id, Seminar_Announcement.id as id,Seminar_Announcement.message as message, 
+    Seminar_Announcement.date_created as date_created, Seminar_Announcement.date_modified as date_modified, Seminar.name as type_name, 'seminar_type' as type 
+	FROM(Seminar_Announcement INNER JOIN Seminar_Participation ON Seminar_Announcement.seminar_id = Seminar_Participation.seminar_id) 
+		INNER JOIN seminar ON seminar.id = Seminar_Participation.seminar_id 
+	WHERE user_id = ? AND("attending" = true or "following" = true) 
+    
+order by date_modified desc 
+  `;
 
   if (queryStringEnding) {
     queryString += queryStringEnding;
@@ -78,12 +89,12 @@ SELECT *, 'seminar_type' as type FROM(Seminar_Announcement inner join Seminar_Pa
   res.rows.forEach(result => {
     const announcement = {
       id: result.id,
-      event_id: result.type_id,
+      type_id: result.type_id,
       message: result.message,
       date_created: result.date_created,
       date_modified: result.date_modified,
       type: result.type,
-      name: result.name
+      type_name: result.type_name
     };
 
     results.push(announcement);
