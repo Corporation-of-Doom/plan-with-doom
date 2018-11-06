@@ -1,7 +1,7 @@
 <template>
   <vue-scroll style="overflow:hidden">
     <div>
-      <el-tabs type="border-card" style="width:100%" @tab-click="handleClick">
+      <el-tabs type="border-card" style="width:100%" @tab-click="changeTab">
         <!-- All seminars and event -->
         <el-tab-pane label="All">
             <el-input
@@ -208,7 +208,7 @@ export default {
     },
 
     methods: {
-      handleClick(tab, event) {
+      changeTab(tab, event) {
         this.activeName = tab.label
         this.searchInput = ""
         if (tab.label === "All") {

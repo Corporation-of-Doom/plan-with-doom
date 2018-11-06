@@ -23,7 +23,7 @@
     <hr>
     <p>Discription<p>
     <p> {{info.discription}} </p>
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model="activeName" @tab-click="changeTab">
       <el-tab-pane label="News" name="news">
         <el-card v-for="(announcement,key) in info.announcements" :key="key" class="box-card" style="margin:10px" shadow="never">
         <div slot="header" class="clearfix">
@@ -109,7 +109,7 @@ export default {
         }
       })
     },
-    handleClick(tab, event) {
+    changeTab(tab, event) {
         console.log(tab, event);
       },
       unfollow(){

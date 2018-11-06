@@ -1,7 +1,7 @@
 <template>
   <vue-scroll class="page-dashboard">
     <div>
-      <el-tabs type="border-card" style="width:100%" @tab-click="handleClick"> 
+      <el-tabs type="border-card" style="width:100%" @tab-click="changeTab"> 
         <el-tab-pane label="All">
           <el-row type="flex" class="row-bg">
             Fliter:
@@ -296,7 +296,7 @@ export default {
           console.log(err)
         })
       },
-      handleClick(tab) {
+      changeTab(tab) {
         this.activeName = tab.label
         this.filter = 'None'
         if (tab.label === "All") {
