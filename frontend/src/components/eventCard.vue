@@ -2,14 +2,14 @@
   <el-row type="flex" class="row-bg" style="height: 25%;border-style:outset; margin:10px">
     <el-col style="background: white;" :xs="21" :sm="22" :md="22" :lg="23" :xl="23">
       <div style="padding-left:20px">
-        <h3>Title</h3>
-        <p>organizer</p>
+        <h3>{{item.name}}</h3>
+        <p>{{item.creator_id}}</p>
         <el-row >
           <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-            <p>Location</p>
+            <p>Location: {{item.event_location}} </p>
           </el-col>
           <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-            <p>Date</p>
+            <p>Date: {{item.start_time}} - {{item.end_time}} </p>
           </el-col>
         </el-row>
       </div>
@@ -29,46 +29,25 @@
 
 
 <script>
-// import { detect } from 'detect-browser'
-// const browser = detect()
+import { detect } from 'detect-browser'
+const browser = detect()
 
-// export default {
-// 	name: 'Card',
-// 	props: ['title'],
-// 	data() {
-// 		return {
-// 			isIe: true,
-// 			isEdge: true,
-// 			activeLink: null
-// 		}
-// 	},
-// 	methods: {
-// 		goto(index, indexPath) {
-// 			if(index.charAt(0) === '/') {
-// 				this.$router.push(index)
-// 				this.$emit('push-page', {page:index})
-// 			}
-
-// 		},
-// 		setLink(path) {
-// 			this.activeLink = path
-// 		}
-// 	},
-// 	created() {
-// 		if(browser.name !== 'ie') this.isIe = false
-// 		if(browser.name !== 'edge') this.isEdge = false
-
-// 		this.setLink(this.$router.currentRoute.path)
-// 		this.$router.afterEach((to, from) => {
-// 			this.setLink(this.$router.currentRoute.path)
-// 			//console.log('afterEach', to, from)
-// 		})
-// 		//console.log('this.$router.currentRoute.path', this.$router.currentRoute.path)
-// 	},
-// 	mounted() {
-// 		//console.log('nav component mounted')				
-// 	}
-// }
+export default {
+	name: 'Card',
+	props: {
+    item:{
+      type: Object, 
+      default:{
+        start_time:"Start Time Unavaiable",
+        end_time: "End Time Unavaiable",
+        name: "Name Unvailable",
+        creator_id: "Organizer Unavailable",
+        event_location: "Location Unavailable"
+      }
+    }
+  },
+	
+}
 </script>
 
 <style lang="scss">

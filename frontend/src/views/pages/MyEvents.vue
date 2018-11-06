@@ -18,7 +18,8 @@
           </el-dropdown>
         </el-row>
         <div>
-            <seminar-card v-for="i in 5" :key="i" @click.native="loadEvent"/>
+            <seminar-card @click.native="loadSeminar"/>
+            <event-card @click.native="loadEvent"/>
         </div>
       </el-tab-pane>
       <el-tab-pane label="Event">
@@ -77,8 +78,12 @@ export default {
         this.filter = command;
       },
       loadEvent(){
-        this.$router.push("event")
+        this.$router.push("Managingevent")
+      },
+      loadSeminar(){
+        this.$router.push("Managingseminar")
       }
+
     },
   components: {
     seminarCard, Search

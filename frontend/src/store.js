@@ -18,7 +18,9 @@ export default new Vuex.Store({
 		},
 		splashScreen: true,
 		logged: false,
-		user:{}
+		user:{},
+		event: {},
+		seminar:{},
 	},
 	mutations: {
 		setLayout(state, payload) {
@@ -51,6 +53,12 @@ export default new Vuex.Store({
 		},
 		setSplashScreen(state, payload) {
 			state.splashScreen = payload
+		},
+		setEvent(state, payload){
+			state.event = payload
+		},
+		setSeminar(state, payload){
+			state.seminar = payload
 		}
 	},
 	actions: {
