@@ -1,5 +1,5 @@
 <template>
-  <vue-scroll style="overflow:hidden">
+  <vue-scroll>
     <div>
       <el-tabs type="border-card" style="width:100%" @tab-click="changeTab">
         <!-- All seminars and event -->
