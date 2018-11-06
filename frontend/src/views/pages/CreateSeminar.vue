@@ -130,6 +130,7 @@ var organizerid = []
 
 			res.data.searchUsersByName.forEach(element => {
 				if (userid !== element.id) {
+					// console.log("user id: "+ userid + "  " + "element.id: " + element.id);
 					availableOrganizers.push(element.first_name+" "+element.last_name)	
 					organizerid.push(element.id)
 				}

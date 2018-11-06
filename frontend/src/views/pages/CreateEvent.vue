@@ -96,6 +96,10 @@
 </template>
 
 <script>
+// some JS file
+import store from '../../store'; // path to your Vuex store
+let userid = store.state.user.id;
+// do stuff with user
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 var availableOrganizers = []
@@ -117,8 +121,12 @@ var organizerid = []
 			
 			res.data.searchUsersByName.forEach(element => {
 				
-				availableOrganizers.push(element.first_name)	
-				organizerid.push(element.id)
+
+				if (userid !== element.id) {
+					// console.log("user id: "+ userid + "  " + "element.id: " + element.id);
+					availableOrganizers.push(element.first_name+" "+element.last_name)	
+					organizerid.push(element.id)
+				}
 			
 			});
 
@@ -208,6 +216,8 @@ export default {
 				}
 
 				console.log("selectedOrganizer: " + selectedOrganizer)
+				selectedOrganizer.push(this.user.id)
+
 
 				fetch({
 					query: `mutation createEvent($event: EventInput!){

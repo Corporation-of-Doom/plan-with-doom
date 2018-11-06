@@ -43,20 +43,6 @@ const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
 export default {
 	name: 'TimelinePage',
-	mounted() {
-		fetch({
-                query: `query getMyManagingEventsAndSeminars($ID: Int!){
-  							getMyManagingEventsAndSeminars(userID: $ID, type: "event") {
-    							... on Event {
-      								id
-      								name
-    							}
-  							}
-						}`
-				,
-                variables: {ID: this.user.id}
-            })
-	},
 	components: {
 		Timeline,
 		TimelineItem,
