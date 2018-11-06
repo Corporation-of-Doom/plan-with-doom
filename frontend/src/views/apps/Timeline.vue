@@ -38,11 +38,24 @@
 
 <script>
 import { Timeline, TimelineItem, TimelineTitle } from 'vue-cute-timeline'
+import { createApolloFetch } from "apollo-fetch"
+const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
 export default {
 	name: 'TimelinePage',
 	mounted() {
-		//console.log('Timeline mounted')
+		fetch({
+                query: `query getMyManagingEventsAndSeminars($ID: Int!){
+  							getMyManagingEventsAndSeminars(userID: $ID, type: "event") {
+    							... on Event {
+      								id
+      								name
+    							}
+  							}
+						}`
+				,
+                variables: {ID: this.user.id}
+            })
 	},
 	components: {
 		Timeline,

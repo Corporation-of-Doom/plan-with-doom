@@ -1,6 +1,6 @@
 <template>
-	<vue-scroll class="page-profile">
-		<div class="create-seminar">
+		<vue-scroll style="overflow:hidden">
+	<div class="create-seminar">
 			<div class="seminarForm">
 
 				<h1>Creating an seminar</h1>
@@ -16,8 +16,8 @@
 
 				<el-select v-model="eventSelected" placeholder="Select event">
 					<el-option
-					v-for="(i,key) in eventNames" :key="key" :value="key">
-					{{ i }}
+					v-for="(i) in managingEvents" :key="i.id" :value="i.id" :label="i.name">
+					{{ i.name }}
 					</el-option>
 				</el-select>
 			
@@ -101,11 +101,15 @@
 			<el-button type="success" v-on:click="onSubmit" round >Create Seminar</el-button>	
 			<el-button type="danger" @click="onCancel" round>Cancel</el-button>
 	
-		</div>	
-	</vue-scroll>
+	</div>	
+		</vue-scroll>
 </template>
 
 <script>
+// some JS file
+import store from '../../store'; // path to your Vuex store
+let userid = store.state.user.id;
+// do stuff with user
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 var availableOrganizers = []
@@ -122,13 +126,13 @@ var organizerid = []
 			}`
 		}).then(res => {
 		if (res.data) {
-			
-			console.log(res.data.searchUsersByName)
-			
+				console.clear()
+
 			res.data.searchUsersByName.forEach(element => {
-				
-				availableOrganizers.push(element.first_name)	
-				organizerid.push(element.id)
+				if (userid !== element.id) {
+					availableOrganizers.push(element.first_name+" "+element.last_name)	
+					organizerid.push(element.id)
+				}
 			
 			});
 
@@ -138,7 +142,7 @@ var organizerid = []
 	}).catch(err => {
 		console.log(err);
 	}); 
-    
+
 export default {
   	name: 'CreateSeminar',
 		
@@ -174,10 +178,8 @@ export default {
 				descriptionInput: '',
 				transferData: populateTranfer(),
                 organizerList: [],	
-				relatedEvent: '',
-				eventNames: [],
-				eventids: [],
-				eventSelected: '',
+				managingEvents: [],
+				eventSelected: null,
 				// temp1: []
 			};
 		},
@@ -196,15 +198,7 @@ export default {
                 variables: {ID: this.user.id}
             }).then(res => {
                 if (res.data) {
-
-					for (var i = 0; i < res.data.getMyManagingEventsAndSeminars.length; i++) {
-						console.log("res.data: " + res.data.getMyManagingEventsAndSeminars[i].name)
-						console.log("res.data: " + res.data.getMyManagingEventsAndSeminars[i].id)
-
-						this.eventNames.push(res.data.getMyManagingEventsAndSeminars[i].name)
-						this.eventids.push(res.data.getMyManagingEventsAndSeminars[i].id)
-                    }
-
+					this.managingEvents = res.data.getMyManagingEventsAndSeminars
                 } else {
                     console.log(res.errors)
                 }		
@@ -214,20 +208,10 @@ export default {
 		},
 
     methods: {
-
 		onSubmit: function(event) {
-
-			if (this.seminarName && this.dateRange && this.timeRange && this.capacityType && this.eventSelected)
-			{	
-				console.log("eventSelected: " + this.eventSelected);
-				for (var i; i < this.eventNames.length; i++) {
-					if (this.eventSelected == i) {
-						this.eventSelected = thiseventids[i]
-					}
-
-				}
-
-				
+			
+			if (this.seminarName && this.dateRange && this.timeRange && this.capacityType && this.eventSelected !==null)
+			{					
 				var temp = this.dateRange.toString().split(",")
 				var start_time = temp[0]
 				var end_time = temp[1]
@@ -262,7 +246,8 @@ export default {
 					selectedOrganizer.push(organizerid[this.organizerList[i]])
 				}
 
-				console.log("selectedOrganizer: " + selectedOrganizer)
+				console.log("selectedOrganizer: " + selectedOrganizer[0])
+				selectedOrganizer.push(this.user.id)
 
 				fetch({
 					query: `mutation createSeminar($seminar: SeminarInput!){
@@ -282,7 +267,8 @@ export default {
 							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput,
 							organizer_ids: selectedOrganizer
 						}
-					}			
+					}	
+				
 				}).then(res => {
 					if (res.data) {
 						alert("Seminar created successfully!")
@@ -306,7 +292,13 @@ export default {
 
 			if (!this.capacityType)
 				alert('Please select a capacity type for your seminar!')
-		
+			
+			if (this.eventSelected === null){
+				console.log("aaahhhh", this.eventSelected);
+				alert('Please select an event for your seminar!')
+			}
+				
+			
 		},
 	  
 		onCancel() {
