@@ -216,7 +216,7 @@ export default {
 				}
 
 				console.log("selectedOrganizer: " + selectedOrganizer)
-				selectedOrganizer.push(this.user.id)
+				// selectedOrganizer.push(this.user.id)
 
 
 				fetch({

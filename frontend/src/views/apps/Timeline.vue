@@ -48,6 +48,37 @@ export default {
 		TimelineItem,
 		TimelineTitle
 	}
+	, 
+
+	data() {
+	
+		return {
+			user: this.$store.state.user
+		}
+	},
+
+	mounted() {
+		console.clear()
+
+		fetch({
+			query: `query getMyAnnoucements($ID: Int!){
+						getMyAnnoucements(userID: $ID) {
+							message
+							date_modified
+						}
+					}`
+			,
+			variables: {ID: this.user.id}
+		}).then(res => {
+			if (res.data) {
+				this.managingEvents = res.data.getMyManagingEventsAndSeminars
+			} else {
+				console.log(res.errors)
+			}		
+		}).catch(err => {
+			console.log(err);
+		});
+	}
 }
 </script>
 

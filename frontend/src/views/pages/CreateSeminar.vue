@@ -126,7 +126,7 @@ var organizerid = []
 			}`
 		}).then(res => {
 		if (res.data) {
-				console.clear()
+			console.clear()
 
 			res.data.searchUsersByName.forEach(element => {
 				if (userid !== element.id) {
@@ -247,7 +247,7 @@ export default {
 					selectedOrganizer.push(organizerid[this.organizerList[i]])
 				}
 
-				console.log("selectedOrganizer: " + selectedOrganizer[0])
+				console.log("selectedOrganizer: " + selectedOrganizer)
 				selectedOrganizer.push(this.user.id)
 
 				fetch({
@@ -295,7 +295,6 @@ export default {
 				alert('Please select a capacity type for your seminar!')
 			
 			if (this.eventSelected === null){
-				console.log("aaahhhh", this.eventSelected);
 				alert('Please select an event for your seminar!')
 			}
 				
