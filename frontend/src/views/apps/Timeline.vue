@@ -40,7 +40,6 @@ import { Timeline, TimelineItem, TimelineTitle } from 'vue-cute-timeline'
 import * as moment from 'moment'
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
-console.clear()
 export default {
 	name: 'TimelinePage',
 	components: {
@@ -72,25 +71,7 @@ export default {
 			variables: {ID: this.user.id}
 		}).then(res => {
 			if (res.data) {
-				
-				for (var i = 0; i < res.data.getMyAnnouncements.length; i++) {
-
-					res.data.getMyAnnouncements[i].date_modified = moment(parseInt(res.data.getMyAnnouncements[i].date_modified,10)).format("MMMM Do YYYY, h:mm a")
-					
-					this.news.push({
-						name: res.data.getMyAnnouncements[i].type_name,
-						message: res.data.getMyAnnouncements[i].message,
-						timestamp: res.data.getMyAnnouncements[i].date_modified,
-						type: res.data.getMyAnnouncements[i].type
-					});
-
-					console.log("news[" + i + "]: \n");
-					console.log("	" + this.news[i].name);
-					console.log("	" + this.news[i].message);
-					console.log("	" + this.news[i].timestamp);
-					console.log("	" + this.news[i].type);
-				}
-
+				this.managingEvents = res.data.getMyManagingEventsAndSeminars
 			} else {
 				console.log(res.errors)
 			}		
