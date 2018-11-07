@@ -258,7 +258,7 @@ export default {
 				}).then(res => {
 					if (res.data) {
 						alert("Seminar created successfully!")
-						// this.$router.push('ManageEvents')
+						this.$router.push('ManageEvents')
 					} else {
 						console.log(res.errors)
 					}
