@@ -21,6 +21,7 @@ import SeminarPage from '../views/pages/Seminar.vue'
 import MyEventsPage from '../views/pages/MyEvents.vue'
 import MangeEventsPage from '../views/pages/ManageEvents.vue'
 import CreateEvent from '../views/pages/CreateEvent.vue'
+import CreateSeminar from "../views/pages/CreateSeminar.vue";
 
 
 //ui
@@ -45,271 +46,280 @@ Vue.use(Router)
 
 
 const router = new Router({
-	mode: 'history',
-	routes: [
-		{
-			path: '/calendar',
-			name: 'calendar',
-			component: Calendar,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				tags: ['app']
-			}
-		},
-		{
-			path: '/search',
-			name: 'search',
-			component: SearchPage,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				tags: ['app']
-			}
-		},
-		{
-			path: '/event',
-			name: 'event',
-			component: EventPage,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: false,
-				tags: ['app']
-			}
-		},
-		{
-			path: '/seminar',
-			name: 'Seminar',
-			component: SeminarPage,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: false,
-				tags: ['app']
-			}
-		},
-		{
-			path: '/manageevents',
-			name: 'manageevents',
-			component: MangeEventsPage,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: false,
-				tags: ['app']
-			}
-		},
-		{
-			path: '/',
-			alias: '/myevents',
-			name: 'myevents',
-			component: MyEventsPage,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: false,
-				tags: ['app']
-			}
-		},
-		{
-			path: '/contacts',
-			name: 'contacts',
-			component: Contacts,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				tags: ['users', 'address', 'book', 'app']
-			}
-		},
-		{
-			path: '/gallery',
-			name: 'gallery',
-			component: Gallery,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				tags: ['photo', 'app']
-			}
-		},
-		{
-			path: '/timeline',
-			name: 'timeline',
-			component: Timeline,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				tags: ['app']
-			}
-		},
-		{
-			path: '/themes',
-			name: 'themes',
-			component: Themes,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				tags: ['ui']
-			}
-		},
-		{
-			path: '/icons',
-			name: 'icons',
-			component: Icons,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft
-			},
-			children: [
-				{
-					path: 'md-icons',
-					name: 'md-icons',
-					component: MdIcons,
-					meta: {
-						auth: true,
-						layout: layouts.navLeft,
-						searchable: true,
-						title: 'Material Design Icons',
-						tags: ['material design']
-					}
-				},
-				{
-					path: 'flag-icons',
-					name: 'flag-icons',
-					component: FlagIcons,
-					meta: {
-						auth: true,
-						layout: layouts.navLeft,
-						searchable: true,
-						title: 'Flag Icons',
-						tags: ['list', 'ui']
-					}
-				}
-			]
-		},
-		{
-			path: '/multi-language',
-			name: 'multi-language',
-			component: MultiLanguage,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				tags: ['ui', 'translate']
-			}
-		},
-		{
-			path: '/helper-classes',
-			name: 'helper-classes',
-			component: HelperClasses,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				title: 'Helper Classes',
-				tags: ['ui']
-			}
-		},
-		{
-			path: '/typography',
-			name: 'typography',
-			component: Typography,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				title: 'Typography',
-				tags: ['ui']
-			}
-		},
-		layout,
-		editors,
-		charts,
-		maps,
-		tables,
-		element,
-		{
-			path: '/profile',
-			name: 'profile',
-			component: Profile,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				tags: ['pages']
-			}
-		},
-		{
-			path: '/invoice',
-			name: 'invoice',
-			component: Invoice,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				searchable: true,
-				tags: ['pages']
-			}
-		},
-		{
-			path: '/login',
-			name: 'login',
-			component: Login,
-			meta: {
-				layout: layouts.contenOnly
-			}
-		},
-		{
-			path: '/register',
-			name: 'register',
-			component: Register,
-			meta: {
-				layout: layouts.contenOnly
-			}
-		},
-		{
-			path: '/forgot-password',
-			name: 'forgot-password',
-			component: ForgotPassword,
-			meta: {
-				layout: layouts.contenOnly
-			}
-		},
-		{ 
-			path: '/logout',
-			beforeEnter (to, from, next) {
-				auth.logout()
-				next({path:'/login'})
-			}
-		},
-		{
-			path: '/not-found',
-			name: 'not-found',
-			component: NotFound,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				tags: ['pages']
-			}
-		},
-		{
-			path: '/CreateEvent',
-			name: 'CreateEvent',
-			component: CreateEvent,
-			meta: {
-				auth: true,
-				layout: layouts.navLeft,
-				tags: ['pages']
-			}
-		}
-	
-	]
-})
+  mode: "history",
+  routes: [
+    {
+      path: "/calendar",
+      name: "calendar",
+      component: Calendar,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        tags: ["app"]
+      }
+    },
+    {
+      path: "/search",
+      name: "search",
+      component: SearchPage,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        tags: ["app"]
+      }
+    },
+    {
+      path: "/event",
+      name: "event",
+      component: EventPage,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: false,
+        tags: ["app"]
+      }
+    },
+    {
+      path: "/seminar",
+      name: "Seminar",
+      component: SeminarPage,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: false,
+        tags: ["app"]
+      }
+    },
+    {
+      path: "/manageevents",
+      name: "manageevents",
+      component: MangeEventsPage,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: false,
+        tags: ["app"]
+      }
+    },
+    {
+      path: "/",
+      alias: "/myevents",
+      name: "myevents",
+      component: MyEventsPage,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: false,
+        tags: ["app"]
+      }
+    },
+    {
+      path: "/contacts",
+      name: "contacts",
+      component: Contacts,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        tags: ["users", "address", "book", "app"]
+      }
+    },
+    {
+      path: "/gallery",
+      name: "gallery",
+      component: Gallery,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        tags: ["photo", "app"]
+      }
+    },
+    {
+      path: "/timeline",
+      name: "timeline",
+      component: Timeline,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        tags: ["app"]
+      }
+    },
+    {
+      path: "/themes",
+      name: "themes",
+      component: Themes,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        tags: ["ui"]
+      }
+    },
+    {
+      path: "/icons",
+      name: "icons",
+      component: Icons,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft
+      },
+      children: [
+        {
+          path: "md-icons",
+          name: "md-icons",
+          component: MdIcons,
+          meta: {
+            auth: true,
+            layout: layouts.navLeft,
+            searchable: true,
+            title: "Material Design Icons",
+            tags: ["material design"]
+          }
+        },
+        {
+          path: "flag-icons",
+          name: "flag-icons",
+          component: FlagIcons,
+          meta: {
+            auth: true,
+            layout: layouts.navLeft,
+            searchable: true,
+            title: "Flag Icons",
+            tags: ["list", "ui"]
+          }
+        }
+      ]
+    },
+    {
+      path: "/multi-language",
+      name: "multi-language",
+      component: MultiLanguage,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        tags: ["ui", "translate"]
+      }
+    },
+    {
+      path: "/helper-classes",
+      name: "helper-classes",
+      component: HelperClasses,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        title: "Helper Classes",
+        tags: ["ui"]
+      }
+    },
+    {
+      path: "/typography",
+      name: "typography",
+      component: Typography,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        title: "Typography",
+        tags: ["ui"]
+      }
+    },
+    layout,
+    editors,
+    charts,
+    maps,
+    tables,
+    element,
+    {
+      path: "/profile",
+      name: "profile",
+      component: Profile,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        tags: ["pages"]
+      }
+    },
+    {
+      path: "/invoice",
+      name: "invoice",
+      component: Invoice,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: true,
+        tags: ["pages"]
+      }
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: Login,
+      meta: {
+        layout: layouts.contenOnly
+      }
+    },
+    {
+      path: "/register",
+      name: "register",
+      component: Register,
+      meta: {
+        layout: layouts.contenOnly
+      }
+    },
+    {
+      path: "/forgot-password",
+      name: "forgot-password",
+      component: ForgotPassword,
+      meta: {
+        layout: layouts.contenOnly
+      }
+    },
+    {
+      path: "/logout",
+      beforeEnter(to, from, next) {
+        auth.logout();
+        next({ path: "/login" });
+      }
+    },
+    {
+      path: "/not-found",
+      name: "not-found",
+      component: NotFound,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        tags: ["pages"]
+      }
+    },
+    {
+      path: "/CreateEvent",
+      name: "CreateEvent",
+      component: CreateEvent,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        tags: ["pages"]
+      }
+    },
+    {
+      path: "/CreateSeminar",
+      name: "CreateSeminar",
+      component: CreateSeminar,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        tags: ["pages"]
+      }
+    }
+  ]
+});
 
 
 const l = {

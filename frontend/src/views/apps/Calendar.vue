@@ -52,10 +52,13 @@
 </template>
 
 <script>
+import { createApolloFetch } from "apollo-fetch"
+const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 import moment from 'moment-timezone'
 import $ from 'jquery'
 import 'fullcalendar'
 import 'fullcalendar/dist/fullcalendar.css'
+var event = []
 
 export default {
 	name: 'Calendar',
@@ -129,6 +132,7 @@ export default {
 			}
 		}
 	},
+
 	methods: {
 		closeEventDialog() {
 			this.$refs.form.resetFields()
@@ -217,13 +221,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-@import '../../assets/scss/_variables';
-
-/*.page-calendar {
-	.calendar-wrap {
-		//background: white;
-	}
-}*/
-</style>
 
