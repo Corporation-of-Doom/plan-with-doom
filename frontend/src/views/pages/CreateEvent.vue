@@ -48,7 +48,7 @@
 				</el-time-picker>
 		
 				<p>Capacity Type</p>
-				<el-radio v-model="capacityType" label="FFA">Free for all</el-radio><p>
+				<el-radio v-model="capacityType" label="FFA">Free for all</el-radio>
 				<el-radio v-model="capacityType" label="FCFS_P">First come first serve (physically)</el-radio>
 				<el-radio v-model="capacityType" label="FCFS_E">First come first serve (electronically)</el-radio>
 

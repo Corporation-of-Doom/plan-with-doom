@@ -4,28 +4,28 @@
     <p style="margin:10px;margin-top:0px;text-align:center;">  {{info.event_id}} </p>
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
-        <el-button v-if="followInfo.status" @click="unfollow" type="primary" plain>{{followInfo.following}}</el-button>
-        <el-button v-else @click="follow" type="primary">{{followInfo.follow}}</el-button>
+        <el-button v-if="followInfo.status" @click="unfollow" type="primary" plain title="Unfollow">{{followInfo.following}}</el-button>
+        <el-button v-else @click="follow" type="primary" title="Follow">{{followInfo.follow}}</el-button>
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin-left:10px">
-        <el-button v-if="attendInfo.status" @click="unattend" type="primary" plain>{{attendInfo.attending}}</el-button>
-        <el-button v-else @click="attend" type="primary">{{attendInfo.attend}}</el-button>
+        <el-button v-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
+        <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
     </el-row>
     <el-row type="flex" class="row-bg">
-      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin:10px;">
-      Date: {{info.start_time}} - {{info.end_time}}
-      </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin:10px">
       Location: {{info.location}}
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin:10px;">
+      Date: {{info.start_time}} - {{info.end_time}}
       </el-col>
     </el-row>
     <hr>
     <p>Discription<p>
     <p> {{info.discription}} </p>
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model="activeName" @tab-click="changeTab">
       <el-tab-pane label="News" name="news">
-        <el-card v-for="(announcement,key) in announcements" :key="key" class="box-card" style="margin:10px" shadow="never">
+        <el-card v-for="(announcement,key) in info.announcements" :key="key" class="box-card" style="margin:10px" shadow="never">
         <div slot="header" class="clearfix">
           <span>{{announcement.date_modified}}</span>
         </div>
@@ -34,12 +34,19 @@
         </div>
       </el-card>
       </el-tab-pane>
-      <el-tab-pane label="Organizers" name="organizers" v-for="(organizer,key) in info.organizers" :key="key" >{{organizer.first_name}} {{organizer.last_name}}</el-tab-pane>
+      <el-tab-pane label="Organizers" name="organizers" >
+        <div v-for="(organizer,key) in info.organizers" :key="key">
+          {{organizer.first_name}} {{organizer.last_name}}
+        </div>
+      </el-tab-pane>
     </el-tabs>
   </vue-scroll>
 </template>
 
 <script>
+import { createApolloFetch } from "apollo-fetch"
+const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
+
 export default {
   name: "SeminarPage",
   data() {
@@ -61,77 +68,83 @@ export default {
   },
   methods: {
     follow() {
-      
-      fetch({query: `mutation addUserToSeminar($newUser: EventParticipationInput!) {
-              addUserToEvent(EventParticipation: $newUser)   
-            }`,
-          variables: {
-            newUser: {
-              userid: this.userid,
-              seminarid: this.info.id,
-              participationType: "FOLLOWING"
-            }
+      console.log("in follow")
+      fetch({query: `mutation addreUserToSeminar($newUser: SeminarParticipationInput!) {
+          addUserToSeminar(SeminarParticipation: $newUser)
+        }`,
+        variables: {
+          newUser: {
+            userid: this.userid,
+            seminarid: this.info.id,
+            participationType: "FOLLOWING"
           }
-        })
+        }
+      })
       .then(res =>{
-          console.log(res)
+        console.log(res)
         if(res.data){
           this.followInfo.status = !this.followInfo.status
         }
       })
+      .catch(err =>{
+        console.log(err)
+      })
     },
     attend() {
-      fetch({query: `mutation addUserToSeminar($newUser: EventParticipationInput!) {
-              addUserToEvent(EventParticipation: $newUser)   
-            }`,
-          variables: {
-            newUser: {
-              userid: this.userid,
-              seminarid: this.info.id,
-              participationType: "ATTENDING"
-            }
+      fetch({query: `mutation addreUserToSeminar($newUser: SeminarParticipationInput!) {
+          addUserToSeminar(SeminarParticipation: $newUser)
+        }`,
+        variables: {
+          newUser: {
+            userid: this.userid,
+            seminarid: this.info.id,
+            participationType: "ATTENDING"
           }
-        })
+        }
+      })
       .then(res =>{
+        console.log(res)
         if(res.data){
           this.attendInfo.status = !this.attendInfo.status;     
         }
       })
     },
-    handleClick(tab, event) {
+    changeTab(tab, event) {
         console.log(tab, event);
       },
       unfollow(){
-      fetch({query: `mutation emoveUserFromSeminar($newUser: EventParticipationInput!) {
-              addUserToEvent(EventParticipation: $newUser)   
-            }`,
-          variables: {
-            newUser: {
-              userid: this.userid,
-              seminarid: this.info.id,
-              participationType: "FOLLOWING"
-            }
+      fetch({query: `mutation removeUserFromSeminar($newUser: SeminarParticipationInput!) {
+          removeUserFromSeminar(SeminarParticipation: $newUser)
+        }`,
+        variables: {
+          newUser: {
+            userid: this.userid,
+            seminarid: this.info.id,
+            participationType: "FOLLOWING"
           }
-        })
+        }
+      })
       .then(res =>{
+        console.log(res)
         if(res.data){
           this.followInfo.status = !this.followInfo.status
         }
       })
     },
     unattend(){
-      fetch({query: `mutation removeUserFromSeminar($newUser: EventParticipationInput!) {
-              removeUserToEvent(EventParticipation: $newUser)   
-            }`,
-          variables: {
-            newUser: {
-              userid: this.userid,
-              seminarid: this.info.id,
-              participationType: "ATTENDING"
-            }
+      fetch({query: `mutation removeUserFromSeminar($newUser: SeminarParticipationInput!) {
+          removeUserFromSeminar(SeminarParticipation: $newUser)
+        }`,
+        variables: {
+          newUser: {
+            userid: this.userid,
+            seminarid: this.info.id,
+            participationType: "ATTENDING"
           }
-        })
+        }
+      })
       .then(res =>{
+        console.log(res)
         if(res.data){
           this.attendInfo.status = !this.attendInfo.status;     
         }

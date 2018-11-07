@@ -121,5 +121,6 @@ export default {
 @import '~perfect-scrollbar/css/perfect-scrollbar.css';
 .ps-container {
 	position: relative;
+	overflow: hidden;
 }
 </style>
