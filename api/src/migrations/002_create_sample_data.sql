@@ -58,10 +58,10 @@ insert into Seminar_Wait_list (user_id, seminar_id,date_added) values (3,2, TIME
 
 
 -- 2 Annoucements
-insert into Event_Announcement (event_id, message, date_created, date_modified) values (3,'The end is nigh, remember your wallet',TIMESTAMP '2010-10-31 8:30:00', TIMESTAMP '2010-10-31 8:30:00');
-insert into Event_Announcement (event_id, message, date_created, date_modified) values (3,'Remember your doom',TIMESTAMP '2010-10-31 8:30:00', TIMESTAMP '2010-10-31 8:30:00');
-insert into Seminar_Announcement (seminar_id, message, date_created, date_modified) values (4,'Bug Fixing Party',TIMESTAMP '2010-10-31 8:30:00', TIMESTAMP '2010-10-31 8:30:00');
-insert into Seminar_Announcement (seminar_id, message, date_created, date_modified) values (3,'Reminder to participants to bring laptops',TIMESTAMP '2019-10-23 8:30:00+02', TIMESTAMP '2019-10-23 8:30:00+02');
+insert into Event_Announcement (event_id, message, date_created, date_modified) values (3,'The end is nigh, remember your wallet',TIMESTAMP '2018-10-31 8:30:00', TIMESTAMP '2018-10-31 19:00:00');
+insert into Event_Announcement (event_id, message, date_created, date_modified) values (3,'Remember your doom',TIMESTAMP '2018-10-31 8:30:00', TIMESTAMP '2018-11-01 8:45:00');
+insert into Seminar_Announcement (seminar_id, message, date_created, date_modified) values (4,'Bug Fixing Party',TIMESTAMP '2018-10-31 8:30:00', TIMESTAMP '2018-10-13 8:30:00');
+insert into Seminar_Announcement (seminar_id, message, date_created, date_modified) values (3,'Reminder to participants to bring laptops',TIMESTAMP '2018-10-23 8:30:00+02', TIMESTAMP '2018-10-23 8:30:00+02');
 
 
 -- One user following
