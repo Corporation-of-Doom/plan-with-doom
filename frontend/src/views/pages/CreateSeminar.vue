@@ -63,6 +63,7 @@
 					v-if="capacityType=='FFA'"
 					disabled
 					v-model="capacityNum" 
+					:precision="0"
 					:min="1" 
 					:max="9999">
 				</el-input-number>
@@ -70,6 +71,7 @@
 				<el-input-number
 					v-if="capacityType!='FFA'"
 					v-model="capacityNum" 
+					:precision="0"
 					:min="1" 
 					:max="9999">
 				</el-input-number>
@@ -130,7 +132,7 @@ export default {
 				endDate: '',      	
 				startTime: '',
 				endTime: '',
-				capacityType: '',
+				capacityType: 'FFA',
 				capacityNum: 1,
 				countryInput: '',
 				cityInput: '',
