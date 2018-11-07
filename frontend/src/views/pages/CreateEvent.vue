@@ -53,7 +53,7 @@
 				<el-radio v-model="capacityType" label="FCFS_E">First come first serve (electronically)</el-radio>
 
 				<el-input-number
-					v-if="capacityType==1"
+					v-if="capacityType=='FFA'"
 					disabled
 					v-model="capacityNum" 
 					:precision="0"
@@ -62,7 +62,7 @@
 				</el-input-number>
 
 				<el-input-number
-					v-if="capacityType!=1"
+					v-if="capacityType!='FFA'"
 					v-model="capacityNum" 
 					:precision="0"
 					:min="1" 
