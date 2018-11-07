@@ -2,19 +2,49 @@
 
 <vue-scroll class="page-dashboard">
   <div>
-    <el-tabs type="border-card" style="width:100%">
+    <el-tabs type="border-card" style="width:100%" @tab-click="changeTab">
       <el-tab-pane label="All">
         <add-event/>
         <add-seminar/>
-        <div>
-            <seminar-card v-for="i in 5" :key="i" @click.native="loadEvent"/>
+        <div v-for="(item,key) in currentList" :key="key">
+          <div v-if="item" >
+            <seminar-card v-if="item.event_id" 
+              @click.native="loadSeminar(item.id)"
+                :item="item"
+              />
+            <event-card v-else 
+            @click.native="loadEvent(item.id)"
+            :item="item" /> 
+          </div>
         </div>
       </el-tab-pane>
       <el-tab-pane label="Event">
         <add-event/>
+        <div v-for="(item,key) in currentList" :key="key">
+          <div v-if="item" >
+            <seminar-card v-if="item.event_id" 
+              @click.native="loadSeminar(item.id)"
+                :item="item"
+              />
+            <event-card v-else 
+            @click.native="loadEvent(item.id)"
+            :item="item" /> 
+          </div>
+        </div>
       </el-tab-pane>
       <el-tab-pane label="Seminar">
         <add-seminar/>
+        <div v-for="(item,key) in currentList" :key="key">
+          <div v-if="item" >
+            <seminar-card v-if="item.event_id" 
+              @click.native="loadSeminar(item.id)"
+                :item="item"
+              />
+            <event-card v-else 
+            @click.native="loadEvent(item.id)"
+            :item="item" /> 
+          </div>
+        </div>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -25,25 +55,202 @@
 import seminarCard from '@/components/seminarCard.vue'
 import addEvent from '@/components/addEvent.vue'
 import addSeminar from '@/components/addSeminar.vue'
+import * as moment from 'moment'
+import { createApolloFetch } from "apollo-fetch"
+const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
+
 export default {
   name: 'ManageEventsPage',
    data() {
       return {
         activeName: 'all',
-        filter: "None"
+        filter: "None",
+        currentList: [],
+        userId: this.$store.state.user.id
       };
     },
-    methods: {
-      handleClick(tab, event) {
-        console.log(tab, event);
-      },
-      changeFilterText(command){
-        this.filter = command;
-      },
-      loadEvent(){
-        this.$router.push("event")
+  mounted() {
+    this.getAll()
+  },
+  methods: {
+    getAll(){
+      fetch({
+        query: `{
+          getMyManagingEventsAndSeminars(userID: ${this.userId}) {
+            __typename
+            ... on Event {
+              id
+            }
+            ... on Seminar {
+              id
+            }
+          }
+        }`
+      })
+      .then(res =>{
+        if(res.data){
+          var result = res.data.getMyManagingEventsAndSeminars
+          result.forEach(element => {
+            if (element.__typename === "Seminar") {
+              this.formatSeminar(element.id)
+            } else {
+              this.formatEvent(element.id)
+            }
+          });
+        }
+      })
+      .catch(err =>{
+        console.log(err)
+      })
+    },
+    getEvent(){
+      fetch({
+        query: `{
+          getMyManagingEventsAndSeminars(userID: ${this.userId}) {
+            __typename
+            ... on Event {
+              id
+            }
+          }
+        }`
+      })
+      .then(res =>{
+        if(res.data){
+          res.data.getMyManagingEventsAndSeminars.forEach(event => {
+            if (event.id) {
+              this.formatEvent(event.id)                
+            }
+          })
+        }
+      })
+    },
+    getSeminar(){
+      fetch({
+        query: `{
+          getMyManagingEventsAndSeminars(userID: ${this.userId}) {
+            __typename
+            ... on Seminar {
+              id
+            }
+          }
+        }`
+      })
+      .then(res =>{
+        if(res.data){
+          res.data.getMyManagingEventsAndSeminars.forEach(event => {
+            if (event.id) {
+              this.formatSeminar(event.id)                
+            }
+          })
+        }
+      })
+    },
+    formatSeminar(id){
+      fetch({
+        query: `{
+          getSeminarByID(id: ${id} ) {
+            id
+            start_time
+            end_time
+            name
+            location
+            event_id
+          }
+        }`
+      })
+      .then(res =>{
+        if(res.data){
+          var info = res.data.getSeminarByID;
+          info.start_time =  moment(parseInt(info.start_time,10)).format("MMMM Do YYYY, h:mm a")
+          info.end_time =  moment(parseInt(info.end_time,10)).format("MMMM Do YYYY, h:mm a")
+          fetch({
+              query: `{
+                getEventByID(id:${info.event_id}){
+                  name
+                }
+              }`
+            })
+            .then(nameRes => {
+              if(nameRes.data){
+                info.event_id = nameRes.data.getEventByID.name
+              } else {
+                info.event_id = "Event Name Not Found"
+              }
+              this.currentList.push(info)
+            })
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    },
+    formatEvent(id){
+      fetch({
+        query: `{
+          getEventByID(id: ${id} ) {
+            id
+            start_time
+            end_time
+            name
+            creator_id
+            event_location: location
+          }
+        }`
+      })
+      .then(res =>{
+        if(res.data){
+          var info = res.data.getEventByID;
+          info.start_time =  moment(parseInt(info.start_time,10)).format("MMMM Do YYYY, h:mm a")
+          info.end_time =  moment(parseInt(info.end_time,10)).format("MMMM Do YYYY, h:mm a")
+          fetch({
+            query: `{
+              getEventByID(id:${info.id}){
+                organizers {
+                  id
+                  first_name
+                  middle_name
+                  last_name
+                }
+              }
+            }`
+          })
+          .then(organizerRes => {
+            if(organizerRes.data){
+              var result = organizerRes.data.getEventByID.organizers.filter(organizer => organizer.id === info.creator_id)[0]
+              info.creator_id = null
+              if (result.first_name) {
+                info.creator_id = result.first_name
+              }
+              if (result.middle_name) {
+                info.creator_id +=  " " + result.middle_name
+              }
+              if (result.last_name) {
+                info.creator_id +=  " " + result.last_name
+              }
+              this.currentList.push(info)
+            }
+          })
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    },
+    changeTab(tab) {
+      this.currentList = []
+      if (tab.label === "All") {
+        this.getAll()
+      } else if (tab.label === "Event") {
+        this.getEvent()
+      } else {
+        this.getSeminar()
       }
     },
+    
+    loadEvent(){
+      // this.$router.push("event")
+    }
+  },
   components: {
     seminarCard, 
     addEvent,
