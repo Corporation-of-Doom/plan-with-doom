@@ -1,7 +1,10 @@
 <template>
-	<vue-scroll class="page-profile">
+	<vue-scroll style="overflow:hidden">
 		<div class="create-event">
 			<div class="eventForm">
+
+				<h1>Creating an event</h1>
+
 
 				<!-- event image allow user to upload a photo -->
 				<div class="image-cropper" id="eventImg">
@@ -11,33 +14,43 @@
 				<p>Name</p>
 				<el-input v-model="eventName" placeholder="Ex. Convention of Doom"></el-input>
 
-				<p>Date</p>
+				<p>Start Date</p>
+
 				<el-date-picker
-					is-range
-					v-model="dateRange"
-					type="daterange"
-					align="right"
+					v-model="startDate"
 					value-format="yyyy-MM-dd"
-					unlink-panels
-					range-separator="To"
-					start-placeholder="Start date"
-					end-placeholder="End date">
+					type="date"
+					placeholder="Start Date">
+					clearable
 				</el-date-picker>
 
-				<p>Time</p>
 				<el-time-picker
-					is-range
-					format="HH:mm"
-					v-model="timeRange"
-					range-separator="To"
-					start-placeholder="Start time"
-					end-placeholder="End time">
+					v-model="startTime"
+					format="hh:mm A"
+					clearable
+					placeholder="Start Time">
+				</el-time-picker>
+
+				<p>End Date</p>
+				<el-date-picker
+					v-model="endDate"
+					value-format="yyyy-MM-dd"
+					type="date"
+					placeholder="End Date">
+					clearable
+				</el-date-picker>
+
+				<el-time-picker
+					v-model="endTime"
+					format="hh:mm A"
+					clearable
+					placeholder="End Time">
 				</el-time-picker>
 		
 				<p>Capacity Type</p>
-				<el-radio v-model="capacityType" label=1>Free for all</el-radio>
-				<el-radio v-model="capacityType" label=2>First come first serve (physically)</el-radio>
-				<el-radio v-model="capacityType" label=3>First come first serve (electronically)</el-radio>
+				<el-radio v-model="capacityType" label="FFA">Free for all</el-radio>
+				<el-radio v-model="capacityType" label="FCFS_P">First come first serve (physically)</el-radio>
+				<el-radio v-model="capacityType" label="FCFS_E">First come first serve (electronically)</el-radio>
 
 				<el-input-number
 					v-if="capacityType==1"
@@ -80,7 +93,7 @@
 					filterable
 					:titles="['Available', 'Selected']"
 					filter-placeholder="Available organizers"
-					v-model="organizerList"
+					v-model="selectedOrganizers"
 					:data="transferData">
 				</el-transfer>
 
@@ -96,73 +109,20 @@
 </template>
 
 <script>
-// some JS file
-import store from '../../store'; // path to your Vuex store
-let userid = store.state.user.id;
-// do stuff with user
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
-var availableOrganizers = []
-var organizerid = []
-
-	fetch({
-		query: `{
-				searchUsersByName(searchString: "") {
-					id
-					first_name
-					middle_name
-					last_name
-				}
-			}`
-		}).then(res => {
-		if (res.data) {
-			
-			console.log(res.data.searchUsersByName)
-			
-			res.data.searchUsersByName.forEach(element => {
-				
-
-				if (userid !== element.id) {
-					// console.log("user id: "+ userid + "  " + "element.id: " + element.id);
-					availableOrganizers.push(element.first_name+" "+element.last_name)	
-					organizerid.push(element.id)
-				}
-			
-			});
-
-		} else {
-			console.log(res.errors)
-		}		
-	}).catch(err => {
-		console.log(err);
-	}); 
-
-
+console.clear();
 export default {
   	name: 'CreateEvent',
 		
 		data() {
-
-			var populateTranfer = _ => {
-				var data = []
-				var initials = availableOrganizers
-				
-				availableOrganizers.forEach((names, index) => {
-					
-					data.push({
-						label: names,
-						key: index,
-						initial: initials[index]
-					});
-				});
-				return data;
-      		};
-
 			return {
 				user: this.$store.state.user,
 				eventName: '',
-				dateRange: '',      	
-				timeRange: '',
+				startDate: '',
+				endDate: '',
+				startTime: '',
+				endTime: '',
 				capacityType: '',
 				capacityNum: 1,
 				countryInput: '',
@@ -171,53 +131,79 @@ export default {
 				addressInput: '',
 				urlInput: '',
 				descriptionInput: '',
-				transferData: populateTranfer(),
-				organizerList: []			
+				transferData: [],
+				selectedOrganizers: []			
 			};
+		},
+
+		mounted() {
+			// fetches a list of organizers to be displayed in the transfer component
+				fetch({
+					query: `{
+							searchUsersByName(searchString: "") {
+								id
+								first_name
+								middle_name
+								last_name
+							}
+						}`
+					}).then(res => {
+					if (res.data) {
+
+						// store all the organizers name into a variable
+						// you shouldn't be allowed to choose yourself as a user
+						res.data.searchUsersByName.forEach(element => {
+							if (this.user.id !== element.id) {
+				
+								this.transferData.push({
+									label: element.first_name+" "+element.last_name,
+									key: element.id,
+								})
+							}
+						});
+						
+					} else {
+						console.log(res.errors)
+					}		
+				}).catch(err => {
+					console.log(err);
+				}); 
 		},
 	
     methods: {
 		onSubmit: function(event) {
 
-			if (this.eventName && this.dateRange && this.timeRange && this.capacityType)
+			if (this.eventName && 
+			this.startDate && this.endDate && 
+			this.startTime && this.endTime &&
+			this.capacityType)
 			{					
-				var temp = this.dateRange.toString().split(",")
-				var start_time = temp[0]
-				var end_time = temp[1]
+				var temp = ''
 
-				var times = this.timeRange.toString().split(' ')
-				temp = times[4].split(':')
-				start_time = start_time + ' ' + temp[0] + ':' + temp[1]
-				temp = times[12].split(':')
-				end_time = end_time + ' ' + temp[0] + ':' + temp[1]
-			
-				temp = this.capacityType
-				var capacity_type = ''
-				var capacity_num = null
-
-				if (temp == 1) {
-					capacity_type = 'FFA'
-				} else if (temp == 2) {
-					capacity_type = 'FCFS_P'
-					capacity_num = this.capacityNum
-				} else if (temp == 3) {
-					capacity_type = 'FCFS_E'
-					capacity_num = this.capacityNum
-				}
-					
-				// console.log('Event name: ' + this.eventName + '\nStart date: ' + start_time + '\nEnd date: ' + end_time + '\nCapacity type: ' + capacity_type + '\nCapacity number: ' + capacity_num)
+				// parse the start time
+				temp = this.startTime.toString().split(" ")
+				temp = temp[4].toString().split(":")
+				var startT = temp[0] + ":" + temp[1]
 				
-				var selectedOrganizer = []
-				console.log("organizerListlength: " + this.organizerList.length)
+				// parse the end time
+				temp = this.endTime.toString().split(" ")
+				temp = temp[4].toString().split(":")
+				var endT = temp[0] + ":" + temp[1]
 
-				for (var i = 0; i < this.organizerList.length; i++) {
-					console.log(i + ": " + this.organizerList[i] )
-					selectedOrganizer.push(organizerid[this.organizerList[i]])
-				}
+				// set the number of capacity to null if it is FFA
+				if (this.capacityType == "FFA") {
+					this.capacityNum = null
+				} 
 
-				console.log("selectedOrganizer: " + selectedOrganizer)
-				// selectedOrganizer.push(this.user.id)
+				// Add yourself as the organizer
+				// this.selectedOrganizers.push(this.user.id)
 
+				console.log("name: " + this.eventName)
+				console.log("start_time: " + this.startDate + " " + startT)
+				console.log("end_time: " + this.endDate + " " + endT)
+				console.log("capacity_type: " + this.capacityType)
+				console.log("max_capacity: " + this.capacityNum)
+				console.log("organizer_ids: " + this.selectedOrganizers)
 
 				fetch({
 					query: `mutation createEvent($event: EventInput!){
@@ -230,12 +216,12 @@ export default {
 							creator_id: this.user.id,
 							name: this.eventName,
 							description: this.descriptionInput,
-							start_time: start_time,
-							end_time: end_time,
-							capacity_type: capacity_type,
-							max_capacity: capacity_num,
+							start_time: this.startDate + " " + startT,
+							end_time: this.endDate + " " + endT,
+							capacity_type: this.capacityType,
+							max_capacity: this.capacityNum,
 							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput,
-							organizer_ids: selectedOrganizer
+							organizer_ids: this.selectedOrganizers
 						}
 					}			
 				}).then(res => {
@@ -250,18 +236,43 @@ export default {
 				});
 			}
 
-			if (!this.eventName)
-				alert('Please enter a name for your event!')
+			// Make sure the user enter information in the required fields
+			var errorMsg = 'The following fields are missing: \n'
+			var errorVal = 0
+	
+			if (!this.eventName) {
+				errorMsg = errorMsg + 'event name\n '
+				errorVal = 1 
+			}
 
-			if (!this.dateRange)
-				alert('Please select a date for your event!')
+			if (!this.startDate) {
+				errorMsg = errorMsg + 'start date\n '
+				errorVal = 1
+			}
 
-			if (!this.timeRange)
-				alert('Please select a time for your event!')	
+			if (!this.startTime) {
+				errorMsg = errorMsg + 'start time\n '
+				errorVal = 1
+			}
 
-			if (!this.capacityType)
-				alert('Please select a capacity type for your event!')
-		
+			if (!this.endDate) {
+				errorMsg = errorMsg + 'end date\n '
+				errorVal = 1
+			}
+
+			if (!this.endTime) {
+				errorMsg = errorMsg + 'end time\n '
+				errorVal = 1
+			}
+
+			if (!this.capacityType) {
+				errorMsg = errorMsg + 'capacity type\n '
+				errorVal = 1
+			}
+
+			if (errorVal == 1) {
+				alert(errorMsg)
+			}
 		},
 	  
 		onCancel() {

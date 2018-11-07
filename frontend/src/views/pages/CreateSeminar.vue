@@ -1,5 +1,5 @@
 <template>
-		<vue-scroll style="overflow:hidden">
+	<vue-scroll style="overflow:hidden">
 	<div class="create-seminar">
 			<div class="seminarForm">
 
@@ -112,7 +112,7 @@
 			<el-button type="danger" @click="onCancel" round>Cancel</el-button>
 	
 	</div>	
-		</vue-scroll>
+	</vue-scroll>
 </template>
 
 <script>
