@@ -64,6 +64,7 @@
 					disabled
 					v-model="capacityNum" 
 					:precision="0"
+
 					:min="1" 
 					:max="9999">
 				</el-input-number>
@@ -133,6 +134,7 @@ export default {
 				startTime: '',
 				endTime: '',
 				capacityType: 'FFA',
+
 				capacityNum: 1,
 				countryInput: '',
 				cityInput: '',

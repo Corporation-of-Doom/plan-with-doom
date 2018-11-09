@@ -126,6 +126,7 @@ export default {
 				startTime: '',
 				endTime: '',
 				capacityType: 'FFA',
+
 				capacityNum: 1,
 				countryInput: '',
 				cityInput: '',

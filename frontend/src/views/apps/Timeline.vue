@@ -41,6 +41,7 @@ import * as moment from 'moment'
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 console.clear()
+
 export default {
 	name: 'TimelinePage',
 	components: {
@@ -55,6 +56,7 @@ export default {
 		return {
 			user: this.$store.state.user,
 			news: []
+
 		}
 	},
 
@@ -93,6 +95,8 @@ export default {
 			} else {
 				console.log(res.errors)
 			}
+	
+
 		}).catch(err => {
 			console.log(err);
 		});
@@ -102,6 +106,7 @@ export default {
 	// methods: {
 
 	// }
+
 }
 </script>
 
