@@ -71,7 +71,21 @@ export default {
 			variables: {ID: this.user.id}
 		}).then(res => {
 			if (res.data) {
-				this.managingEvents = res.data.getMyManagingEventsAndSeminars
+				for (var i = 0; i < res.data.getMyAnnouncements.length; i++) {
+ 					res.data.getMyAnnouncements[i].date_modified = moment(parseInt(res.data.getMyAnnouncements[i].date_modified,10)).format("MMMM Do YYYY, h:mm a")
+					
+					this.news.push({
+						name: res.data.getMyAnnouncements[i].type_name,
+						message: res.data.getMyAnnouncements[i].message,
+						timestamp: res.data.getMyAnnouncements[i].date_modified,
+						type: res.data.getMyAnnouncements[i].type
+					});
+ 					console.log("news[" + i + "]: \n");
+					console.log("	" + this.news[i].name);
+					console.log("	" + this.news[i].message);
+					console.log("	" + this.news[i].timestamp);
+					console.log("	" + this.news[i].type);
+				}
 			} else {
 				console.log(res.errors)
 			}		
