@@ -55,6 +55,7 @@
 import seminarCard from '@/components/seminarCard.vue'
 import addEvent from '@/components/addEvent.vue'
 import addSeminar from '@/components/addSeminar.vue'
+import {loadSeminars,loadEvents} from './helper'
 import * as moment from 'moment'
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
@@ -66,7 +67,7 @@ export default {
         activeName: 'all',
         filter: "None",
         currentList: [],
-        userId: this.$store.state.user.id
+        user: this.$store.state.user
       };
     },
   mounted() {
@@ -76,7 +77,7 @@ export default {
     getAll(){
       fetch({
         query: `{
-          getMyManagingEventsAndSeminars(userID: ${this.userId}) {
+          getMyManagingEventsAndSeminars(userID: ${this.user.id}) {
             __typename
             ... on Event {
               id
@@ -106,7 +107,7 @@ export default {
     getEvent(){
       fetch({
         query: `{
-          getMyManagingEventsAndSeminars(userID: ${this.userId}) {
+          getMyManagingEventsAndSeminars(userID: ${this.user.id}) {
             __typename
             ... on Event {
               id
@@ -127,7 +128,7 @@ export default {
     getSeminar(){
       fetch({
         query: `{
-          getMyManagingEventsAndSeminars(userID: ${this.userId}) {
+          getMyManagingEventsAndSeminars(userID: ${this.user.id}) {
             __typename
             ... on Seminar {
               id
@@ -247,9 +248,24 @@ export default {
       }
     },
     
-    loadEvent(){
-      // this.$router.push("event")
-    }
+    loadEvent(id){
+      loadEvents(id).then(function(result) {
+        if (result){
+          this.$router.push("event")
+        } else{
+          console.log("something went wrong")
+        }
+      }.bind(this))
+    },
+    loadSeminar(id){
+      loadSeminars(id).then(function(result) {
+        if (result){
+          this.$router.push("seminar")
+        } else{
+          console.log("something went wrong")
+        }
+      }.bind(this))
+    },
   },
   components: {
     seminarCard, 

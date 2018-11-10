@@ -1,14 +1,17 @@
 <template> 
   <vue-scroll style="background:white;">
     <h1 style="margin-bottom:5px; margin-top:20px;text-align:center;">{{info.name}} </h1>
-    <p style="margin:10px;margin-top:0px;text-align:center;">  {{info.event_id}} </p>
+    <p style="margin:10px;margin-top:0px;text-align:center;">  {{info.event_name}} </p>
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
-        <el-button v-if="followInfo.status" @click="unfollow" type="primary" plain title="Unfollow">{{followInfo.following}}</el-button>
+        <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Event </el-button>
+        <el-button v-else-if="followInfo.status" @click="unfollow" type="primary" plain title="Unfollow">{{followInfo.following}}</el-button>
         <el-button v-else @click="follow" type="primary" title="Follow">{{followInfo.follow}}</el-button>
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin-left:10px">
-        <el-button v-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
+        <el-button v-if="hideAttend" @click="attend" type="primary" title="Must attend the event" disabled>{{attendInfo.attend}}</el-button>
+        <el-button v-else-if="manageInfo.status" title="Announcement" type="primary"> {{manageInfo.announcement}} </el-button>
+        <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
         <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
     </el-row>
@@ -17,7 +20,8 @@
       Location: {{info.location}}
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin:10px;">
-      Date: {{info.start_time}} - {{info.end_time}}
+      <p>Start Date: {{info.start_time}}</p>
+      <p>End Date: {{info.end_time}}</p>
       </el-col>
     </el-row>
     <hr>
@@ -45,6 +49,7 @@
 
 <script>
 import { createApolloFetch } from "apollo-fetch"
+import {followAndAttend, unfollowAndUnattend} from './helper'
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
 export default {
@@ -60,7 +65,13 @@ export default {
         status: this.$store.state.seminar.attend,
         attend: "Attend",
         attending: "Attending"
+      }, 
+      manageInfo: {
+        status: this.$store.state.seminar.manage,
+        edit: "Edit",
+        announcement: "Announcment"
       },
+      hideAttend: this.$store.state.seminar.hideAttend,
       activeName:'news',
       info: this.$store.state.seminar,
       userid:this.$store.state.user.id
@@ -68,87 +79,43 @@ export default {
   },
   methods: {
     follow() {
-      console.log("in follow")
-      fetch({query: `mutation addreUserToSeminar($newUser: SeminarParticipationInput!) {
-          addUserToSeminar(SeminarParticipation: $newUser)
-        }`,
-        variables: {
-          newUser: {
-            userid: this.userid,
-            seminarid: this.info.id,
-            participationType: "FOLLOWING"
-          }
+      followAndAttend('Seminar', 'FOLLOWING').then(function(result) {
+        if (result){
+          this.followInfo.status = true
+        } else{
+          this.followInfo.status = false
         }
-      })
-      .then(res =>{
-        console.log(res)
-        if(res.data){
-          this.followInfo.status = !this.followInfo.status
-        }
-      })
-      .catch(err =>{
-        console.log(err)
-      })
+      }.bind(this))
     },
     attend() {
-      fetch({query: `mutation addreUserToSeminar($newUser: SeminarParticipationInput!) {
-          addUserToSeminar(SeminarParticipation: $newUser)
-        }`,
-        variables: {
-          newUser: {
-            userid: this.userid,
-            seminarid: this.info.id,
-            participationType: "ATTENDING"
-          }
+      followAndAttend('Seminar', 'ATTENDING').then(function(result) {
+        if (result){
+          this.attendInfo.status = true
+        } else{
+          this.attendInfo.status = false
         }
-      })
-      .then(res =>{
-        console.log(res)
-        if(res.data){
-          this.attendInfo.status = !this.attendInfo.status;     
-        }
-      })
+      }.bind(this))
     },
     changeTab(tab, event) {
         console.log(tab, event);
       },
-      unfollow(){
-      fetch({query: `mutation removeUserFromSeminar($newUser: SeminarParticipationInput!) {
-          removeUserFromSeminar(SeminarParticipation: $newUser)
-        }`,
-        variables: {
-          newUser: {
-            userid: this.userid,
-            seminarid: this.info.id,
-            participationType: "FOLLOWING"
-          }
+    unfollow(){
+      unfollowAndUnattend('Seminar', 'FOLLOWING').then(function(result) {
+        if (result){
+          this.followInfo.status = false
+        } else{
+          this.followInfo.status = true
         }
-      })
-      .then(res =>{
-        console.log(res)
-        if(res.data){
-          this.followInfo.status = !this.followInfo.status
-        }
-      })
+      }.bind(this))
     },
     unattend(){
-      fetch({query: `mutation removeUserFromSeminar($newUser: SeminarParticipationInput!) {
-          removeUserFromSeminar(SeminarParticipation: $newUser)
-        }`,
-        variables: {
-          newUser: {
-            userid: this.userid,
-            seminarid: this.info.id,
-            participationType: "ATTENDING"
-          }
+      unfollowAndUnattend('Seminar', 'ATTENDING').then(function(result) {
+        if (result){
+          this.attendInfo.status = false
+        } else{
+          this.attendInfo.status = true
         }
-      })
-      .then(res =>{
-        console.log(res)
-        if(res.data){
-          this.attendInfo.status = !this.attendInfo.status;     
-        }
-      })
+      }.bind(this))
     }
   },
   components: {}
