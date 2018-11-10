@@ -1,19 +1,26 @@
 <template>
 	<vue-scroll style="overflow:hidden">
-		<div class="create-event">
-			<div class="eventForm">
+	<div class="create-seminar">
+			<div class="seminarForm">
 
-				<h1>Creating an event</h1>
+				<h1>Creating an seminar</h1>
 
-
-				<!-- event image allow user to upload a photo -->
-				<div class="image-cropper" id="eventImg">
-					<img src="http://www.electricvelocity.com.au/upload/blogs/smart-e-bike-side_2.jpg" class="rounded" />
+				<div class="image-cropper" id="seminarImg">
+					<img src="@/assets/images/doggo.jpeg" class="rounded" />
 				</div>
 				
-				<p>Name</p>
-				<el-input v-model="eventName" placeholder="Ex. Convention of Doom"></el-input>
+				<p>Seminar Name</p>
+				<el-input v-model="seminarName" placeholder="Ex. Seminar of Doom"></el-input>
 
+                <p>Related Event</p>
+
+				<el-select v-model="eventSelected" placeholder="Select event">
+					<el-option
+					v-for="(i) in managingEvents" :key="i.id" :value="i.id" :label="i.name">
+					{{ i.name }}
+					</el-option>
+				</el-select>
+			
 				<p>Start Date</p>
 
 				<el-date-picker
@@ -57,6 +64,7 @@
 					disabled
 					v-model="capacityNum" 
 					:precision="0"
+
 					:min="1" 
 					:max="9999">
 				</el-input-number>
@@ -90,23 +98,23 @@
 					v-model="descriptionInput">
 				</el-input>
 
-				<p>Add Event Organizer(s)</p>
+				<p>Add Seminar Organizer(s)</p>
 				<el-transfer
 					filterable
 					:titles="['Available', 'Selected']"
 					filter-placeholder="Available organizers"
 					v-model="selectedOrganizers"
-					:data="transferData">
-				</el-transfer>
+					:data="transferData"
+				></el-transfer>
 
 			</div>
 
 			<!-- buttons -->
 			<br>
-			<el-button type="success" v-on:click="onSubmit" round >Create Event</el-button>	
+			<el-button type="success" v-on:click="onSubmit" round >Create Seminar</el-button>	
 			<el-button type="danger" @click="onCancel" round>Cancel</el-button>
 	
-		</div>	
+	</div>	
 	</vue-scroll>
 </template>
 
@@ -115,14 +123,14 @@ import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 console.clear();
 export default {
-  	name: 'CreateEvent',
-		
+	  name: 'CreateSeminar',
+	  
 		data() {
 			return {
 				user: this.$store.state.user,
-				eventName: '',
+				seminarName: '',
 				startDate: '',
-				endDate: '',
+				endDate: '',      	
 				startTime: '',
 				endTime: '',
 				capacityType: 'FFA',
@@ -135,12 +143,14 @@ export default {
 				urlInput: '',
 				descriptionInput: '',
 				transferData: [],
-				selectedOrganizers: []			
+                selectedOrganizers: [],	
+				managingEvents: [],
+				eventSelected: null
 			};
 		},
-
 		mounted() {
-			// fetches a list of organizers to be displayed in the transfer component
+
+				// fetches a list of organizers to be displayed in the transfer component
 				fetch({
 					query: `{
 							searchUsersByName(searchString: "") {
@@ -171,16 +181,36 @@ export default {
 				}).catch(err => {
 					console.log(err);
 				}); 
+			
+			// fetches the logged in user's managing events
+            fetch({
+                query: `query getMyManagingEventsAndSeminars($ID: Int!){
+  							getMyManagingEventsAndSeminars(userID: $ID, type: "event") {
+    							... on Event {
+      								id
+      								name
+    							}
+  							}
+						}`, variables: {ID: this.user.id}
+            }).then(res => {
+                if (res.data) {
+					this.managingEvents = res.data.getMyManagingEventsAndSeminars
+                } else {
+                    console.log(res.errors)
+                }		
+            }).catch(err => {
+                console.log(err);
+            });
 		},
-	
+
     methods: {
 		onSubmit: function(event) {
-
-			if (this.eventName && 
+			
+			if (this.seminarName && 
 			this.startDate && this.endDate && 
 			this.startTime && this.endTime &&
-			this.capacityType)
-			{					
+			this.capacityType && this.eventSelected !==null)
+			{				
 				var temp = ''
 
 				// parse the start time
@@ -199,9 +229,10 @@ export default {
 				} 
 
 				// Add yourself as the organizer
-				// this.selectedOrganizers.push(this.user.id)
+				this.selectedOrganizers.push(this.user.id)
 
-				console.log("name: " + this.eventName)
+				console.log("event_id: " + this.eventSelected)
+				console.log("name: " + this.seminarName)
 				console.log("start_time: " + this.startDate + " " + startT)
 				console.log("end_time: " + this.endDate + " " + endT)
 				console.log("capacity_type: " + this.capacityType)
@@ -209,15 +240,15 @@ export default {
 				console.log("organizer_ids: " + this.selectedOrganizers)
 
 				fetch({
-					query: `mutation createEvent($event: EventInput!){
-						createEvent(event: $event){
+					query: `mutation createSeminar($seminar: SeminarInput!){
+						createSeminar(seminar: $seminar){
 						id
 						}
 					}`,
 					variables: {
-						event: {		
-							creator_id: this.user.id,
-							name: this.eventName,
+						seminar: {		
+							event_id: this.eventSelected,
+							name: this.seminarName,
 							description: this.descriptionInput,
 							start_time: this.startDate + " " + startT,
 							end_time: this.endDate + " " + endT,
@@ -226,10 +257,11 @@ export default {
 							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput,
 							organizer_ids: this.selectedOrganizers
 						}
-					}			
+					}	
+				
 				}).then(res => {
 					if (res.data) {
-						alert("Event created successfully!")
+						alert("Seminar created successfully!")
 						this.$router.push('ManageEvents')
 					} else {
 						console.log(res.errors)
@@ -243,9 +275,14 @@ export default {
 			var errorMsg = 'The following fields are missing: \n'
 			var errorVal = 0
 	
-			if (!this.eventName) {
-				errorMsg = errorMsg + 'event name\n '
+			if (!this.seminarName) {
+				errorMsg = errorMsg + 'seminar name\n '
 				errorVal = 1 
+			}
+
+			if (this.eventSelected === null) {
+				errorMsg = errorMsg + 'event\n '
+				errorVal = 1
 			}
 
 			if (!this.startDate) {
@@ -279,7 +316,7 @@ export default {
 		},
 	  
 		onCancel() {
-			this.$confirm('The event information will be discarded. Continue?', 'Warning', {
+			this.$confirm('The seminar information will be discarded. Continue?', 'Warning', {
 				confirmButtonText: 'OK',
 				cancelButtonText: 'Cancel',
 				type: 'warning',
@@ -295,7 +332,8 @@ export default {
 					message: 'Delete canceled'
 				});
 			});
-		}
+        },
+        
 	} //METHODS
   };
 
@@ -319,7 +357,7 @@ img {
     height: 100%;
 }
 
-.event-name {
+.seminar-name {
 	position: relative;
 }
 

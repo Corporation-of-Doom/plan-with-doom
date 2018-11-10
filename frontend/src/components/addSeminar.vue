@@ -1,5 +1,5 @@
 <template>
-  <el-card @click.native="createEvent" class="box-card" style="margin:10px; text-align:center;" shadow="hover" >
+  <el-card @click.native="createSeminar" class="box-card" style="margin:10px; text-align:center;" shadow="hover" >
     <div >
         Add New Seminar
     </div>
@@ -16,8 +16,8 @@ export default {
 		}
 	},
 	methods: {
-		createEvent() {
-			this.$router.push('not-found')
+		createSeminar() {
+			this.$router.push('CreateSeminar')
 		},
 	},
 }
