@@ -211,6 +211,15 @@ const rootResolvers = {
     picture_path: ({ picture_path }) => picture_path,
     announcements: ({ announcements }) => announcements,
     organizers: ({ organizers }) => organizers
+  },
+  Announcement: {
+    id: ({ id }) => id,
+    type_name: ({ type_name }) => type_name,
+    type_id: ({ type_id }) => type_id,
+    message: ({ message }) => message,
+    date_created: ({ date_created }) => date_created,
+    date_modified: ({ date_modified }) => date_modified,
+    type: ({ type }) => type
   }
 };
 
