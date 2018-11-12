@@ -324,6 +324,7 @@ export default {
 					type: 'success',
 					message: 'Delete completed'
 				});
+				this.$router.push('ManageEvents')
 			}).catch(() => {
 				this.$message({
 					type: 'info',
