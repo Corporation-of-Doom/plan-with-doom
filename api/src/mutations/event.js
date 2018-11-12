@@ -14,6 +14,15 @@ async function insertNewEvent(eventInput) {
     organizer_ids
   } = eventInput;
 
+  const event_start_time = new Date(start_time);
+  const event_end_time = new Date(end_time);
+  if (event_start_time > event_end_time) {
+    console.log("Invalid Start Time: Event cannot start after Event ends");
+    return new Error(
+      "Unable to create a Event: Invalid Start Time: Event cannot start after Event ends"
+    );
+  }
+
   if (capacity_type === "FFA") {
     max_capacity = null;
   }
