@@ -1,29 +1,32 @@
 <template>
 	<vue-scroll class="page-profile" id="affix-container">
-		<div class="card-base card-shadow--medium identity" id="boundary">
-			<div class="cover"></div>
-			<!--<div class="username" v-affix="{parentid: 'affix-container', boundaryid: '', delay:600, offset:0, enable:() => affixEnabled}">-->
-			<div class="username">
-				<div class="cover-small"></div>
-				<div class="avatar-small"><img src="@/assets/images/avatar.jpg" alt="avatar"></div>
-				<span>{{username}}</span>
-				<div class="colors-box">
-					<div v-for="i in 5" :key="i" :class="{'color':true, 'active':colorActive}" :style="{'background':color}"></div>
-				</div>
-			</div>
-			<div class="avatar"><img src="@/assets/images/avatar.jpg" alt="avatar"></div>
-			<img src="@/assets/images/cover-2.jpg" id="color-thief" class="color-thief" alt="profile cover">
-		</div>
+		<el-card shadow="always" style="text-align:center;padding:20px;margin-bottom:10px">
+			<el-col>
+				<font size="+2">{{user.first_name}} {{user.middle_name}} {{user.last_name}}</font>
+				<p v-if="user.organization"> {{user.organization}} </p>
+				<el-row v-if="user.phone_number && user.email">
+					<el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:left">
+						<p placeholder="email@email.com">Email: {{user.email}}</p>
+					</el-col>
+					<el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right">
+						<p placeholder="+1 xxx xxx xxxx">Phone: {{user.phone_number}}</p>
+					</el-col>
+				</el-row>
+				<p v-else-if="user.email" placeholder="email@email.com">Email: {{user.email}}</p>
+				<p v-else-if="user.phone_number" placeholder="+1 xxx xxx xxxx">Phone: {{user.phone_number}}</p>
+				<i class="mdi mdi-linkedin-box"></i>
+				<i class="mdi mdi-twitter-box"></i>
+				<i class="mdi mdi-facebook-box"></i>
+				<i class="mdi mdi-instagram"></i>
+			</el-col>
+		</el-card>
+		
 		<div class="card-base card-shadow--medium info bg-white black-text">
 			<el-tabs v-model="activeTab">
-				<el-tab-pane label="Timeline" name="timeline">
-					<profile-timeline></profile-timeline>
-				</el-tab-pane>
-				<el-tab-pane label="Info" name="info">
+				<!-- <el-tab-pane label="Public Profile" name="profile">
+				</el-tab-pane> -->
+				<el-tab-pane label="Personal Infomation" name="info">
 					<profile-edit></profile-edit>
-				</el-tab-pane>
-				<el-tab-pane label="Photo" name="photo">
-					<profile-gallery></profile-gallery>
 				</el-tab-pane>
 			</el-tabs>
 		</div>
@@ -41,36 +44,14 @@ export default {
 	name: 'Profile',
 	data() {
 		return {
-			username: 'Aurora Shenton',
+			user:this.$store.state.user,
 			colorActive: false,
 			color: 'white',
-			activeTab: 'timeline',
+			activeTab: 'info',
 			affixEnabled: true
 		}
 	},
 	methods: {
-		resizeAffixEnabled() {
-			if(window.innerWidth <= 768) {
-				this.affixEnabled = false	
-			} else {
-				this.affixEnabled = true	
-			}
-		}
-	},
-	mounted() {
-		var colorThief = new ColorThief();
-		setTimeout(()=>{
-			let rgb = colorThief.getColor(document.getElementById('color-thief'))
-			//console.log('Profile mounted', rgb)
-			this.colorActive = true
-			this.color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`
-		}, 1000)
-
-		this.resizeAffixEnabled();
-		window.addEventListener('resize', this.resizeAffixEnabled);
-	},
-	beforeDestroy() {
-		window.removeEventListener('resize', this.resizeAffixEnabled);
 	},
 	components: {
 		Affix,
