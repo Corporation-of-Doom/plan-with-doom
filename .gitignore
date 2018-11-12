@@ -1,3 +1,4 @@
 api/node_modules/
 api/package-lock.json
+frontend/package-lock.json
 .DS_store
