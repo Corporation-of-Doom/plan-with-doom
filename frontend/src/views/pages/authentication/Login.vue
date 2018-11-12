@@ -134,14 +134,18 @@ export default {
                 .then(res => {
                   if (res.data){
                     user.manage = []
-                    res.data.getMyManagingEventsAndSeminars.forEach(element => {
-                      if (element.creator_id === user.id) {
-                        user.manage.push(element)
-                      } else if (element.__typename === "Seminar") {
-                        user.manage.push(element)
-                      }
-                    })
-                    console.log(user.manage)
+                    user.associate = []
+                      console.log(res.data.getMyManagingEventsAndSeminars)
+                    if(res.data.getMyManagingEventsAndSeminars.length > 0){
+                      user.associate = res.data.getMyManagingEventsAndSeminars
+                      res.data.getMyManagingEventsAndSeminars.forEach(element => {
+                        if (element.creator_id === user.id) {
+                          user.manage.push(element)
+                        } else if (element.__typename === "Seminar") {
+                          user.manage.push(element)
+                        }
+                      })
+                    }
                   } else {
                     user.manage = []
                     console.log("no manging")

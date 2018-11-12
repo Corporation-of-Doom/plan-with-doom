@@ -74,7 +74,8 @@ export default {
     },
   mounted() {
     this.getAll()
-    var res = this.$store.state.user.manage.filter(item => item.__typename === "Event")
+    var res = this.$store.state.user.associate.filter(item => item.__typename === "Event")
+    console.log(this.$store.state.user.associate)
     if(res.length !== 0) this.showAddSeminar = true
   },
   methods: {
