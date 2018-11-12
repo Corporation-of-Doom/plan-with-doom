@@ -11,7 +11,8 @@ async function insertNewSeminar(seminarInput) {
     max_capacity,
     location,
     picture_path,
-    organizer_ids
+    organizer_ids,
+    website
   } = seminarInput;
 
   if (capacity_type === "FFA") {
@@ -29,6 +30,7 @@ async function insertNewSeminar(seminarInput) {
   current_capacity = 0;
   max_capacity = max_capacity || null;
   location = location || null;
+  website = website || null;
   description = description || null;
   picture_path = picture_path || null;
 
@@ -36,8 +38,8 @@ async function insertNewSeminar(seminarInput) {
 
   const queryString = `INSERT INTO Seminar
     (event_id, name, description, start_time, end_time, capacity_type, 
-    max_capacity, location, picture_path,current_capacity) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
+    max_capacity, location, picture_path,current_capacity,website) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?) RETURNING id;`;
 
   const vals = [
     event_id,
@@ -49,7 +51,8 @@ async function insertNewSeminar(seminarInput) {
     max_capacity,
     location,
     picture_path,
-    current_capacity
+    current_capacity,
+    website
   ];
 
   const res = await db.raw(`${queryString}`, vals);
@@ -72,7 +75,8 @@ async function insertNewSeminar(seminarInput) {
     location,
     picture_path,
     current_capacity,
-    id
+    id,
+    website
   };
 }
 

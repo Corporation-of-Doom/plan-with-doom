@@ -28,7 +28,7 @@ insert into Event_Organizer (user_id, event_id) values (5,5);
 
 
 -- 3 Seminars
-insert into Seminar (event_id, name, start_time, end_time, capacity_type) values (3,'Preparing for your doom',TIMESTAMP '2019-10-20 10:30:00+02', TIMESTAMP '2019-11-20 12:30:00+02', 'FFA');
+insert into Seminar (event_id, name, start_time, end_time, capacity_type,website) values (3,'Preparing for your doom',TIMESTAMP '2019-10-20 10:30:00+02', TIMESTAMP '2019-11-20 12:30:00+02', 'FFA','https://en.wikipedia.org/wiki/Doctor_Doom');
 insert into Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity) values (2,'How to Weeb',TIMESTAMP '2019-10-22 12:30:00+02', TIMESTAMP '2019-11-22 13:30:00+02', 'FCFS_E',2,2);
 insert into Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity) values (1,'Hackathon',TIMESTAMP '2019-10-24 8:30:00+02', TIMESTAMP '2019-11-24 10:30:00+02', 'FCFS_P',6,0);
 insert into Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity) values (3,'Alpha Demo',TIMESTAMP '2018-10-31 14:50:00', TIMESTAMP '2018-10-31 15:00:00', 'FCFS_P',5,0);
@@ -51,6 +51,7 @@ insert into Event_Participation (user_id, event_id, attending) values (9,4,True)
 insert into Event_Participation (user_id, event_id, following) values (10,4,True);
 
 
+insert into Seminar_Participation (user_id, seminar_id, attending) values (10,1,True);
 insert into Seminar_Participation (user_id, seminar_id, attending) values (2,2,True);
 insert into Seminar_Participation (user_id, seminar_id, attending) values (5,2,True);
 insert into Seminar_Participation (user_id, seminar_id, following) values (3,2,True);

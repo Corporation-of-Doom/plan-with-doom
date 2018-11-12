@@ -11,11 +11,10 @@ type Seminar {
     current_capacity: Int
     location: Int
     picture_path: Int
-
-  #Testing attaching announcements to an seminar
-  announcements: [Announcement!]
-  organizers: [User!]
-
+    website: String
+    announcements: [Announcement!]
+    organizers: [User!]
+    
   }
 
 input SeminarInput {
@@ -32,6 +31,7 @@ input SeminarInput {
   organizer_ids: [Int!]
   location: String
   picture_path: String
+  website: String
 }
 
 input SeminarParticipationInput {
