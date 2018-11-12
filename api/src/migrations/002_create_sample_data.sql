@@ -12,7 +12,7 @@ insert into doom_user (first_name, last_name, email, privacy_settings, password_
 
 
 -- 3 events
-insert into Event (creator_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity) values (3,'CUSEC',TIMESTAMP '2019-10-23 8:30:00+02', TIMESTAMP '2019-11-27 10:30:00+02', 'FCFS_E',6,0);
+insert into Event (creator_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity, website) values (3,'CUSEC',TIMESTAMP '2019-10-23 8:30:00+02', TIMESTAMP '2019-11-27 10:30:00+02', 'FCFS_E',6,0,'http://2018.cusec.net/');
 insert into Event (creator_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity) values (2,'Animefest',TIMESTAMP '2019-10-21 12:30:00+02', TIMESTAMP '2019-11-29 10:30:00+02', 'FCFS_P',3,2);
 insert into Event (creator_id, name, start_time, end_time, capacity_type) values (1,'Doomsday convention',TIMESTAMP '2018-10-30 1:00:00', TIMESTAMP '2018-11-02 10:30:00', 'FFA');
 insert into Event (creator_id, name, start_time, end_time, capacity_type,max_capacity, current_capacity) values (6,'Avenger Meetup',TIMESTAMP '2019-05-03 10:30:00', TIMESTAMP '2019-11-24 10:30:00', 'FCFS_E',5,0);
@@ -37,6 +37,7 @@ insert into Seminar_Organizer (user_id, seminar_id) values (2,2);
 insert into Seminar_Organizer (user_id, seminar_id) values (3,1);
 insert into Seminar_Organizer (user_id, seminar_id) values (4,3);
 
+insert into Event_Participation (user_id, event_id, attending) values (10,1,True);
 insert into Event_Participation (user_id, event_id, attending) values (2,2,True);
 insert into Event_Participation (user_id, event_id, attending) values (5,2,True);
 insert into Event_Participation (user_id, event_id, attending) values (3,2,True);

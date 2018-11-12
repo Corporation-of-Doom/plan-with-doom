@@ -11,7 +11,8 @@ async function insertNewEvent(eventInput) {
     max_capacity,
     location,
     picture_path,
-    organizer_ids
+    organizer_ids,
+    website
   } = eventInput;
 
   const event_start_time = new Date(start_time);
@@ -40,6 +41,7 @@ async function insertNewEvent(eventInput) {
   description = description || null;
 
   location = location || null;
+  website = website || null;
   picture_path = picture_path || null;
 
   organizer_ids = organizer_ids || [];
@@ -47,8 +49,8 @@ async function insertNewEvent(eventInput) {
 
   const queryString = `INSERT INTO Event
   (creator_id, name, description, start_time, end_time, capacity_type, 
-    max_capacity, location, picture_path, current_capacity) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
+    max_capacity, location, picture_path, current_capacity, website) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?) RETURNING id;`;
 
   const vals = [
     creator_id,
@@ -60,7 +62,8 @@ async function insertNewEvent(eventInput) {
     max_capacity,
     location,
     picture_path,
-    current_capacity
+    current_capacity,
+    website
   ];
 
   const res = await db.raw(`${queryString}`, vals);
@@ -83,7 +86,8 @@ async function insertNewEvent(eventInput) {
     location,
     current_capacity,
     picture_path,
-    id
+    id,
+    website
   };
 }
 
