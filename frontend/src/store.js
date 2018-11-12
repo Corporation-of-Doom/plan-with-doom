@@ -59,10 +59,60 @@ export default new Vuex.Store({
 		},
 		setSeminar(state, payload){
 			state.seminar = payload
-		}
+		},
+		addToAttend(state, payload){
+			state.user.attend.push(payload)
+			if (payload.__typename === 'Event') {
+				state.event.attend = true
+			} else if (payload.__typename === 'Seminar'){
+				state.seminar.attend = true
+			}
+		},
+		removeFromAttend(state, payload){
+			if (payload.__typename === 'Event') {
+				state.event.attend = false
+			} else if (payload.__typename === 'Seminar'){
+				state.seminar.attend = false
+			}
+			state.user.attend = state.user.attend.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
+		}, 
+		addToFollow(state, payload){
+			state.user.follow.push(payload)
+			if (payload.__typename === 'Event') {
+				state.event.follow = true
+			} else if (payload.__typename === 'Seminar'){
+				state.seminar.follow = true
+			}
+		},
+		removeFromFollow(state, payload){
+			if (payload.__typename === 'Event') {
+				state.event.follow = false
+			} else if (payload.__typename === 'Seminar'){
+				state.seminar.follow = false
+			}
+			state.user.follow = state.user.follow.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
+		},
+		addToManage(state, payload){
+			state.user.manage.push(payload)
+			if (payload.__typename === 'Event') {
+				state.event.manage = true
+			} else if (payload.__typename === 'Seminar'){
+				state.seminar.manage = true
+			}
+		},
+		removeFromManage(state, payload){
+			if (payload.__typename === 'Event') {
+				state.event.manage = false
+			} else if (payload.__typename === 'Seminar'){
+				state.seminar.manage = false
+			}
+			state.user.manage = state.user.manage.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
+		},
 	},
 	actions: {
-
+		setUser(user){
+			this.state.user = user
+		},
 	},
 	getters: {
 		layout(state, getters) {
@@ -91,6 +141,15 @@ export default new Vuex.Store({
 		},
 		splashScreen(state, getters) {
 			return state.splashScreen
+		},
+		getUser(state){
+			return state.user
+		},
+		getEvent(state){
+			return state.event
+		},
+		getSeminar(state){
+			return state.seminar
 		}
 	},
 	plugins: [createPersistedState({paths: ['layout']})],

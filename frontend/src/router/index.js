@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 //apps
-import Dashboard from '../views/apps/Dashboard.vue'
 import Calendar from '../views/apps/Calendar.vue'
 import Contacts from '../views/apps/Contacts.vue'
 import Gallery from '../views/apps/Gallery.vue'
@@ -14,7 +13,6 @@ import Register from '../views/pages/authentication/Register.vue'
 import ForgotPassword from '../views/pages/authentication/ForgotPassword.vue'
 import Profile from '../views/pages/Profile.vue'
 import NotFound from '../views/pages/NotFound.vue'
-import Invoice from '../views/pages/Invoice.vue'
 import SearchPage from '../views/pages/Search.vue'
 import EventPage from '../views/pages/Event.vue'
 import SeminarPage from '../views/pages/Seminar.vue'
@@ -239,17 +237,6 @@ const router = new Router({
       path: "/profile",
       name: "profile",
       component: Profile,
-      meta: {
-        auth: true,
-        layout: layouts.navLeft,
-        searchable: true,
-        tags: ["pages"]
-      }
-    },
-    {
-      path: "/invoice",
-      name: "invoice",
-      component: Invoice,
       meta: {
         auth: true,
         layout: layouts.navLeft,

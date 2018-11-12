@@ -1,5 +1,5 @@
 <template>
-  <vue-scroll class="page-dashboard">
+  <vue-scroll>
     <div>
       <el-tabs type="border-card" style="width:100%" @tab-click="changeTab"> 
         <el-tab-pane label="All">
@@ -89,6 +89,7 @@
 import seminarCard from '@/components/seminarCard.vue'
 import Search from '@/components/Search.vue'
 import * as moment from 'moment'
+import {loadSeminars,loadEvents} from './helper'
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
@@ -99,7 +100,7 @@ export default {
         activeName: 'All',
         filter: "None",
         currentList:[],
-        userId: this.$store.state.user.id,
+        user: this.$store.state.user,
       };
     },
      mounted() {
@@ -118,7 +119,7 @@ export default {
         }
         fetch({
           query: `{
-            getMyEventsAndSeminars(userID: ${this.userId}${call}) {
+            getMyEventsAndSeminars(userID: ${this.user.id}${call}) {
               __typename
               ... on Event {
                 id
@@ -157,7 +158,7 @@ export default {
         }
         fetch({
           query: `{
-            getMyEventsAndSeminars(userID: ${this.userId}${call}) {
+            getMyEventsAndSeminars(userID: ${this.user.id}${call}) {
               __typename
               ... on Event {
                 id
@@ -187,7 +188,7 @@ export default {
         }
         fetch({
           query: `{
-            getMyEventsAndSeminars(userID: ${this.userId}${call}) {
+            getMyEventsAndSeminars(userID: ${this.user.id}${call}) {
               __typename
               ... on Seminar {
                 id
@@ -319,217 +320,22 @@ export default {
         }
       },
       loadEvent(id){
-        // gets all the information about an event
-        fetch({
-          query: `{
-            getEventByID(id:${id}){
-              name
-              creator_id
-              description
-              start_time
-              end_time
-              location
-              announcements{
-                date_modified
-                message
-              }
-              seminars{
-                id
-                name
-                description
-                start_time
-                end_time
-                location
-                organizers{
-                  id
-                  first_name
-                  middle_name
-                  last_name
-                }
-              }
-              organizers{
-                id
-                first_name
-                middle_name
-                last_name
-              }
-            }
-          }`
-        })
-        .then(res => {
-          if(res.data){
-            // formats event for Events page
-            var eventInfo = res.data.getEventByID
-            eventInfo.start_time =  moment(parseInt(eventInfo.start_time,10)).format("MMMM Do YYYY, h:mm a")
-            eventInfo.end_time =  moment(parseInt(eventInfo.end_time,10)).format("MMMM Do YYYY, h:mm a")
-            eventInfo.announcements.forEach(event => {
-              event.date_modified =  moment(parseInt(event.date_modified,10)).format("MMMM Do YYYY, h:mm a")
-            });
-            eventInfo.seminars.forEach(seminar => {
-              seminar.start_time =  moment(parseInt(seminar.start_time,10)).format("MMMM Do YYYY, h:mm a")
-              seminar.end_time =  moment(parseInt(seminar.end_time,10)).format("MMMM Do YYYY, h:mm a")
-            })
-            eventInfo.organizers.forEach(organizer => {
-              organizer.name = ''
-              if (organizer.first_name) {
-                organizer.name = organizer.first_name
-              }
-              if (organizer.middle_name) {
-                organizer.name +=  " " + organizer.middle_name
-              }
-              if (organizer.last_name) {
-                organizer.name +=  " " + organizer.last_name
-              }
-              
-            })
-            // checks to see if the user is following the event
-            fetch({
-              query: `{
-                getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:FOLLOWING){
-                  ...on Event{
-                    id
-                  }
-                }
-              }`
-              })
-            .then(res => {
-              if (res.data.getMyEventsAndSeminars.length > 0) {
-                var result = res.data.getMyEventsAndSeminars.filter(event => event.id === id)
-                if (result.length>0) {
-                  eventInfo.follow = true
-                } else{
-                  eventInfo.follow = false
-                }
-              } else {
-                eventInfo.follow = false
-              }
-              // checks to see if the user is attending the vent
-              fetch({
-                query: `{
-                  getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:ATTENDING){
-                    ...on Event{
-                      id
-                    }
-                  }
-                }`
-                })
-              .then(res => {
-                if (res.data.getMyEventsAndSeminars.length > 0) {
-                  var result = res.data.getMyEventsAndSeminars.filter(event => event.id === id)
-                  if (result.length>0) {
-                    eventInfo.attend = true
-                  } else{
-                    eventInfo.attend = false
-                  }
-                } else {
-                  eventInfo.attend = false
-                }
-                eventInfo.creator_id = eventInfo.organizers.filter(organizer => organizer.id === eventInfo.creator_id)[0].name
-                eventInfo.id = id
-                this.$store.commit("setEvent",eventInfo)
-                this.$router.push("event")
-              })
-            })
+        loadEvents(id).then(function(result) {
+          if (result){
+            this.$router.push("event")
+          } else{
+            console.log("something went wrong")
           }
-        })
-          
+        }.bind(this))
       },
       loadSeminar(id){
-        // gets all the information about a seminar
-        fetch({
-          query: `{
-            getSeminarByID(id:${id}){
-              announcements{
-                date_modified
-                message
-              }
-              id
-              name
-              event_id
-              description
-              start_time
-              end_time
-              location
-              organizers{
-                id
-                first_name
-                middle_name
-                last_name
-              }
-            }
-          }`
-        })
-        .then(res => {
-          // formats the seminars information
-          if(res.data){
-            var seminarInfo = res.data.getSeminarByID
-            seminarInfo.start_time =  moment(parseInt(seminarInfo.start_time,10)).format("MMMM Do YYYY, h:mm a")
-            seminarInfo.end_time =  moment(parseInt(seminarInfo.end_time,10)).format("MMMM Do YYYY, h:mm a")
-            seminarInfo.announcements.forEach(seminar => {
-              seminar.date_modified =  moment(parseInt(seminar.date_modified,10)).format("MMMM Do YYYY, h:mm a")
-            });
-            // get the event the semianr is rom
-            fetch({
-              query: `{
-              getEventByID(id:${seminarInfo.event_id}){
-                  name
-                }
-              }`
-            })
-            .then(nameRes => {
-              if(nameRes.data){
-                seminarInfo.event_id = nameRes.data.getEventByID.name
-              }
-              // chekcs if user is following the event
-              fetch({
-              query: `{
-                getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:FOLLOWING){
-                  ...on Seminar{
-                    id
-                  }
-                }
-              }`
-              })
-            .then(res => {
-              if (res.data.getMyEventsAndSeminars.length > 0) {
-                var result = res.data.getMyEventsAndSeminars.filter(event => event.id === id)
-                if (result.length>0) {
-                  seminarInfo.follow = true
-                } else{
-                  seminarInfo.follow = false
-                }
-              } else {
-                seminarInfo.follow = false
-              }
-              // checks to see if the user is attending the event
-              fetch({
-                query: `{
-                  getMyEventsAndSeminars(userID:${this.$store.state.user.id}, participationType:ATTENDING){
-                    ...on Seminar{
-                      id
-                    }
-                  }
-                }`
-                })
-              .then(res => {
-                if (res.data.getMyEventsAndSeminars.length > 0) {
-                  var result = res.data.getMyEventsAndSeminars.filter(event => event.id === id)
-                  if (result.length>0) {
-                    seminarInfo.attend = true
-                  } else{
-                    seminarInfo.attend = false
-                  }
-                } else {
-                  seminarInfo.attend = false
-                }
-                seminarInfo.id=id
-                this.$store.commit("setSeminar",seminarInfo)
-                this.$router.push("seminar")
-                })
-              })
-            })
+        loadSeminars(id).then(function(result) {
+          if (result){
+            this.$router.push("seminar")
+          } else{
+            console.log("something went wrong")
           }
-        })
+        }.bind(this))
       },
     },
   components: {

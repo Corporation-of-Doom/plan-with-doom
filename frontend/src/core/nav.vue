@@ -24,7 +24,7 @@
 		<el-menu-item index="/manageevents">
 			<i class="mdi mdi-briefcase"></i><span slot="title">Manage Event</span>
 		</el-menu-item>
-		<el-menu-item index="/not-found">
+		<el-menu-item index="/profile">
 			<i class="mdi mdi-face"></i><span slot="title">Profile</span>
 		</el-menu-item>
 		<el-menu-item index="/not-found">
