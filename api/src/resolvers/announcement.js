@@ -8,6 +8,7 @@ async function queryAnnouncementByTypeID(
 ) {
   var queryStringEnding = "";
   var vals = [id];
+  const results = [];
   if (limit) {
     queryStringEnding += "LIMIT ?";
     vals.push(limit);
@@ -21,10 +22,10 @@ async function queryAnnouncementByTypeID(
 
   if (type === "Event") {
     queryString =
-      "select * from Event_Announcement where event_id = ? ORDER BY date_modified DESC ";
+      "SELECT Event_Announcement.event_id as type_id, Event_Announcement.id as id,Event_Announcement.message as message, Event_Announcement.date_created as date_created, Event_Announcement.date_modified as date_modified, Event.name as type_name, 'event_type' as type FROM(Event_Announcement INNER JOIN Event ON Event_Announcement.event_id = Event.id) WHERE Event_Announcement.event_id = ? ORDER BY date_modified DESC; ";
   } else {
     queryString =
-      "select * from Seminar_Announcement where seminar_id = ? ORDER BY date_modified DESC ";
+      "SELECT Seminar_Announcement.seminar_id as type_id, Seminar_Announcement.id as id,Seminar_Announcement.message as message, Seminar_Announcement.date_created as date_created, Seminar_Announcement.date_modified as date_modified, Seminar.name as type_name, 'event_type' as type FROM(Seminar_Announcement INNER JOIN Seminar ON Seminar_Announcement.seminar_id = Seminar.id) WHERE Seminar_Announcement.seminar_id = ? ORDER BY date_modified DESC; ";
   }
 
   if (queryStringEnding) {
@@ -33,15 +34,25 @@ async function queryAnnouncementByTypeID(
 
   queryString += ";";
 
-  return await db
-    .raw(queryString, vals)
-    .then(res => {
-      return res.rows;
-    })
-    .catch(err => {
-      console.log(err);
-      throw err;
-    });
+  console.log(queryString);
+
+  const res = await db.raw(queryString, vals);
+
+  res.rows.forEach(result => {
+    const announcement = {
+      id: result.id,
+      type_id: result.type_id,
+      message: result.message,
+      date_created: result.date_created,
+      date_modified: result.date_modified,
+      type: result.type,
+      type_name: result.type_name
+    };
+
+    results.push(announcement);
+  });
+
+  return results;
 }
 // TODO: add functionality for filtering by following/attending + event/seminar
 async function queryMyAnnouncements(
