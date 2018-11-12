@@ -55,6 +55,7 @@
 import seminarCard from '@/components/seminarCard.vue'
 import addEvent from '@/components/addEvent.vue'
 import addSeminar from '@/components/addSeminar.vue'
+import {loadSeminars,loadEvents} from './helper'
 import * as moment from 'moment'
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
@@ -66,7 +67,7 @@ export default {
         activeName: 'all',
         filter: "None",
         currentList: [],
-        userId: this.$store.state.user.id
+        user: this.$store.state.user
       };
     },
   mounted() {
@@ -76,10 +77,11 @@ export default {
     getAll(){
       fetch({
         query: `{
-          getMyManagingEventsAndSeminars(userID: ${this.userId}) {
+          getMyManagingEventsAndSeminars(userID: ${this.user.id}) {
             __typename
             ... on Event {
               id
+              creator_id
             }
             ... on Seminar {
               id
@@ -89,14 +91,22 @@ export default {
       })
       .then(res =>{
         if(res.data){
-          var result = res.data.getMyManagingEventsAndSeminars
+          var result = []
+          res.data.getMyManagingEventsAndSeminars.forEach(element => {
+            if (element.creator_id === this.user.id){
+              result.push(element)
+            } else if ( element.__typename === "Seminar") {
+              result.push(element)
+            }
+          })
+        
           result.forEach(element => {
             if (element.__typename === "Seminar") {
               this.formatSeminar(element.id)
             } else {
               this.formatEvent(element.id)
             }
-          });
+          })
         }
       })
       .catch(err =>{
@@ -106,10 +116,11 @@ export default {
     getEvent(){
       fetch({
         query: `{
-          getMyManagingEventsAndSeminars(userID: ${this.userId}) {
+          getMyManagingEventsAndSeminars(userID: ${this.user.id}) {
             __typename
             ... on Event {
               id
+              creator_id
             }
           }
         }`
@@ -117,7 +128,7 @@ export default {
       .then(res =>{
         if(res.data){
           res.data.getMyManagingEventsAndSeminars.forEach(event => {
-            if (event.id) {
+            if (event.id && event.creator_id === this.user.id) {
               this.formatEvent(event.id)                
             }
           })
@@ -127,7 +138,7 @@ export default {
     getSeminar(){
       fetch({
         query: `{
-          getMyManagingEventsAndSeminars(userID: ${this.userId}) {
+          getMyManagingEventsAndSeminars(userID: ${this.user.id}) {
             __typename
             ... on Seminar {
               id
@@ -247,9 +258,24 @@ export default {
       }
     },
     
-    loadEvent(){
-      // this.$router.push("event")
-    }
+    loadEvent(id){
+      loadEvents(id).then(function(result) {
+        if (result){
+          this.$router.push("event")
+        } else{
+          console.log("something went wrong")
+        }
+      }.bind(this))
+    },
+    loadSeminar(id){
+      loadSeminars(id).then(function(result) {
+        if (result){
+          this.$router.push("seminar")
+        } else{
+          console.log("something went wrong")
+        }
+      }.bind(this))
+    },
   },
   components: {
     seminarCard, 
