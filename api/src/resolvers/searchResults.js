@@ -19,7 +19,7 @@ async function searchEventsAndSeminars(
            description AS description, start_time AS start_time,
            end_time AS end_time, capacity_type AS capacity_type,
            max_capacity AS max_capacity, current_capacity AS current_capacity,
-           location AS location, picture_path AS picture_path, website AS website
+           location AS location, picture_path AS picture_path, website AS website, location_link AS location_link
     FROM ??`;
     vals.push("event_id", "event");
   } else {
@@ -51,7 +51,7 @@ async function searchEventsAndSeminars(
            description AS description, start_time AS start_time,
            end_time AS end_time, capacity_type AS capacity_type,
            max_capacity AS max_capacity, current_capacity AS current_capacity,
-           location AS location, picture_path AS picture_path, website AS website
+           location AS location, picture_path AS picture_path, website AS website, location_link AS location_link
     FROM ??
     ${whereClause}`;
     vals.push("creator_id", "seminar");
@@ -84,7 +84,8 @@ async function searchEventsAndSeminars(
       current_capacity: searchResult.current_capacity,
       location: searchResult.location,
       picture_path: searchResult.picture_path,
-      website: searchResult.website
+      website: searchResult.website,
+      location_link: searchResult.location_link
     };
 
     if (searchResult.creator_id)
@@ -152,7 +153,7 @@ async function getMySchedule(
          ??.description AS description, ??.start_time AS start_time,
          ??.end_time AS end_time, ??.capacity_type AS capacity_type,
          ??.max_capacity AS max_capacity, ??.current_capacity AS current_capacity,
-         ??.location AS location, ??.picture_path AS picture_path, ??.website AS website, `;
+         ??.location AS location, ??.picture_path AS picture_path, ??.website AS website, ??.location_link AS location_link, `;
   var whereQueryString = `WHERE ??.user_id = ?`;
 
   if (!participationType) {
@@ -169,7 +170,7 @@ async function getMySchedule(
       ${selectQueryString} "event".creator_id AS creator_id, NULL AS event_id
       FROM ?? JOIN ?? ON (??.?? = ??.id) ${whereQueryString}`;
 
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 12; i++) {
       vals.push("event");
     }
     vals.push(
@@ -198,7 +199,7 @@ async function getMySchedule(
       ${queryString} ${selectQueryString} NULL AS creator_id, "seminar".event_id AS event_id
       FROM ?? JOIN ?? ON (??.?? = ??.id) ${whereQueryString}`;
 
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 12; i++) {
       vals.push("seminar");
     }
     vals.push(
@@ -242,7 +243,8 @@ async function getMySchedule(
       current_capacity: result.current_capacity,
       location: result.location,
       picture_path: result.picture_path,
-      website: result.website
+      website: result.website,
+      location_link: result.location_link
     };
 
     if (result.creator_id) eventOrSeminar.creator_id = result.creator_id;
@@ -375,7 +377,8 @@ async function getMyManagingSchedule(
       current_capacity: result.current_capacity,
       location: result.location,
       picture_path: result.picture_path,
-      website: result.website
+      website: result.website,
+      location_link: result.location_link
     };
 
     if (result.type === "event_type")

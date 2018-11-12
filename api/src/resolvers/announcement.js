@@ -34,8 +34,6 @@ async function queryAnnouncementByTypeID(
 
   queryString += ";";
 
-  console.log(queryString);
-
   const res = await db.raw(queryString, vals);
 
   res.rows.forEach(result => {
