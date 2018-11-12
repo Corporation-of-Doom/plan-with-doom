@@ -70,6 +70,7 @@ export default {
         currentList: [],
         user: this.$store.state.user,
         showAddSeminar: false
+
       };
     },
   mounted() {
