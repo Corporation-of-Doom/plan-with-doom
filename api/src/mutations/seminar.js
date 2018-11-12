@@ -1,4 +1,5 @@
 const { db } = require("../db");
+const { queryEventByID } = require("../resolvers/event");
 
 async function insertNewSeminar(seminarInput) {
   let {
@@ -33,6 +34,39 @@ async function insertNewSeminar(seminarInput) {
   picture_path = picture_path || null;
 
   organizer_ids = organizer_ids || [];
+
+  // console.log(getEventByID(event_id));
+
+  const temp = await queryEventByID(event_id);
+  const event_start_time = temp.start_time;
+  const event_end_time = temp.end_time;
+  const sem_start_time = new Date(start_time);
+  const sem_end_time = new Date(end_time);
+
+  if (sem_start_time > sem_end_time) {
+    console.log("Invalid Start Time: Seminar cannot start after Seminar ends");
+    return new Error(
+      "Unable to create a Seminar: Invalid Start Time: Seminar cannot start after Seminar ends"
+    );
+  }
+  if (sem_start_time < event_start_time) {
+    console.log("Invalid Start Time: Seminar cannot start before Event starts");
+    return new Error(
+      "Unable to create a Seminar: Invalid Start Time: Seminar cannot start before Event starts"
+    );
+  }
+  if (sem_start_time > event_end_time) {
+    console.log("Invalid Start Time: Seminar cannot start after Event ends");
+    return new Error(
+      "Unable to create a Seminar: Invalid Start Time: Seminar cannot start after Event ends"
+    );
+  }
+  if (sem_end_time > event_end_time) {
+    console.log("Invalid End Time: Seminar cannot end after Event ends");
+    return new Error(
+      "Unable to create a Seminar: Invalid End Time: Seminar cannot end after Event ends"
+    );
+  }
 
   const queryString = `INSERT INTO Seminar
     (event_id, name, description, start_time, end_time, capacity_type, 
