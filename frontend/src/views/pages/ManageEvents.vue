@@ -5,7 +5,7 @@
     <el-tabs type="border-card" style="width:100%" @tab-click="changeTab">
       <el-tab-pane label="All">
         <add-event/>
-        <add-seminar/>
+        <add-seminar v-if="showAddSeminar"/>
         <div v-for="(item,key) in currentList" :key="key">
           <div v-if="item" >
             <seminar-card v-if="item.event_id" 
@@ -33,7 +33,8 @@
         </div>
       </el-tab-pane>
       <el-tab-pane label="Seminar">
-        <add-seminar/>
+        <add-seminar v-if="showAddSeminar"/>
+        <p v-else style="text-align:center"> Create an event to see you seminars </p>
         <div v-for="(item,key) in currentList" :key="key">
           <div v-if="item" >
             <seminar-card v-if="item.event_id" 
@@ -67,11 +68,14 @@ export default {
         activeName: 'all',
         filter: "None",
         currentList: [],
-        user: this.$store.state.user
+        user: this.$store.state.user,
+        showAddSeminar: false
       };
     },
   mounted() {
     this.getAll()
+    var res = this.$store.state.user.manage.filter(item => item.__typename === "Event")
+    if(res.length !== 0) this.showAddSeminar = true
   },
   methods: {
     getAll(){

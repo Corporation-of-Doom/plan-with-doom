@@ -141,8 +141,10 @@ export default {
                         user.manage.push(element)
                       }
                     })
+                    console.log(user.manage)
                   } else {
                     user.manage = []
+                    console.log("no manging")
                   }
                   console.log(user)
                   this.$store.commit("setLogin", user);

@@ -163,7 +163,7 @@
 			<el-col v-if="edit" class="col-p">
 				<el-form-item>
 					<el-button type="primary" @click="onSubmit">Save</el-button>
-					<el-button>Cancel</el-button>
+					<el-button @click="onCancel">Cancel</el-button>
 				</el-form-item>
 			</el-col>
 		</el-form>
@@ -250,7 +250,7 @@ export default {
 			this.twitter = this.$store.state.user.twitter
 			this.facebook = this.$store.state.user.facebook
 			this.insta = this.$store.state.user.instagram
-			
+			this.edit = false			
 		}
 	},
 	mounted() {
