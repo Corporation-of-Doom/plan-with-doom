@@ -81,6 +81,7 @@ export default {
             __typename
             ... on Event {
               id
+              creator_id
             }
             ... on Seminar {
               id
@@ -90,14 +91,22 @@ export default {
       })
       .then(res =>{
         if(res.data){
-          var result = res.data.getMyManagingEventsAndSeminars
+          var result = []
+          res.data.getMyManagingEventsAndSeminars.forEach(element => {
+            if (element.creator_id === this.user.id){
+              result.push(element)
+            } else if ( element.__typename === "Seminar") {
+              result.push(element)
+            }
+          })
+        
           result.forEach(element => {
             if (element.__typename === "Seminar") {
               this.formatSeminar(element.id)
             } else {
               this.formatEvent(element.id)
             }
-          });
+          })
         }
       })
       .catch(err =>{
@@ -111,6 +120,7 @@ export default {
             __typename
             ... on Event {
               id
+              creator_id
             }
           }
         }`
@@ -118,7 +128,7 @@ export default {
       .then(res =>{
         if(res.data){
           res.data.getMyManagingEventsAndSeminars.forEach(event => {
-            if (event.id) {
+            if (event.id && event.creator_id === this.user.id) {
               this.formatEvent(event.id)                
             }
           })

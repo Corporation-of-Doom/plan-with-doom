@@ -24,7 +24,7 @@
       </el-col>
     </el-row>
     <hr>
-    <p>Discription<p>
+    <p>Description<p>
     <p> {{info.description}} </p>
     <el-tabs v-model="activeName">
       <el-tab-pane label="News" name="news">
@@ -94,7 +94,7 @@ export default {
       manageInfo: {
         status: this.$store.state.event.manage,
         edit: "Edit",
-        announcement: "Announcment"
+        announcement: "Post Announcment"
       },
       activeName: "news",
       info:this.$store.state.event,

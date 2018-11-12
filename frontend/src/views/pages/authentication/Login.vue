@@ -69,6 +69,9 @@ export default {
             last_name
             privacy_settings
             linked_in
+            twitter
+            facebook
+            instagram
             organization
           }
         }`
@@ -120,6 +123,7 @@ export default {
                       __typename
                       ...on Event{
                         id
+                        creator_id
                       }
                       ...on Seminar{
                         id
@@ -129,7 +133,14 @@ export default {
                 })
                 .then(res => {
                   if (res.data){
-                    user.manage = res.data.getMyManagingEventsAndSeminars
+                    user.manage = []
+                    res.data.getMyManagingEventsAndSeminars.forEach(element => {
+                      if (element.creator_id === user.id) {
+                        user.manage.push(element)
+                      } else if (element.__typename === "Seminar") {
+                        user.manage.push(element)
+                      }
+                    })
                   } else {
                     user.manage = []
                   }

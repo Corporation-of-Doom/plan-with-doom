@@ -4,13 +4,13 @@
     <p style="margin:10px;margin-top:0px;text-align:center;">  {{info.event_name}} </p>
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
-        <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Event </el-button>
+        <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Seminar </el-button>
         <el-button v-else-if="followInfo.status" @click="unfollow" type="primary" plain title="Unfollow">{{followInfo.following}}</el-button>
         <el-button v-else @click="follow" type="primary" title="Follow">{{followInfo.follow}}</el-button>
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin-left:10px">
         <el-button v-if="hideAttend" @click="attend" type="primary" title="Must attend the event" disabled>{{attendInfo.attend}}</el-button>
-        <el-button v-else-if="manageInfo.status" title="Announcement" type="primary"> {{manageInfo.announcement}} </el-button>
+        <el-button v-else-if="manageInfo.status" title="Post Announcement" type="primary"> {{manageInfo.announcement}} </el-button>
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
         <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
@@ -25,7 +25,7 @@
       </el-col>
     </el-row>
     <hr>
-    <p>Discription<p>
+    <p>Description<p>
     <p> {{info.discription}} </p>
     <el-tabs v-model="activeName" @tab-click="changeTab">
       <el-tab-pane label="News" name="news">
@@ -69,7 +69,7 @@ export default {
       manageInfo: {
         status: this.$store.state.seminar.manage,
         edit: "Edit",
-        announcement: "Announcment"
+        announcement: "Post Announcment"
       },
       hideAttend: this.$store.state.seminar.hideAttend,
       activeName:'news',
