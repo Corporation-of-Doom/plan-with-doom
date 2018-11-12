@@ -6,10 +6,10 @@
 				
 				<span style="color: red;"> {{ form.error }} </span>
 				<float-label class="styled">
-					<input type="email" placeholder="E-mail" v-model="form.email">
+					<input type="email" placeholder="E-mail" v-model="form.email" v-on:keyup.enter="login">
 				</float-label>
 				<float-label class="styled">
-					<input type="password" placeholder="Password" v-model="form.password">
+					<input type="password" placeholder="Password" v-model="form.password" v-on:keyup.enter="login">
 				</float-label>
 				
 				<div class="flex">
@@ -69,14 +69,94 @@ export default {
             last_name
             privacy_settings
             linked_in
+            twitter
+            facebook
+            instagram
             organization
           }
         }`
       })
-        .then(res => {
-          if (res.data) {
-            this.$store.commit("setLogin", res.data.login);
-            this.$router.push("myevents");
+      .then(res => {
+        if (res.data) {
+          var user = res.data.login
+          fetch({
+            query: `{
+              getMyEventsAndSeminars(userID:${user.id}, participationType:FOLLOWING){
+                __typename
+                ...on Event{
+                  id
+                }
+                ...on Seminar{
+                  id
+                }
+              }
+            }`
+            })
+            .then(res => {
+              if (res.data){
+                user.follow = res.data.getMyEventsAndSeminars
+              } else {
+                user.follow = []
+              }
+              fetch({
+                query: `{
+                  getMyEventsAndSeminars(userID:${user.id}, participationType:ATTENDING){
+                    __typename
+                    ...on Event{
+                      id
+                    }
+                    ...on Seminar{
+                      id
+                    }
+                  }
+                }`
+              })
+              .then(res => {
+                if (res.data){
+                  user.attend = res.data.getMyEventsAndSeminars
+                } else {
+                  user.attend = []
+                }
+                fetch({
+                query: `{
+                  getMyManagingEventsAndSeminars(userID:${user.id}){
+                      __typename
+                      ...on Event{
+                        id
+                        creator_id
+                      }
+                      ...on Seminar{
+                        id
+                      }
+                    }
+                  }`
+                })
+                .then(res => {
+                  if (res.data){
+                    user.manage = []
+                    user.associate = []
+                      console.log(res.data.getMyManagingEventsAndSeminars)
+                    if(res.data.getMyManagingEventsAndSeminars.length > 0){
+                      user.associate = res.data.getMyManagingEventsAndSeminars
+                      res.data.getMyManagingEventsAndSeminars.forEach(element => {
+                        if (element.creator_id === user.id) {
+                          user.manage.push(element)
+                        } else if (element.__typename === "Seminar") {
+                          user.manage.push(element)
+                        }
+                      })
+                    }
+                  } else {
+                    user.manage = []
+                    console.log("no manging")
+
+                  }
+                  console.log(user)
+                  this.$store.commit("setLogin", user);
+                  this.$router.push("myevents");
+                })
+              })
+            })
           } else {
             this.form.error = res.errors[0].message;
           }

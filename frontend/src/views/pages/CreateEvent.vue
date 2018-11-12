@@ -228,8 +228,14 @@ export default {
 						}
 					}			
 				}).then(res => {
+					console.log(res.data)
 					if (res.data) {
 						alert("Event created successfully!")
+						var payload = {
+							__typename: "Event",
+							id: res.data.createEvent.id
+						}
+						this.$store.commit("addToManage",payload)
 						this.$router.push('ManageEvents')
 					} else {
 						console.log(res.errors)

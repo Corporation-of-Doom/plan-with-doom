@@ -16,7 +16,7 @@
 					<img src="../assets/images/avatar.jpg" class="avatar" alt="avatar">
 				</span>
 				<el-dropdown-menu slot="dropdown">
-					<el-dropdown-item command="/not-found"><i class="mdi mdi-account mr-10"></i> Profile</el-dropdown-item>
+					<el-dropdown-item command="/profile"><i class="mdi mdi-account mr-10"></i> Profile</el-dropdown-item>
 					<el-dropdown-item command="/not-found"><i class="mdi mdi-calendar mr-10"></i> Calendar</el-dropdown-item>
 					<el-dropdown-item command="/logout" divided><i class="mdi mdi-logout mr-10"></i> Logout</el-dropdown-item>
 				</el-dropdown-menu>
