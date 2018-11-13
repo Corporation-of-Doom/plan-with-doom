@@ -24,6 +24,8 @@ insert into Event_Organizer (user_id, event_id) values (2,2);
 insert into Event_Organizer (user_id, event_id) values (1,3);
 insert into Event_Organizer (user_id, event_id) values (6,4);
 insert into Event_Organizer (user_id, event_id) values (7,4);
+insert into Event_Organizer (user_id, event_id) values (1,4);
+insert into Event_Organizer (user_id, event_id) values (3,4);
 insert into Event_Organizer (user_id, event_id) values (5,5);
 
 
