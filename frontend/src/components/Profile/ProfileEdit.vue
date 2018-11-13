@@ -251,6 +251,7 @@ export default {
 			this.facebook = this.$store.state.user.facebook
 			this.insta = this.$store.state.user.instagram
 			this.edit = false			
+
 		}
 	},
 	mounted() {
