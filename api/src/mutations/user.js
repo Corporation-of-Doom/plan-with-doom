@@ -22,7 +22,8 @@ async function registerUser(user) {
     facebook,
     instagram,
     phone_number,
-    privacy_settings
+    privacy_settings,
+    about_me
   } = user;
 
   middle_name = middle_name || null;
@@ -40,8 +41,8 @@ async function registerUser(user) {
     INSERT INTO doom_user
       (first_name, last_name, email, privacy_settings, password_hash,
        middle_name, organization, linked_in, twitter, facebook,
-       instagram, phone_number)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
+       instagram, phone_number, about_me)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
 
   const vals = [
     first_name,
@@ -55,7 +56,8 @@ async function registerUser(user) {
     twitter,
     facebook,
     instagram,
-    phone_number
+    phone_number,
+    about_me
   ];
 
   const res = await db.raw(`${queryString}`, vals);
@@ -75,7 +77,8 @@ async function registerUser(user) {
     facebook,
     instagram,
     phone_number,
-    privacy_settings
+    privacy_settings,
+    about_me
   };
 }
 

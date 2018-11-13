@@ -12,6 +12,7 @@ const User = `
     instagram: String
     phone_number: String
     privacy_settings: String!
+    about_me: String
 
     # still need to add photo
     # Will deal with that when we have DB set up
@@ -30,6 +31,7 @@ const User = `
     instagram: String
     phone_number: String
     privacy_settings: String!
+    about_me: String
 
     # still need to add photo
     # Will deal with that when we have DB set up

@@ -179,7 +179,8 @@ const rootResolvers = {
     twitter: ({ twitter }) => twitter,
     facebook: ({ facebook }) => facebook,
     instagram: ({ instagram }) => instagram,
-    phone_number: ({ phone_number }) => phone_number
+    phone_number: ({ phone_number }) => phone_number,
+    about_me: ({ about_me }) => about_me
   },
   Event: {
     id: ({ id }) => id,

@@ -23,7 +23,8 @@ async function signIn(emailToFind, password) {
     facebook,
     instagram,
     phone_number,
-    privacy_settings
+    privacy_settings,
+    about_me
   } = res.rows[0];
 
   // check if password is correct
@@ -40,7 +41,8 @@ async function signIn(emailToFind, password) {
       facebook,
       instagram,
       phone_number,
-      privacy_settings
+      privacy_settings,
+      about_me
     };
   }
 
@@ -83,7 +85,8 @@ async function searchUsers(searchString) {
       instagram: user.instagram,
       twitter: user.twitter,
       phone_number: user.phone_number,
-      privacy_settings: user.privacy_settings
+      privacy_settings: user.privacy_settings,
+      about_me: user.about_me
     });
   });
 
