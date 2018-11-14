@@ -110,6 +110,19 @@ async function insertNewSeminar(seminarInput) {
   };
 }
 
+async function updateCurrentCapacity(seminarid) {
+  // Will recalculate and update the table's current capacity
+  var queryString = `UPDATE "seminar" 
+                      SET current_capacity =subquery.count
+                    FROM (SELECT count(*) from seminar_participation where seminar_id = ? and attending = true) AS subquery
+                    WHERE seminar.id=?
+                    RETURNING current_capacity;`;
+  const vals = [seminarid, seminarid];
+
+  const res = await db.raw(`${queryString}`, vals);
+  return res.rows[0].current_capacity;
+}
+
 async function updateSeminarParticipation(
   SeminarParticipationInput,
   adding = true
@@ -129,6 +142,7 @@ async function updateSeminarParticipation(
   const vals = [userid, seminarid, adding];
 
   await db.raw(`${queryString}`, vals);
+  var newCapacity = await updateCurrentCapacity(seminarid);
   return true;
 }
 

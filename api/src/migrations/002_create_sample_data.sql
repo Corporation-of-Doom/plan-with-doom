@@ -67,6 +67,8 @@ insert into Seminar_Announcement (seminar_id, message, date_created, date_modifi
 -- One user following
 insert into User_Following (user_id, following_user_id) values (4,1);
 
+-- Would be Ideal to replace this with a looped call to helper function updateCurrentCapacity
+-- Updating current capacity of the events in the DB
 UPDATE "event" 
     SET current_capacity =subquery.count
 FROM (SELECT count(*)
@@ -103,3 +105,29 @@ FROM (SELECT count(*)
     where event_id = 5 and attending = true) AS subquery
 WHERE event.id=5;
 
+-- Updating current capacity for seminars
+UPDATE "seminar" 
+    SET current_capacity =subquery.count
+FROM (SELECT count(*) from seminar_participation  where seminar_id = 1 and attending = true) AS subquery
+    WHERE seminar.id=1;
+
+UPDATE "seminar" 
+    SET current_capacity =subquery.count
+FROM (SELECT count(*)
+    from seminar_participation
+    where seminar_id = 2 and attending = true) AS subquery
+    WHERE seminar.id=2;
+
+UPDATE "seminar" 
+    SET current_capacity =subquery.count
+FROM (SELECT count(*)
+    from seminar_participation
+    where seminar_id = 3 and attending = true) AS subquery
+    WHERE seminar.id=3;
+
+UPDATE "seminar" 
+    SET current_capacity =subquery.count
+FROM (SELECT count(*)
+    from seminar_participation
+    where seminar_id = 4 and attending = true) AS subquery
+    WHERE seminar.id=4;
