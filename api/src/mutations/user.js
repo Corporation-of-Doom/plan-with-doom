@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const { db } = require("../db");
+const { getUser } = require("../resolvers/user");
 
 function createSalt(len = 12) {
   return bcrypt.genSaltSync(len);
@@ -86,6 +87,8 @@ async function registerUser(user) {
 }
 
 async function editUserProfile(userID, user) {
+  if (Object.keys(user).length === 0) return getUser(userID);
+
   let queryString = `UPDATE doom_user SET`;
   let first = 1;
 
