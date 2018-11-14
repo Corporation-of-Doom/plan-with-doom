@@ -145,7 +145,7 @@ export default {
               }`,
             variables: {
               announcement: {		
-                type_id: 3,
+                type_id: this.$store.state.event.id,
                 message: this.postMessage
               }
             }
