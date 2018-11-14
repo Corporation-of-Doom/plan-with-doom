@@ -24,7 +24,8 @@ async function signIn(emailToFind, password) {
     instagram,
     phone_number,
     privacy_settings,
-    about_me
+    about_me,
+    picture_path
   } = res.rows[0];
 
   // check if password is correct
