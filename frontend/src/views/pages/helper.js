@@ -160,7 +160,7 @@ export function loadSeminars(id){
             }else{
               seminarInfo.manage = false
             }
-            if(user.follow.filter(item => item.__typename === "Event" && item.event_id === seminarInfo.event_id).length > 0){
+            if(user.attend.filter(item => item.__typename === "Event" && item.event_id === seminarInfo.event_id).length === 0){
               seminarInfo.hideAttend = true
             } else {
               seminarInfo.hideAttend = false
