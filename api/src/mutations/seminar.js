@@ -79,8 +79,8 @@ async function insertNewSeminar(seminarInput) {
 
   // Inserting seminar into table
   const queryString = `INSERT INTO Seminar
-    (event_id, name, description, start_time, end_time, capacity_type, 
-    max_capacity, location, picture_path,current_capacity,website,location_link) 
+    (event_id, name, description, start_time, end_time, capacity_type,
+    max_capacity, location, picture_path,current_capacity,website,location_link)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
 
   const vals = [
