@@ -64,15 +64,19 @@ export default new Vuex.Store({
 			state.user.attend.push(payload)
 			if (payload.__typename === 'Event') {
 				state.event.attend = true
+				state.event.current_capacity++
 			} else if (payload.__typename === 'Seminar'){
 				state.seminar.attend = true
+				state.seminar.current_capacity++
 			}
 		},
 		removeFromAttend(state, payload){
 			if (payload.__typename === 'Event') {
 				state.event.attend = false
+				state.event.current_capacity--
 			} else if (payload.__typename === 'Seminar'){
 				state.seminar.attend = false
+				state.seminar.current_capacity--
 			}
 			state.user.attend = state.user.attend.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
 		}, 
@@ -107,6 +111,22 @@ export default new Vuex.Store({
 				state.seminar.manage = false
 			}
 			state.user.manage = state.user.manage.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
+		},
+		addToWaitlist(state, payload){
+			state.user.waitlist.push(payload)
+			if (payload.__typename === 'Event') {
+				state.event.waitlist = true
+			} else if (payload.__typename === 'Seminar'){
+				state.seminar.waitlist = true
+			}
+		},
+		removeFromWaitlis(state, payload){
+			if (payload.__typename === 'Event') {
+				state.event.waitlist = false
+			} else if (payload.__typename === 'Seminar'){
+				state.seminar.waitlist = false
+			}
+			state.user.waitlist = state.user.waitlist.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
 		},
 	},
 	actions: {

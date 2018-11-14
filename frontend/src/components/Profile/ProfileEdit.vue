@@ -13,13 +13,6 @@
 		<el-form ref="form" :model="form" label-width="120px" :label-position="labelPosition">
 			<el-col>
 				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
-					<el-form-item label="Email">
-						<el-input :disabled="!edit" v-model="form.email" type="email"/>
-					</el-form-item>
-				</el-col>
-			</el-col>
-			<el-col>
-				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
 					<el-form-item label="First name">
 						<el-input :disabled="!edit" v-model="form.firstName"/>
 					</el-form-item>
@@ -39,122 +32,47 @@
 						<el-input :disabled="!edit" v-model="form.orgnization"/>
 					</el-form-item>
 				</el-col>
-			</el-col>
-			<!-- <el-col>
 				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
-					<el-form-item label="Birthday">
-						<el-date-picker type="date" placeholder="Pick a date" v-model="form.birthday" style="width: 100%;"></el-date-picker>
+					<el-form-item label="Email">
+						<el-input :disabled="!edit" v-model="form.email" type="email"/>
 					</el-form-item>
 				</el-col>
-				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
-					<el-form-item label="Gender">
-						<el-radio-group v-model="form.gender">
-							<el-radio label="Male" border></el-radio>
-							<el-radio label="Female" border></el-radio>
-						</el-radio-group>
-					</el-form-item>
-				</el-col>
-			</el-col> -->
-			<el-col>
 				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
 					<el-form-item label="Phone">
 						<el-input :disabled="!edit" v-model="form.phone" placeholder="+1 xxx xxx xxxx"/>
 					</el-form-item>
 				</el-col>
+			</el-col>
+			<el-col>
 				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
 					<el-form-item label="LinkedIn">
 						<el-input :disabled="!edit" v-model="form.linkedIn" placeholder="LinkedIn.com">
-							 <template slot="prepend">Http://</template>
+							 <template slot="prepend">http://</template>
 						</el-input>
 					</el-form-item>
 				</el-col>
 				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
 					<el-form-item label="Twitter">
 						<el-input :disabled="!edit" v-model="form.twitter" placeholder="Twitter.com">
-							 <template slot="prepend">Http://</template>
+							 <template slot="prepend">http://</template>
 						</el-input>
 					</el-form-item>
 				</el-col>
 				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
 					<el-form-item label="Facebook">
 						<el-input :disabled="!edit" v-model="form.facebook" placeholder="facebook.com">
-							 <template slot="prepend">Http://</template>
+							 <template slot="prepend">http://</template>
 						</el-input>
 					</el-form-item>
 				</el-col>
 				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
 					<el-form-item label="Instagram">
 						<el-input :disabled="!edit" v-model="form.insta" placeholder="Instagram.com">
-							 <template slot="prepend">Http://</template>
+							 <template slot="prepend">http://</template>
 						</el-input>
 					</el-form-item>
 				</el-col>
 			</el-col>
-			<el-col>
-				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
-					<el-form-item label="Address">
-						<el-input :disabled="!edit" v-model="form.address"/>
-					</el-form-item>
-				</el-col>
-				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
-					<el-form-item label="Postal code">
-						<el-input :disabled="!edit" v-model="form.postalCode"/>
-					</el-form-item>
-				</el-col>
-			</el-col>
-			<el-col>
-				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
-					<el-form-item label="City">
-						<el-input :disabled="!edit" v-model="form.city"/>
-					</el-form-item>
-				</el-col>
-				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
-					<el-form-item label="Country">
-						<el-input :disabled="!edit" v-model="form.country"/>
-					</el-form-item>
-				</el-col>
-			</el-col>
-			<!-- <el-col>
-				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
-					<el-form-item label="Hobbies">
-						<el-select
-							class="select-wide"
-							v-model="form.hobbies"
-							multiple
-							filterable
-							allow-create
-							default-first-option
-							placeholder="Choose tags for your hobbies">
-							<el-option
-							v-for="item in hobbies"
-							:key="item.value"
-							:label="item.label"
-							:value="item.value">
-							</el-option>
-						</el-select>
-					</el-form-item>
-				</el-col>
-				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
-					<el-form-item label="Skills">
-						<el-select
-							class="select-wide"
-							v-model="form.skills"
-							multiple
-							filterable
-							allow-create
-							default-first-option
-							placeholder="Choose tags for your skills">
-							<el-option
-							v-for="item in skills"
-							:key="item.value"
-							:label="item.label"
-							:value="item.value">
-							</el-option>
-						</el-select>
-					</el-form-item>
-				</el-col>
-			</el-col>
-						 -->
 			<el-col class="col-p">
 				<el-form-item label="About me">
 					<el-input  :disabled="!edit" type="textarea" v-model="form.aboutMe" autosize></el-input>

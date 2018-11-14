@@ -14,6 +14,8 @@ export function loadEvents(id){
           start_time
           end_time
           location
+          max_capacity
+					current_capacity
           announcements{
             date_modified
             message
@@ -93,7 +95,6 @@ export function loadEvents(id){
 }
 
 export function loadSeminars(id){
-    console.log("lololololol")
     // gets all the information about a seminar
     return fetch({
         query: `{
@@ -108,7 +109,9 @@ export function loadSeminars(id){
             description
             start_time
             end_time
-            location
+						location
+						max_capacity
+						current_capacity
             organizers{
               id
               first_name
