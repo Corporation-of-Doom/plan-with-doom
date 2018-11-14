@@ -1,4 +1,4 @@
-const { signIn, searchUsers } = require("./user");
+const { signIn, searchUsers, getUser } = require("./user");
 const { queryEventByID } = require("./event");
 const { querySeminarByID, querySeminarsByEventID } = require("./seminar");
 const {
@@ -31,6 +31,16 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Incorrect password or email");
+      }
+    },
+    async getUserById(_, args) {
+      const { userID } = args;
+      try {
+        const user = await getUser(userID);
+        return user;
+      } catch (err) {
+        console.log(err);
+        return new Error(`Unable to get user with ID ${userID}`);
       }
     },
     async getTotal(_, args) {
@@ -179,7 +189,9 @@ const rootResolvers = {
     twitter: ({ twitter }) => twitter,
     facebook: ({ facebook }) => facebook,
     instagram: ({ instagram }) => instagram,
-    phone_number: ({ phone_number }) => phone_number
+    phone_number: ({ phone_number }) => phone_number,
+    about_me: ({ about_me }) => about_me,
+    picture_path: ({ picture_path }) => picture_path
   },
   Event: {
     id: ({ id }) => id,

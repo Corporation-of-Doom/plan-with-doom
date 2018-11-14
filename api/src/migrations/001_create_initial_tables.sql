@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS Doom_User(
   picture_path		      TEXT,
   password_hash         TEXT                NOT NULL,
   confirmed             BOOL                DEFAULT FALSE,
-  website	  		        TEXT,
+  about_me              TEXT,
+
   PRIMARY KEY (ID)
 );
 
