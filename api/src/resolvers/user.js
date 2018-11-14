@@ -106,7 +106,6 @@ async function checkConflicts(userID, startDateTime, endDateTime) {
   for (var i = 0; i < userEventsAndSeminars.length; i++) {
     var currStart = new Date(userEventsAndSeminars[i].start_time);
     var currEnd = new Date(userEventsAndSeminars[i].end_time);
-    console.log(userEventsAndSeminars.length);
 
     if (
       (currStart >= start && currStart <= end) ||
