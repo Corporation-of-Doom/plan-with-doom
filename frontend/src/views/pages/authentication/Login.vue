@@ -73,6 +73,7 @@ export default {
             facebook
             instagram
             organization
+            about_me
           }
         }`
       })
