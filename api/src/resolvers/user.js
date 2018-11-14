@@ -96,4 +96,28 @@ async function searchUsers(searchString) {
   return users;
 }
 
-module.exports = { signIn, searchUsers };
+async function getUser(userID) {
+  const queryString = `SELECT * from doom_user WHERE id = ?;`;
+  const res = await db.raw(queryString, [userID]);
+
+  if (!res.rows.length) return null;
+
+  return {
+    id: res.rows[0].id,
+    first_name: res.rows[0].first_name,
+    middle_name: res.rows[0].middle_name,
+    last_name: res.rows[0].last_name,
+    email: res.rows[0].email,
+    organization: res.rows[0].organization,
+    linked_in: res.rows[0].linked_in,
+    facebook: res.rows[0].facebook,
+    instagram: res.rows[0].instagram,
+    twitter: res.rows[0].twitter,
+    phone_number: res.rows[0].phone_number,
+    privacy_settings: res.rows[0].privacy_settings,
+    picture_path: res.rows[0].picture_path,
+    about_me: res.rows[0].about_me
+  };
+}
+
+module.exports = { signIn, searchUsers, getUser };

@@ -18,6 +18,7 @@ const SchemaDefinition = `
   # the schema allows the following queries:
   type Query {
     login(email: String!, password: String!): User!
+    getUserById(userID: Int!): User
 
     getTotal(type: String): Int!
     getTotalSearchResults(searchString: String!, type: String): Int!
