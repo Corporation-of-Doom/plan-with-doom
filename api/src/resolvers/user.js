@@ -1,5 +1,6 @@
 const { db } = require("../db");
 const bcrypt = require("bcrypt");
+const { getMySchedule } = require("./searchResults");
 
 async function signIn(emailToFind, password) {
   // check if email exists
@@ -90,4 +91,40 @@ async function searchUsers(searchString) {
   return users;
 }
 
-module.exports = { signIn, searchUsers };
+async function checkConflicts(userID, startDateTime, endDateTime) {
+  const start = new Date(startDateTime);
+  const end = new Date(endDateTime);
+
+  var userEventsAndSeminars = await getMySchedule(
+    userID,
+    null,
+    null,
+    null,
+    "ATTENDING"
+  );
+
+  for (var i = 0; i < userEventsAndSeminars.length; i++) {
+    var currStart = new Date(userEventsAndSeminars[i].start_time);
+    var currEnd = new Date(userEventsAndSeminars[i].end_time);
+    console.log(userEventsAndSeminars.length);
+
+    if (
+      (currStart >= start && currStart <= end) ||
+      (currEnd >= start && currEnd <= end)
+    ) {
+      // conflict found
+      return true;
+    } else if (
+      (start >= currStart && start <= currEnd) ||
+      (end >= currStart && end <= currEnd)
+    ) {
+      // conflict found
+      return true;
+    }
+  }
+
+  // no conflict found
+  return false;
+}
+
+module.exports = { signIn, searchUsers, checkConflicts };
