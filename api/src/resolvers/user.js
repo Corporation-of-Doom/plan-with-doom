@@ -42,7 +42,8 @@ async function signIn(emailToFind, password) {
       instagram,
       phone_number,
       privacy_settings,
-      about_me
+      about_me,
+      picture_path
     };
   }
 
@@ -86,7 +87,8 @@ async function searchUsers(searchString) {
       twitter: user.twitter,
       phone_number: user.phone_number,
       privacy_settings: user.privacy_settings,
-      about_me: user.about_me
+      about_me: user.about_me,
+      picture_path: user.picture_path
     });
   });
 
