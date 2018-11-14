@@ -15,9 +15,13 @@
 				<p v-else-if="user.email" placeholder="email@email.com">Email: {{user.email}}</p>
 				<p v-else-if="user.phone_number" placeholder="+1 xxx xxx xxxx">Phone: {{user.phone_number}}</p>
 				<i v-if="user.linked_in" @click="onClick('linked_in')" class="mdi mdi-linkedin-box"></i>
+				{{user.linked_in}}
 				<i v-if="user.twitter" @click="onClick('twitter')" class="mdi mdi-twitter-box"></i>
+				{{user.twitter}} <br>
 				<i v-if="user.facebook" @click="onClick('facebook')" class="mdi mdi-facebook-box"></i>
+				{{user.facebook}}
 				<i v-if="user.instagram" @click="onClick('instagram')" class="mdi mdi-instagram"></i>
+				{{user.instagram}}
 			</el-col>
 		</el-card>
 		
