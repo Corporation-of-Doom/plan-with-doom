@@ -85,4 +85,38 @@ async function registerUser(user) {
   };
 }
 
-module.exports = { registerUser };
+async function editUserProfile(userID, user) {
+  let queryString = `UPDATE doom_user SET`;
+  let first = 1;
+
+  for (var key in user) {
+    if (user[key] !== null) {
+      if (!first) queryString = `${queryString}, `;
+      first = 0;
+      queryString = `${queryString} ${key} = '${user[key]}'`;
+    }
+  }
+
+  queryString = `${queryString} WHERE id = ? RETURNING *;`;
+
+  const res = await db.raw(queryString, [userID]);
+
+  return {
+    id: res.rows[0].id,
+    first_name: res.rows[0].first_name,
+    middle_name: res.rows[0].middle_name,
+    last_name: res.rows[0].last_name,
+    email: res.rows[0].email,
+    organization: res.rows[0].organization,
+    linked_in: res.rows[0].linked_in,
+    facebook: res.rows[0].facebook,
+    instagram: res.rows[0].instagram,
+    twitter: res.rows[0].twitter,
+    phone_number: res.rows[0].phone_number,
+    privacy_settings: res.rows[0].privacy_settings,
+    picture_path: res.rows[0].picture_path,
+    about_me: res.rows[0].about_me
+  };
+}
+
+module.exports = { registerUser, editUserProfile };
