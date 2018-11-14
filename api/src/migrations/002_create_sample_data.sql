@@ -66,3 +66,40 @@ insert into Seminar_Announcement (seminar_id, message, date_created, date_modifi
 
 -- One user following
 insert into User_Following (user_id, following_user_id) values (4,1);
+
+UPDATE "event" 
+    SET current_capacity =subquery.count
+FROM (SELECT count(*)
+from event_participation
+where event_id = 1 and attending = true) AS subquery
+WHERE event.id=1;
+
+UPDATE "event" 
+    SET current_capacity =subquery.count
+FROM (SELECT count(*)
+    from event_participation
+    where event_id = 2 and attending = true) AS subquery
+WHERE event.id=2;
+
+UPDATE "event" 
+    SET current_capacity =subquery.count
+FROM (SELECT count(*)
+    from event_participation
+    where event_id = 3 and attending = true) AS subquery
+WHERE event.id=3;
+
+
+UPDATE "event" 
+    SET current_capacity =subquery.count
+FROM (SELECT count(*)
+    from event_participation
+    where event_id = 4 and attending = true) AS subquery
+WHERE event.id=4;
+
+UPDATE "event" 
+    SET current_capacity =subquery.count
+FROM (SELECT count(*)
+    from event_participation
+    where event_id = 5 and attending = true) AS subquery
+WHERE event.id=5;
+
