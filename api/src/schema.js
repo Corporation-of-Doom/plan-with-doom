@@ -42,8 +42,13 @@ const SchemaDefinition = `
     # Creates a new event
     createEvent(event: EventInput!): Event!
     createSeminar(seminar: SeminarInput!): Seminar!
+
     addUserToEvent(EventParticipation: EventParticipationInput!): Int!
     removeUserFromEvent(EventParticipation: EventParticipationInput!): Int!
+
+    addUserToEventWaitlist(EventParticipation: EventParticipationInput!): Int!
+    removeUserFromEventWaitlist(EventParticipation: EventParticipationInput!): Int!
+
 
     addUserToSeminar(SeminarParticipation: SeminarParticipationInput!): Int!
     removeUserFromSeminar(SeminarParticipation: SeminarParticipationInput!): Int!
