@@ -171,33 +171,33 @@ async function updateEventParticipation(
   let { userid, eventid, participationType } = EventParticipationInput;
   var updateWaitlist = false;
 
-  let { current_capacity, max_capacity } = await queryEventByID(eventid);
-  // Checking if user can be added to event or should be added to waitlist
-  if (max_capacity && current_capacity == max_capacity) {
-    if (adding) {
-      console.log(userid + ":" + eventid);
-      console.log(
-        "Event is currently at max capacity, user should be added to waitlist"
-      );
-      return new Error(
-        "Event is currently at max capacity, user should be added to waitlist"
-      );
-    }
-  } else if (current_capacity > max_capacity) {
-    throw new Error(
-      "Wack: Current capacity(" +
-        current_capacity +
-        ") of event " +
-        eventid +
-        " is greater than max capacity(" +
-        max_capacity +
-        ")"
-    );
-  }
-
   // Adds/removes user from the event
   var queryString = null;
   if (participationType.toUpperCase() === "ATTENDING") {
+    let { current_capacity, max_capacity } = await queryEventByID(eventid);
+    // Checking if user can be added to event or should be added to waitlist
+
+    if (max_capacity && current_capacity == max_capacity) {
+      if (adding) {
+        console.log(userid + ":" + eventid);
+        console.log(
+          "Event is currently at max capacity, user should be added to waitlist"
+        );
+        return new Error(
+          "Event is currently at max capacity, user should be added to waitlist"
+        );
+      }
+    } else if (current_capacity > max_capacity) {
+      throw new Error(
+        "Wack: Current capacity(" +
+          current_capacity +
+          ") of event " +
+          eventid +
+          " is greater than max capacity(" +
+          max_capacity +
+          ")"
+      );
+    }
     queryString = `INSERT INTO event_participation (user_id, event_id , attending ) VALUES( ? , ? , ?)
         ON CONFLICT (user_id , event_id ) DO UPDATE SET attending = excluded.attending;`;
   } else {
@@ -209,16 +209,18 @@ async function updateEventParticipation(
 
   var newCapacity = await updateCurrentCapacity(eventid);
 
-  // Checks if user unattended event, meaning there's space on the waitlist
-  // Moves participant off waitinglist
-  if (current_capacity == max_capacity && newCapacity < current_capacity) {
-    var top = await getWaitlistTop(eventid);
-    updateEventWaitlist(top, eventid, false);
-    updateEventParticipation({
-      userid: top,
-      participationType: "ATTENDING",
-      eventid: eventid
-    });
+  if (participationType.toUpperCase() === "ATTENDING") {
+    // Checks if user unattended event, meaning there's space on the waitlist
+    // Moves participant off waitinglist
+    if (current_capacity == max_capacity && newCapacity < current_capacity) {
+      var top = await getWaitlistTop(eventid);
+      updateEventWaitlist(top, eventid, false);
+      updateEventParticipation({
+        userid: top,
+        participationType: "ATTENDING",
+        eventid: eventid
+      });
+    }
   }
 
   return true;
