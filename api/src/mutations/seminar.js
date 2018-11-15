@@ -110,6 +110,19 @@ async function insertNewSeminar(seminarInput) {
   };
 }
 
+async function updateCurrentCapacity(seminarid) {
+  // Will recalculate and update the table's current capacity
+  var queryString = `UPDATE "seminar" 
+                      SET current_capacity =subquery.count
+                    FROM (SELECT count(*) FROM seminar_participation WHERE seminar_id = ? AND attending = true) AS subquery
+                    WHERE seminar.id=?
+                    RETURNING current_capacity;`;
+  const vals = [seminarid, seminarid];
+
+  const res = await db.raw(`${queryString}`, vals);
+  return res.rows[0].current_capacity;
+}
+
 async function updateSeminarParticipation(
   SeminarParticipationInput,
   adding = true
@@ -120,15 +133,16 @@ async function updateSeminarParticipation(
 
   if (participationType === "ATTENDING") {
     queryString = `INSERT INTO seminar_participation (user_id, seminar_id , attending ) VALUES( ? , ? , ?)
-    ON CONFLICT (user_id , seminar_id ) do update set attending = excluded.attending;`;
+    ON CONFLICT (user_id , seminar_id ) DO UPDATE SET attending = excluded.attending;`;
   } else {
     queryString = `INSERT INTO seminar_participation (user_id, seminar_id , following ) VALUES( ? , ? , ?)
-    ON CONFLICT (user_id , seminar_id ) do update set following = excluded.following;`;
+    ON CONFLICT (user_id , seminar_id ) DO UPDATE SET following = excluded.following;`;
   }
 
   const vals = [userid, seminarid, adding];
 
   await db.raw(`${queryString}`, vals);
+  var newCapacity = await updateCurrentCapacity(seminarid);
   return true;
 }
 
