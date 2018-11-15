@@ -87,8 +87,13 @@ export default {
           }
         })
         .then(res => {
+          var userInfo = res.data.signUp
+          userInfo.manage = []
+          userInfo.follow = []
+          userInfo.attend = []
+          userInfo.waitlist = []
           if (res.data) {
-            this.$store.commit("setLogin", res.data.signUp);
+            this.$store.commit("setLogin", userInfo);
             this.$router.push("myevents");
           } else {
             form.error = res.errors[0].message;

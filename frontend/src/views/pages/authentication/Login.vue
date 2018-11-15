@@ -151,6 +151,7 @@ export default {
                     console.log("no manging")
 
                   }
+                  user.waitlist = []
                   console.log(user)
                   this.$store.commit("setLogin", user);
                   this.$router.push("myevents");

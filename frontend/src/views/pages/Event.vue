@@ -10,8 +10,6 @@
         <el-button v-else @click="follow" type="primary" title="Follow">{{followInfo.follow}}</el-button>
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin-left:10px">
-        <el-button v-if="waitlist" title="Unwaitlist" @click="unwaitlist" plain type="primary"> Waitlisted </el-button>
-        <el-button v-else-if="info.current_capacity === info.max_capacity" @click="wait" title="Waitlist" type="primary"> Add to Waitlist </el-button>
         
         <div v-if="manageInfo.status">
           
@@ -41,8 +39,9 @@
 
         </div>
 
-
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
+        <el-button v-else-if="waitlist" title="Unwaitlist" @click="unlist" plain type="primary"> Waitlisted </el-button>
+        <el-button v-else-if="info.current_capacity === info.max_capacity" @click="list" title="Waitlist" type="primary"> Add to Waitlist </el-button>
         <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
     </el-row>
@@ -128,7 +127,7 @@ export default {
         edit: "Edit",
         announcement: "Post Announcment"
       },
-      waitlist: false,
+      waitlist: this.$store.state.event.waitlist,
       activeName: "news",
       info:this.$store.state.event,
       user:this.$store.state.user,
@@ -185,13 +184,31 @@ export default {
           if (result){
             this.attendInfo.status = true
           } else{
-            this.attendInfo.status = false
+            this.waitlisted()
           }
         }.bind(this))        
       }
     },
-    wait(){
+    list(){
       this.waitlist = true
+      fetch({
+        query: `mutation addUserToEventWaitlist($participation:EventParticipationInput!) {
+          addUserToEventWaitlist(EventParticipation: $participation) 
+        }`,
+        variables: {
+          "participation": {
+            "userid": this.user.id,
+            "eventid": this.info.id,
+            "participationType": "ATTENDING"
+          }
+        }
+      })
+      .then(res => {
+        console.log(res)
+        if(res.data){
+          this.$store.commit("addToWaitlist",{__typename: 'Event', id: this.info.id})
+        }
+      })
     },
     loadSeminar(id) {
       loadSeminars(id).then(function(result) {
@@ -223,8 +240,26 @@ export default {
         }.bind(this))
       }
     },
-    unwaitlist(){
+    unlist(){
       this.waitlist = false
+      fetch({
+        query: `mutation removeUserFromEventWaitlist($participation:EventParticipationInput!) {
+          removeUserFromEventWaitlist(EventParticipation: $participation)
+        }`,
+        variables: {
+          "participation": {
+            "userid": this.user.id,
+            "eventid": this.info.id,
+            "participationType": "ATTENDING"
+          }
+        }
+      })
+      .then(res => {
+        console.log(res)
+        if(res.data){
+          this.$store.commit("removeFromWaitlist",{__typename: 'Event', id: this.info.id})
+        }
+      })
     }
   },
   components: {}

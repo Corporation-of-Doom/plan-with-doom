@@ -86,6 +86,16 @@ export function loadEvents(id){
         }else{
             eventInfo.manage = false
         }
+        if(user.waitlist.filter(item => item.__typename === "Event" && item.id === id).length > 0){
+            eventInfo.waitlist = true
+        }else{
+            eventInfo.waitlist = false
+        }
+        console.log('Follow: '+eventInfo.follow)
+        console.log('Attend: '+eventInfo.attend)
+        console.log('Manage: '+eventInfo.manage)
+        console.log('Waitlist: '+eventInfo.waitlist)
+
         eventInfo.creator_id = eventInfo.organizers.filter(organizer => organizer.id === eventInfo.creator_id)[0].name
         eventInfo.id = id
         store.commit("setEvent",eventInfo)
@@ -219,6 +229,7 @@ export function followAndAttend(type, partType){
         variables: call.variables
     })
     .then(res =>{
+        console.log(res, call)
         if(res.data){
             var payload = {
               __typename: type,
