@@ -12,7 +12,36 @@
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin-left:10px">
         <el-button v-if="waitlist" title="Unwaitlist" @click="unwaitlist" plain type="primary"> Waitlisted </el-button>
         <el-button v-else-if="info.current_capacity === info.max_capacity" @click="wait" title="Waitlist" type="primary"> Add to Waitlist </el-button>
-        <el-button v-else-if="manageInfo.status" title="Announcement" type="primary"> {{manageInfo.announcement}} </el-button>
+        
+        <div v-if="manageInfo.status">
+          
+          <el-button title="Announcement" type="primary" @click="dialogVisible = true"> {{manageInfo.announcement}} </el-button>
+
+          <el-dialog
+            
+            title="Post an announcement"
+            :visible.sync="dialogVisible"
+            width="30%">
+
+            <el-input
+              id="post"
+              type="textarea"
+              :rows="2"
+              placeholder="Message here"
+              clearable
+              v-model="postMessage">
+            </el-input>
+
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="dialogVisible = false">Cancel</el-button>
+              <el-button type="primary" @click="onPost">Post</el-button>
+            </span>
+
+          </el-dialog>
+
+        </div>
+
+
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
         <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
@@ -102,10 +131,42 @@ export default {
       waitlist: false,
       activeName: "news",
       info:this.$store.state.event,
-      user:this.$store.state.user
+      user:this.$store.state.user,
+      dialogVisible: false,
+      postMessage: '',
     };
   },
   methods: {
+    onPost() {
+      console.log(typeof(this.$store.state.event.id));
+
+      if (this.postMessage) {
+        fetch({
+            query: ` mutation createEventAnnoucement($announcement: AnnouncementInput!) {
+              createEventAnnouncement(announcement: $announcement) {
+                  id
+                }
+              }`,
+            variables: {
+              announcement: {		
+                type_id: this.$store.state.event.id,
+                message: this.postMessage
+              }
+            }
+            }).then(res => {
+            if (res.data) {
+              this.dialogVisible = false
+              this.postMessage=''   
+            } else {
+              console.log(res.errors)
+            }		
+          }).catch(err => {
+            console.log(err);
+          }); 
+      } else {
+        alert("There is nothing to post.")
+      }
+    },
     follow() {
       followAndAttend('Event', 'FOLLOWING').then(function(result) {
         if (result){
