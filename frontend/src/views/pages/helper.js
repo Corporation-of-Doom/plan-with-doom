@@ -46,6 +46,8 @@ export function loadEvents(id){
         // formats event for Events page
         var eventInfo = res.data.getEventByID
         var user = store.getters.getUser
+        eventInfo.start_time_utc = eventInfo.start_time
+        eventInfo.end_time_utc = eventInfo.end_time
         eventInfo.start_time =  moment(parseInt(eventInfo.start_time,10)).format("MMMM Do YYYY, h:mm a")
         eventInfo.end_time =  moment(parseInt(eventInfo.end_time,10)).format("MMMM Do YYYY, h:mm a")
         eventInfo.announcements.forEach(event => {
@@ -123,6 +125,8 @@ export function loadSeminars(id){
         var user = store.getters.getUser
         if(res.data){
           var seminarInfo = res.data.getSeminarByID
+          seminarInfo.start_time_utc = seminarInfo.start_time
+          seminarInfo.end_time_utc = seminarInfo.end_time
           seminarInfo.start_time =  moment(parseInt(seminarInfo.start_time,10)).format("MMMM Do YYYY, h:mm a")
           seminarInfo.end_time =  moment(parseInt(seminarInfo.end_time,10)).format("MMMM Do YYYY, h:mm a")
           seminarInfo.announcements.forEach(seminar => {
@@ -137,9 +141,6 @@ export function loadSeminars(id){
             }`
           })
           .then(nameRes => {
-            if(nameRes.data){
-              seminarInfo.event_id = nameRes.data.getEventByID.name
-            }
             if(nameRes.data){
               console.log(nameRes.data.getEventByID.name)
               seminarInfo.event_name = nameRes.data.getEventByID.name
@@ -160,13 +161,12 @@ export function loadSeminars(id){
             }else{
               seminarInfo.manage = false
             }
-            if(user.attend.filter(item => item.__typename === "Event" && item.event_id === seminarInfo.event_id).length === 0){
-              seminarInfo.hideAttend = true
-            } else {
+            if(user.attend.filter(item => item.__typename === "Event" && item.id === seminarInfo.event_id).length > 0){
               seminarInfo.hideAttend = false
+            } else {
+              seminarInfo.hideAttend = true
             }
             seminarInfo.id=id
-            console.log(seminarInfo)
             store.commit("setSeminar",seminarInfo)
             return true
           })
