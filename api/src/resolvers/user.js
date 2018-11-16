@@ -91,7 +91,7 @@ async function searchUsers(searchString) {
   return users;
 }
 
-async function checkConflicts(userID, startDateTime, endDateTime) {
+async function checkConflicts(userID, eventID, startDateTime, endDateTime) {
   const start = new Date(startDateTime);
   const end = new Date(endDateTime);
 
@@ -104,6 +104,8 @@ async function checkConflicts(userID, startDateTime, endDateTime) {
   );
 
   for (var i = 0; i < userEventsAndSeminars.length; i++) {
+    if (eventID && userEventsAndSeminars[i].id === eventID) continue;
+
     var currStart = new Date(userEventsAndSeminars[i].start_time);
     var currEnd = new Date(userEventsAndSeminars[i].end_time);
 
