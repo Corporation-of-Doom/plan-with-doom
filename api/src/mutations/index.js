@@ -1,4 +1,8 @@
-const { insertNewEvent, updateEventParticipation } = require("./event");
+const {
+  insertNewEvent,
+  updateEventParticipation,
+  updateEventWaitlist
+} = require("./event");
 const { insertNewSeminar, updateSeminarParticipation } = require("./seminar");
 const { registerUser } = require("./user");
 const { insertNewAnnouncement } = require("./announcement");
@@ -50,6 +54,26 @@ const mutations = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to remove user from event");
+      }
+    },
+    async addUserToEventWaitlist(_, args) {
+      try {
+        const { EventParticipation } = args;
+        const { userid, eventid } = EventParticipation;
+        return await updateEventWaitlist(userid, eventid);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to add user to event waitlist");
+      }
+    },
+    async removeUserFromEventWaitlist(_, args) {
+      try {
+        const { EventParticipation } = args;
+        const { userid, eventid } = EventParticipation;
+        return await updateEventWaitlist(userid, eventid, false);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to remove user from event waitlist");
       }
     },
     async addUserToSeminar(_, args) {
