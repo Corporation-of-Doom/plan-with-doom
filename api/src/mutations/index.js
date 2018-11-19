@@ -58,9 +58,8 @@ const mutations = {
     },
     async addUserToEventWaitlist(_, args) {
       try {
-        const { EventParticipation } = args;
-        const { userid, eventid } = EventParticipation;
-        return await updateEventWaitlist(userid, eventid);
+        const { userID, eventID } = args;
+        return await updateEventWaitlist(userID, eventID);
       } catch (err) {
         console.log(err);
         return new Error("Unable to add user to event waitlist");
@@ -68,9 +67,8 @@ const mutations = {
     },
     async removeUserFromEventWaitlist(_, args) {
       try {
-        const { EventParticipation } = args;
-        const { userid, eventid } = EventParticipation;
-        return await updateEventWaitlist(userid, eventid, false);
+        const { userID, eventID } = args;
+        return await updateEventWaitlist(userID, eventID, false);
       } catch (err) {
         console.log(err);
         return new Error("Unable to remove user from event waitlist");

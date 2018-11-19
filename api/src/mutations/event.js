@@ -121,19 +121,24 @@ async function getWaitlistTop(eventid) {
 }
 
 /* 
-mutation addUserToEventWaitlist($mylife:EventParticipationInput!) {
-  addUserToEventWaitlist(EventParticipation: $mylife)
+
+# mutation addUserToEventWaitlist($user: Int!, $event: Int!) {
+#   addUserToEventWaitlist(userID: $user, eventID: $event)
+# }
+
+mutation removeUserFromEventWaitlist($user: Int!, $event: Int!) {
+  removeUserFromEventWaitlist(userID: $user, eventID: $event)
 }
 
-mutation removeUserFromEventWaitlist($mylife:EventParticipationInput!) {
-  removeUserFromEventWaitlist(EventParticipation: $mylife)
-}
-mutation addUserToEvent($mylife:EventParticipationInput!) {
-  addUserToEvent(EventParticipation: $mylife)
-}
-mutation removeUserFromEvent($mylife:EventParticipationInput!) {
-  removeUserFromEvent(EventParticipation: $mylife)
-}
+
+# mutation addUserToEvent($mylife:EventParticipationInput!) {
+#   addUserToEvent(EventParticipation: $mylife)
+# }
+
+# mutation removeUserFromEvent($mylife:EventParticipationInput!) {
+#   removeUserFromEvent(EventParticipation: $mylife)
+# }
+
 
 */
 
@@ -156,6 +161,7 @@ async function updateEventWaitlist(userid, eventid, adding = true) {
     queryString = `INSERT INTO Event_Wait_list(user_id, event_id, date_added) VALUES(?, ?, ?);`;
     vals = [userid, eventid, date];
   } else {
+    console.log("mydudeee");
     queryString = `DELETE FROM Event_Wait_list WHERE user_id = ? and event_id = ?;`;
     vals = [userid, eventid];
   }

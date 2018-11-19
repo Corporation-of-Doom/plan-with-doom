@@ -138,6 +138,44 @@ async function updateCurrentCapacity(seminarid) {
   return res.rows[0].current_capacity;
 }
 
+async function getWaitlistTop(eventid) {
+  // Returns the id of the user who's at the top of the waitlist given an eventid
+  var queryString = null;
+  var userid = null;
+  queryString = `SELECT user_id FROM seminar_wait_list WHERE seminar_id=? ORDER BY date_added LIMIT 1;`;
+  vals = [eventid];
+  const res = await db.raw(`${queryString}`, vals);
+  userid = res.rows[0].user_id;
+  return userid;
+}
+
+async function updateSeminarWaitlist(userid, eventid, adding = true) {
+  var queryString = null;
+  var vals = [];
+  let { current_capacity, max_capacity } = await queryEventByID(eventid);
+
+  // Checks if there is capacity in the event
+  if (adding) {
+    if (current_capacity < max_capacity) {
+      console.log("Event currently has space, user should be added to event");
+      return new Error(
+        "Event currently has space, user should be added to event"
+      );
+    }
+  }
+  if (adding) {
+    var date = new Date();
+    queryString = `INSERT INTO Event_Wait_list(user_id, event_id, date_added) VALUES(?, ?, ?);`;
+    vals = [userid, eventid, date];
+  } else {
+    queryString = `DELETE FROM Event_Wait_list WHERE user_id = ? and event_id = ?;`;
+    vals = [userid, eventid];
+  }
+
+  await db.raw(`${queryString}`, vals);
+  return true;
+}
+
 async function updateSeminarParticipation(
   SeminarParticipationInput,
   adding = true
@@ -161,4 +199,8 @@ async function updateSeminarParticipation(
   return true;
 }
 
-module.exports = { insertNewSeminar, updateSeminarParticipation };
+module.exports = {
+  insertNewSeminar,
+  updateSeminarParticipation
+  // updateSeminarWaitlist
+};
