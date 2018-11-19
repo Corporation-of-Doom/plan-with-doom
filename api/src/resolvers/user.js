@@ -91,23 +91,33 @@ async function searchUsers(searchString) {
   return users;
 }
 
-async function checkConflicts(userID, eventID, startDateTime, endDateTime) {
+async function checkConflicts(userID, type, startDateTime, endDateTime) {
   const start = new Date(startDateTime);
   const end = new Date(endDateTime);
 
-  var userEventsAndSeminars = await getMySchedule(
-    userID,
-    null,
-    null,
-    null,
-    "ATTENDING"
-  );
+  let userEventsOrSeminars;
 
-  for (var i = 0; i < userEventsAndSeminars.length; i++) {
-    if (eventID && userEventsAndSeminars[i].id === eventID) continue;
+  if (type.toLowerCase() === "event") {
+    userEventsOrSeminars = await getMySchedule(
+      userID,
+      "event",
+      null,
+      null,
+      "ATTENDING"
+    );
+  } else if (type.toLowerCase() === "seminar") {
+    userEventsOrSeminars = await getMySchedule(
+      userID,
+      "seminar",
+      null,
+      null,
+      "ATTENDING"
+    );
+  }
 
-    var currStart = new Date(userEventsAndSeminars[i].start_time);
-    var currEnd = new Date(userEventsAndSeminars[i].end_time);
+  for (var i = 0; i < userEventsOrSeminars.length; i++) {
+    var currStart = new Date(userEventsOrSeminars[i].start_time);
+    var currEnd = new Date(userEventsOrSeminars[i].end_time);
 
     if (
       (currStart >= start && currStart <= end) ||
