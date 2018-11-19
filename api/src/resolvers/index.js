@@ -168,8 +168,8 @@ const rootResolvers = {
     },
     async checkCalendarConflicts(_, args) {
       try {
-        const { userID, eventID, startDateTime, endDateTime } = args;
-        return checkConflicts(userID, eventID, startDateTime, endDateTime);
+        const { userID, type, startDateTime, endDateTime } = args;
+        return checkConflicts(userID, type, startDateTime, endDateTime);
       } catch (err) {
         console.log(err);
         return new Error(
