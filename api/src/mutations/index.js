@@ -62,6 +62,7 @@ const mutations = {
         return await updateEventWaitlist(userID, eventID);
       } catch (err) {
         console.log(err);
+        console.log("User is likely already in waitlist");
         return new Error("Unable to add user to event waitlist");
       }
     },
