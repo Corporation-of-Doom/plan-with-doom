@@ -100,8 +100,8 @@
       title="Conflict Found!"
       :visible.sync="conflictDialog"
       width="50%">
-      <span>Oh no! You are attending another seminar at that time. <br>
-        Are you sure you want to attend this seminar?
+      <span>Oh no! You are attending another event at that time. <br>
+        Are you sure you want to attend this event?
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="cancelConflictDialog">Cancel</el-button>
