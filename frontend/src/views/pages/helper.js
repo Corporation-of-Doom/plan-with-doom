@@ -57,19 +57,6 @@ export function loadEvents(id){
             seminar.start_time =  moment(parseInt(seminar.start_time,10)).format("MMMM Do YYYY, h:mm a")
             seminar.end_time =  moment(parseInt(seminar.end_time,10)).format("MMMM Do YYYY, h:mm a")
         })
-        eventInfo.organizers.forEach(organizer => {
-            organizer.name = ''
-            if (organizer.first_name) {
-            organizer.name = organizer.first_name
-            }
-            if (organizer.middle_name) {
-            organizer.name +=  " " + organizer.middle_name
-            }
-            if (organizer.last_name) {
-            organizer.name +=  " " + organizer.last_name
-            }
-            
-        })
         // checks to see if the user is following the event
         if(user.follow.filter(item => item.__typename === "Event" && item.id === id).length > 0){
             eventInfo.follow = true

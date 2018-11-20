@@ -40,15 +40,17 @@
       </el-tab-pane>
       <el-tab-pane label="Organizers" name="organizers" >
         <div v-for="(organizer,key) in info.organizers" :key="key">
-          {{organizer.first_name}} {{organizer.last_name}}
+          {{organizer.first_name}} {{organizer.middle_name}} {{organizer.last_name}}
         </div>
       </el-tab-pane>
     </el-tabs>
     <el-dialog
-      title="Conflict Found!"
+      title="Conflict Found"
       :visible.sync="conflictDialog"
       width="50%">
-      <span>You seemed to be booked for this time. Are you sure you want to attend this seminar?</span>
+      <span>Oh no! You are attending another seminar at that time. <br>
+        Are you sure you want to attend this seminar?
+      </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="cancelConflictDialog">Cancel</el-button>
         <el-button type="primary" @click="attend">Confirm</el-button>
@@ -97,7 +99,7 @@ export default {
       var start_time = moment(parseInt(this.info.start_time_utc,10)).format('YYYY-MM-DD HH:mm')
       var end_time = moment(parseInt(this.info.end_time_utc,10)).format('YYYY-MM-DD HH:mm')
       fetch({ query: `{
-        checkCalendarConflicts(userID: ${this.userid},eventID: ${this.info.event_id}, startDateTime: "${start_time}", endDateTime: "${end_time}")
+        checkCalendarConflicts(userID: ${this.userid}, type: "seminar", startDateTime: "${start_time}", endDateTime: "${end_time}")
       }`
       })
       .then(res => {
