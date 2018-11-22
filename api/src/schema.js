@@ -52,6 +52,9 @@ const SchemaDefinition = `
     addUserToSeminar(SeminarParticipation: SeminarParticipationInput!): Int!
     removeUserFromSeminar(SeminarParticipation: SeminarParticipationInput!): Int!
 
+    addUserToSeminarWaitlist(userID: Int!, seminarID: Int!): Int!
+    removeUserFromSeminarWaitlist(userID: Int!, seminarID: Int!): Int!
+
     createEventAnnouncement(announcement: AnnouncementInput!): Announcement!
     createSeminarAnnouncement(announcement: AnnouncementInput!): Announcement!
   }

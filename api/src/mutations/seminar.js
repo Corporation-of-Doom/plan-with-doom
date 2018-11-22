@@ -1,5 +1,6 @@
 const { db } = require("../db");
 const { queryEventByID } = require("../resolvers/event");
+const { querySeminarByID } = require("../resolvers/seminar");
 const { queryOrganizerByTypeID } = require("../resolvers/searchResults");
 
 async function insertNewSeminar(seminarInput) {
@@ -138,38 +139,64 @@ async function updateCurrentCapacity(seminarid) {
   return res.rows[0].current_capacity;
 }
 
-async function getWaitlistTop(eventid) {
-  // Returns the id of the user who's at the top of the waitlist given an eventid
+async function getWaitlistTop(seminarid) {
+  // Returns the id of the user who's at the top of the waitlist given an seminarid
   var queryString = null;
   var userid = null;
   queryString = `SELECT user_id FROM seminar_wait_list WHERE seminar_id=? ORDER BY date_added LIMIT 1;`;
-  vals = [eventid];
+  vals = [seminarid];
   const res = await db.raw(`${queryString}`, vals);
-  userid = res.rows[0].user_id;
-  return userid;
+  if (res.rows.length) {
+    return res.rows[0].user_id;
+  }
+  return false;
 }
 
-async function updateSeminarWaitlist(userid, eventid, adding = true) {
+async function isAttendingSeminar(userid, seminarid) {
+  // Checks the seminar participation  table to see if user is attending the given seminarid
+  var queryString = null;
+  queryString = `SELECT attending FROM seminar_participation WHERE seminar_id = ? AND user_id = ? LIMIT 1;`;
+  vals = [seminarid, userid];
+
+  const res = await db.raw(`${queryString}`, vals);
+  if (res.rows.length) {
+    return res.rows[0].attending;
+  } else {
+    return false;
+  }
+}
+
+async function alreadyAttendingSeminar(userid, seminarid) {
+  //Will throw error is the user is already attending the seminar
+  if (await isAttendingSeminar(userid, seminarid)) {
+    throw new Error(
+      "User:" + userid + " is already attending Seminar:" + seminarid
+    );
+  }
+}
+
+async function updateSeminarWaitlist(userid, seminarid, adding = true) {
   var queryString = null;
   var vals = [];
-  let { current_capacity, max_capacity } = await queryEventByID(eventid);
+  let { current_capacity, max_capacity } = await querySeminarByID(seminarid);
 
-  // Checks if there is capacity in the event
+  //throws error if user already attending seminar
+  await alreadyAttendingSeminar(userid, seminarid);
+
   if (adding) {
+    // Checks if there is capacity in the Seminar
     if (current_capacity < max_capacity) {
-      console.log("Event currently has space, user should be added to event");
-      return new Error(
-        "Event currently has space, user should be added to event"
-      );
+      var msg = "Seminar currently has space, user should be added to Seminar";
+      console.log(msg);
+      return new Error(msg);
     }
-  }
-  if (adding) {
+
     var date = new Date();
-    queryString = `INSERT INTO Event_Wait_list(user_id, event_id, date_added) VALUES(?, ?, ?);`;
-    vals = [userid, eventid, date];
+    queryString = `INSERT INTO Seminar_Wait_list(user_id, Seminar_id, date_added) VALUES(?, ?, ?);`;
+    vals = [userid, seminarid, date];
   } else {
-    queryString = `DELETE FROM Event_Wait_list WHERE user_id = ? and event_id = ?;`;
-    vals = [userid, eventid];
+    queryString = `DELETE FROM Seminar_Wait_list WHERE user_id = ? and Seminar_id = ?;`;
+    vals = [userid, seminarid];
   }
 
   await db.raw(`${queryString}`, vals);
@@ -180,27 +207,67 @@ async function updateSeminarParticipation(
   SeminarParticipationInput,
   adding = true
 ) {
+  // Adds/removes user from the event
   let { userid, seminarid, participationType } = SeminarParticipationInput;
 
   var queryString = null;
+  let { current_capacity, max_capacity } = await querySeminarByID(seminarid);
+  if (participationType.toUpperCase() === "ATTENDING") {
+    // throws if error user already attending when trying to add to a seminar
+    if (adding) {
+      await alreadyAttendingSeminar(userid, seminarid);
+    }
+    // Checking if user can be added to event or should be added to waitlist
+    if (max_capacity && current_capacity == max_capacity) {
+      if (adding) {
+        return new Error(
+          "Seminar is currently at max capacity, user should be added to waitlist"
+        );
+      }
+    } else if (max_capacity && current_capacity > max_capacity) {
+      throw new Error(
+        "Wack: Current capacity(" +
+          current_capacity +
+          ") of seminar " +
+          seminarid +
+          " is greater than max capacity(" +
+          max_capacity +
+          ")"
+      );
+    }
 
-  if (participationType === "ATTENDING") {
     queryString = `INSERT INTO seminar_participation (user_id, seminar_id , attending ) VALUES( ? , ? , ?)
-    ON CONFLICT (user_id , seminar_id ) DO UPDATE SET attending = excluded.attending;`;
+      ON CONFLICT (user_id , seminar_id ) DO UPDATE SET attending = excluded.attending;`;
   } else {
     queryString = `INSERT INTO seminar_participation (user_id, seminar_id , following ) VALUES( ? , ? , ?)
-    ON CONFLICT (user_id , seminar_id ) DO UPDATE SET following = excluded.following;`;
+      ON CONFLICT (user_id , seminar_id ) DO UPDATE SET following = excluded.following;`;
+  }
+  const vals = [userid, seminarid, adding];
+  await db.raw(`${queryString}`, vals);
+
+  var newCapacity = await updateCurrentCapacity(seminarid);
+
+  if (participationType.toUpperCase() === "ATTENDING") {
+    /* Checks if user unattended event, meaning there's space on the waitlist
+    Moves participant off waitinglist */
+    if (current_capacity == max_capacity && newCapacity < current_capacity) {
+      var top = await getWaitlistTop(seminarid);
+      if (top) {
+        updateSeminarWaitlist(top, seminarid, false);
+        updateSeminarParticipation({
+          userid: top,
+          participationType: "ATTENDING",
+          seminarid: seminarid
+        });
+      }
+    }
   }
 
-  const vals = [userid, seminarid, adding];
-
-  await db.raw(`${queryString}`, vals);
-  var newCapacity = await updateCurrentCapacity(seminarid);
   return true;
 }
 
 module.exports = {
   insertNewSeminar,
-  updateSeminarParticipation
-  // updateSeminarWaitlist
+  updateSeminarParticipation,
+  updateSeminarWaitlist
 };
