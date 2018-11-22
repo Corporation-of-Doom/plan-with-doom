@@ -208,6 +208,7 @@ async function updateEventParticipation(
   }
   const vals = [userid, eventid, adding];
   await db.raw(`${queryString}`, vals);
+  // TODO: Unattend all related seminars #101
 
   var newCapacity = await updateCurrentCapacity(eventid);
 
