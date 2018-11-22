@@ -3,6 +3,7 @@ INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Bhavanthy','Mod','bmodchal@uoguelph.ca', 'Public','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Alliyya','Mo','alliyya@uoguelph.ca', 'Public','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Tamara','Charchoghlyan','tamaracharch@gmail.com', 'Private','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
+INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Denis','Nikitenko','dnikiten@uoguelph.ca', 'Public','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Tom','Riddle','alliyyamo.dev@gmail.com', 'Private','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Tony','Stark','ironman@avengers.ca', 'Public','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Steve','Rogers','captamerica@avengers.ca', 'Private','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
@@ -34,9 +35,11 @@ INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type, max_ca
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity) VALUES (3,'Alpha Demo',TIMESTAMP '2018-10-31 14:50:00', TIMESTAMP '2018-10-31 15:00:00', 'FCFS_P',5);
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity) VALUES (3,'RC Demo',TIMESTAMP '2018-11-28 14:50:00', TIMESTAMP '2018-11-28 15:00:00', 'FCFS_P',5);
 
-INSERT INTO Seminar_Organizer (user_id, seminar_id) VALUES (2,2);
 INSERT INTO Seminar_Organizer (user_id, seminar_id) VALUES (3,1);
+INSERT INTO Seminar_Organizer (user_id, seminar_id) VALUES (2,2);
 INSERT INTO Seminar_Organizer (user_id, seminar_id) VALUES (4,3);
+INSERT INTO Seminar_Organizer (user_id, seminar_id) VALUES (5,4);
+INSERT INTO Seminar_Organizer (user_id, seminar_id) VALUES (5,5);
 
 INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (2,2,True);
 INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (5,2,True);
@@ -55,6 +58,13 @@ INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (2,2,T
 INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (5,2,True);
 INSERT INTO Seminar_Participation (user_id, seminar_id, following) VALUES (3,2,True);
 INSERT INTO Seminar_Participation (user_id, seminar_id, following) VALUES (3,4,True);
+
+INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (1,5,True);
+INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (2,5,True);
+INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (3,5,True);
+INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (4,5,True);
+INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (5,5,True);
+
 INSERT INTO Seminar_Wait_list (user_id, seminar_id,date_added) VALUES (3,2, TIMESTAMP '2019-10-23 8:30:00+02');
 
 
@@ -73,6 +83,8 @@ DO
 $do$
 BEGIN
     FOR i IN 1..5 LOOP
+    
+    
         UPDATE "event" 
             SET current_capacity =subquery.count
         FROM
@@ -80,6 +92,7 @@ BEGIN
             FROM event_participation
             WHERE event_id = i AND attending = true) AS subquery
         WHERE event.id=i;
+    
         UPDATE "seminar" 
             SET current_capacity =subquery.count
         FROM
@@ -87,6 +100,8 @@ BEGIN
             FROM seminar_participation
             WHERE seminar_id = i AND attending = true) AS subquery
         WHERE seminar.id=i;
+
+
 
    END LOOP;
 END
