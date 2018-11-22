@@ -413,9 +413,9 @@ async function getMyWaitlist(userID, type = null, limit = null, offset = null) {
     // do both types. Start w/ event and UION ALL w/ seminar
     vals.push(
       "event_type",
-      "event_organizer",
+      "event_wait_list",
       "event",
-      "event_organizer",
+      "event_wait_list",
       "event_id",
       "event",
       userID
@@ -429,9 +429,9 @@ async function getMyWaitlist(userID, type = null, limit = null, offset = null) {
   if (!type || type.toLowerCase() === "seminar") {
     vals.push(
       "seminar_type",
-      "seminar_organizer",
+      "seminar_wait_list",
       "seminar",
-      "seminar_organizer",
+      "seminar_wait_list",
       "seminar_id",
       "seminar",
       userID
@@ -451,7 +451,6 @@ async function getMyWaitlist(userID, type = null, limit = null, offset = null) {
   queryString = `${queryString};`;
 
   const res = await db.raw(queryString, vals);
-  console.log(db.raw(queryString, vals).toString());
 
   res.rows.forEach(result => {
     const eventOrSeminar = {
@@ -483,6 +482,6 @@ module.exports = {
   getTotalCount,
   getMySchedule,
   queryOrganizerByTypeID,
-  getMyManagingSchedule
-  // getMyWaitlist
+  getMyManagingSchedule,
+  getMyWaitlist
 };

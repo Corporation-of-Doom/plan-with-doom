@@ -10,7 +10,8 @@ const {
   getTotalCount,
   getMySchedule,
   queryOrganizerByTypeID,
-  getMyManagingSchedule
+  getMyManagingSchedule,
+  getMyWaitlist
 } = require("./searchResults");
 
 const rootResolvers = {
@@ -149,6 +150,19 @@ const rootResolvers = {
         if (!type)
           return new Error("Unable to Managing Events and Managing Seminars.");
         return new Error(`Unable to get Managing ${type}s.`);
+      }
+    },
+    async getMyWaitlistedEventsAndSeminars(_, args) {
+      const { userID, type, limit, offset } = args;
+      try {
+        return await getMyWaitlist(userID, type, limit, offset);
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error(
+            "Unable to retrieve waitlisted Events and Managing Seminars."
+          );
+        return new Error(`Unable to get waitlisted ${type}s.`);
       }
     },
     async getMyAnnouncements(_, args) {
