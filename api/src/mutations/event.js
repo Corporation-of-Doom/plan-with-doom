@@ -116,8 +116,10 @@ async function getWaitlistTop(eventid) {
   queryString = `SELECT user_id FROM event_wait_list WHERE event_id=? ORDER BY date_added LIMIT 1;`;
   vals = [eventid];
   const res = await db.raw(`${queryString}`, vals);
-  userid = res.rows[0].user_id;
-  return userid;
+  if (res.rows.length) {
+    return res.rows[0].user_id;
+  }
+  return false;
 }
 
 async function isAttendingEvent(userid, eventid) {
@@ -133,28 +135,14 @@ async function isAttendingEvent(userid, eventid) {
     return false;
   }
 }
-
-/* 
-
-# mutation addUserToEventWaitlist($user: Int!, $event: Int!) {
-#   addUserToEventWaitlist(userID: $user, eventID: $event)
-# }
-
-mutation removeUserFromEventWaitlist($user: Int!, $event: Int!) {
-  removeUserFromEventWaitlist(userID: $user, eventID: $event)
+async function alreadyAttendingEvent(userid, eventid) {
+  //Will throw error is the user is already attending the Event
+  if (await isAttendingEvent(userid, eventid)) {
+    throw new Error(
+      "User:" + userid + " is already attending Event:" + eventid
+    );
+  }
 }
-
-
-# mutation addUserToEvent($mylife:EventParticipationInput!) {
-#   addUserToEvent(EventParticipation: $mylife)
-# }
-
-# mutation removeUserFromEvent($mylife:EventParticipationInput!) {
-#   removeUserFromEvent(EventParticipation: $mylife)
-# }
-
-
-*/
 
 async function updateEventWaitlist(userid, eventid, adding = true) {
   var queryString = null;
@@ -162,27 +150,11 @@ async function updateEventWaitlist(userid, eventid, adding = true) {
   let { current_capacity, max_capacity } = await queryEventByID(eventid);
 
   //check if user is already attending event
-  if (await isAttendingEvent(userid, eventid)) {
-    var temp = adding ? "adding" : "remove";
-    console.log(
-      "User:" +
-        userid +
-        " is already attending event:" +
-        eventid +
-        ", cannot " +
-        temp +
-        " user from waitlist"
-    );
-
-    return new Error(
-      "User is already attending event, cannot add/remove user from waitlist"
-    );
-  }
+  await alreadyAttendingEvent(userid, eventid);
 
   if (adding) {
     // Checks if there is capacity in the event
     if (current_capacity < max_capacity) {
-      console.log("Event currently has space, user should be added to event");
       return new Error(
         "Event currently has space, user should be added to event"
       );
@@ -192,7 +164,6 @@ async function updateEventWaitlist(userid, eventid, adding = true) {
     queryString = `INSERT INTO Event_Wait_list(user_id, event_id, date_added) VALUES(?, ?, ?);`;
     vals = [userid, eventid, date];
   } else {
-    console.log("mydudeee");
     queryString = `DELETE FROM Event_Wait_list WHERE user_id = ? and event_id = ?;`;
     vals = [userid, eventid];
   }
@@ -206,20 +177,14 @@ async function updateEventParticipation(
   adding = true
 ) {
   let { userid, eventid, participationType } = EventParticipationInput;
-  var updateWaitlist = false;
 
   // Adds/removes user from the event
   var queryString = null;
   let { current_capacity, max_capacity } = await queryEventByID(eventid);
   if (participationType.toUpperCase() === "ATTENDING") {
     // Checking if user can be added to event or should be added to waitlist
-
     if (max_capacity && current_capacity == max_capacity) {
       if (adding) {
-        console.log(userid + ":" + eventid);
-        console.log(
-          "Event is currently at max capacity, user should be added to waitlist"
-        );
         return new Error(
           "Event is currently at max capacity, user should be added to waitlist"
         );
@@ -247,16 +212,18 @@ async function updateEventParticipation(
   var newCapacity = await updateCurrentCapacity(eventid);
 
   if (participationType.toUpperCase() === "ATTENDING") {
-    // Checks if user unattended event, meaning there's space on the waitlist
-    // Moves participant off waitinglist
+    /* Checks if user unattended event, meaning there's space on the waitlist
+    Moves participant off waitinglist */
     if (current_capacity == max_capacity && newCapacity < current_capacity) {
       var top = await getWaitlistTop(eventid);
-      updateEventWaitlist(top, eventid, false);
-      updateEventParticipation({
-        userid: top,
-        participationType: "ATTENDING",
-        eventid: eventid
-      });
+      if (top) {
+        updateEventWaitlist(top, eventid, false);
+        updateEventParticipation({
+          userid: top,
+          participationType: "ATTENDING",
+          eventid: eventid
+        });
+      }
     }
   }
 
