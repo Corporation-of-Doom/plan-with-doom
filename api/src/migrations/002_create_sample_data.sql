@@ -28,7 +28,6 @@ INSERT INTO Event_Organizer (user_id, event_id) VALUES (7,4);
 INSERT INTO Event_Organizer (user_id, event_id) VALUES (5,5);
 
 
--- 3 Seminars
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type) VALUES (3,'Preparing for your doom',TIMESTAMP '2019-10-20 10:30:00+02', TIMESTAMP '2019-11-20 12:30:00+02', 'FFA');
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity) VALUES (2,'How to Weeb',TIMESTAMP '2019-10-22 12:30:00+02', TIMESTAMP '2019-11-22 13:30:00+02', 'FCFS_E',2);
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity) VALUES (1,'Hackathon',TIMESTAMP '2019-10-24 8:30:00+02', TIMESTAMP '2019-11-24 10:30:00+02', 'FCFS_P',6);
@@ -41,11 +40,17 @@ INSERT INTO Seminar_Organizer (user_id, seminar_id) VALUES (4,3);
 INSERT INTO Seminar_Organizer (user_id, seminar_id) VALUES (5,4);
 INSERT INTO Seminar_Organizer (user_id, seminar_id) VALUES (5,5);
 
+-- Adding users to events
 INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (2,2,True);
-INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (5,2,True);
 INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (3,2,True);
-INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (3,3,True);
+INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (5,2,True);
+
 INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (10,3,True);
+INSERT INTO Event_Participation (user_id, Event_id, attending) VALUES (1,3,True);
+INSERT INTO Event_Participation (user_id, Event_id, attending) VALUES (2,3,True);
+INSERT INTO Event_Participation (user_id, Event_id, attending) VALUES (3,3,True);
+INSERT INTO Event_Participation (user_id, Event_id, attending) VALUES (4,3,True);
+INSERT INTO Event_Participation (user_id, Event_id, attending) VALUES (5,3,True);
 
 INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (3,4,True);
 INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (7,4,True);
@@ -53,10 +58,11 @@ INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (8,4,True)
 INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (9,4,True);
 INSERT INTO Event_Participation (user_id, event_id, following) VALUES (10,4,True);
 
-
+-- Adding users to seminars
 INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (2,2,True);
-INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (5,2,True);
 INSERT INTO Seminar_Participation (user_id, seminar_id, following) VALUES (3,2,True);
+INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (5,2,True);
+
 INSERT INTO Seminar_Participation (user_id, seminar_id, following) VALUES (3,4,True);
 
 INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (1,5,True);
