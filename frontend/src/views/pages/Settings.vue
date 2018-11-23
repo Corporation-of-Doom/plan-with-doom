@@ -13,13 +13,15 @@
         TBD
         </el-option>
     </el-select><br> -->
+    <font size="+1" style="padding:10px">Autosave </font> <br>
+    <hr>
     <div style="padding:20px; content-align:center">
         Sidebar Orientations <br>
         <el-select v-model="sidebar.value" @change="onChangeSidebar">
-            <el-option :key="sidebar.left" :label="sidebar.left" :value="sidebar.left" />
-            <el-option :key="sidebar.right" :label="sidebar.right" :value="sidebar.right" />
-            <el-option :key="sidebar.top" :label="sidebar.top" :value="sidebar.top" />
-            <el-option :key="sidebar.bottom" :label="sidebar.bottom" :value="sidebar.bottom" />
+            <el-option :key="sidebar.left.text" :label="sidebar.left.text" :value="sidebar.left.value" />
+            <el-option :key="sidebar.right.text" :label="sidebar.right.text" :value="sidebar.right.value" />
+            <el-option :key="sidebar.top.text" :label="sidebar.top.text" :value="sidebar.top.value" />
+            <el-option :key="sidebar.bottom.text" :label="sidebar.bottom.text" :value="sidebar.bottom.value" />
         </el-select>
     </div>
   </div>
@@ -40,10 +42,22 @@ export default {
    data() {
       return {
         sidebar:{
-            left: 'Left',
-            right: 'Right',
-            top: 'Top',
-            bottom: 'Bottom',
+            left: {
+              text:'Left',
+              value: 'left'
+            },
+            right: {
+              text: 'Right',
+              value: 'right'
+            },
+            top: {
+              text: 'Top',
+              value: 'top'
+            },
+            bottom: {
+              text: 'Bottom',
+              value: 'bottom'
+            },
             value: 'Left'
         },
         user: this.$store.state.user,
@@ -56,6 +70,7 @@ export default {
   methods: {
       onChangeSidebar(event){
           console.log('hererererere' + event)
+          this.$store.commit("setLayout", {navPos: event})
       }
   },
   components: {
