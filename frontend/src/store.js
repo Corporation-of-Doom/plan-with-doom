@@ -113,7 +113,7 @@ export default new Vuex.Store({
 			state.user.manage = state.user.manage.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
 		},
 		addToWaitlist(state, payload){
-			console.log(state.user.waitlist)
+			// console.log(state.user.waitlist)
 			state.user.waitlist.push(payload)
 			if (payload.__typename === 'Event') {
 				state.event.waitlist = true
