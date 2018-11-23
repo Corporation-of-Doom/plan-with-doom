@@ -106,7 +106,8 @@ export default {
           }
         })
         .then(res => {
-          var userInfo = res.data.signUp
+          console.log(res.data)
+          var userInfo = res
           userInfo.manage = []
           userInfo.follow = []
           userInfo.attend = []
@@ -121,7 +122,7 @@ export default {
             this.$store.commit("setLogin", userInfo);
             this.$router.push("myevents");
           } else {
-            form.error = res.errors[0].message;
+            form.error.email = res.errors[0].message;
           }
         })
         .catch(err => {

@@ -146,23 +146,28 @@ export function loadSeminars(id){
               seminarInfo.event_name = nameRes.data.getEventByID.name
             }
             // chekcs if user is following the event
-            if(user.follow.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-              seminarInfo.follow = true
-            }else{
-              seminarInfo.follow = false
-            }
-            if(user.attend.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-              seminarInfo.attend = true
-            }else{
-              seminarInfo.attend = false
-            }
-            if(user.manage.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-              seminarInfo.manage = true
-            }else{
-              seminarInfo.manage = false
-            }
             if(user.attend.filter(item => item.__typename === "Event" && item.id === seminarInfo.event_id).length > 0){
-              seminarInfo.hideAttend = false
+                seminarInfo.hideAttend = false
+                if(user.follow.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.follow = true
+                }else{
+                    seminarInfo.follow = false
+                }
+                if(user.attend.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.attend = true
+                }else{
+                    seminarInfo.attend = false
+                }
+                if(user.manage.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.manage = true
+                }else{
+                    seminarInfo.manage = false
+                }
+                if(user.waitlist.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.waitlist = true
+                }else{
+                    seminarInfo.waitlist = false
+                }
             } else {
               seminarInfo.hideAttend = true
             }

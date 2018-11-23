@@ -222,15 +222,12 @@ export default {
     list(){
       this.waitlist = true
       fetch({
-        query: `mutation addUserToEventWaitlist($participation:EventParticipationInput!) {
-          addUserToEventWaitlist(EventParticipation: $participation) 
+        query: `mutation addUserToEventWaitlist($user: Int!, $event: Int!) {
+          addUserToEventWaitlist(userID: $user, eventID: $event) 
         }`,
         variables: {
-          "participation": {
-            "userid": this.user.id,
-            "eventid": this.info.id,
-            "participationType": "ATTENDING"
-          }
+            "user": this.user.id,
+            "event": this.info.id,
         }
       })
       .then(res => {
@@ -273,15 +270,12 @@ export default {
     unlist(){
       this.waitlist = false
       fetch({
-        query: `mutation removeUserFromEventWaitlist($participation:EventParticipationInput!) {
-          removeUserFromEventWaitlist(EventParticipation: $participation)
+        query: `mutation removeUserFromEventWaitlist($user: Int!, $event: Int!) {
+          removeUserFromEventWaitlist(userID: $user, eventID: $event)
         }`,
         variables: {
-          "participation": {
-            "userid": this.user.id,
-            "eventid": this.info.id,
-            "participationType": "ATTENDING"
-          }
+            "user": this.user.id,
+            "event": this.info.id,
         }
       })
       .then(res => {

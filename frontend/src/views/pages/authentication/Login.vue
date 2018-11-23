@@ -150,12 +150,30 @@ export default {
                   } else {
                     user.manage = []
                     console.log("no manging")
-
                   }
-                  user.waitlist = []
-                  console.log(user)
-                  this.$store.commit("setLogin", user);
-                  this.$router.push("myevents");
+                  fetch({
+                  query: `{
+                      getMyWaitlistedEventsAndSeminars(userID: ${user.id}) {
+                        __typename
+                        ... on Event {
+                          id
+                        }
+                        ... on Seminar {
+                          id
+                        }
+                      }
+                    }`
+                  })
+                  .then(res => {
+                    console.log(res)
+                    user.waitlist = []
+                    if (res.data) {
+                      user.waitlist = res.data.getMyWaitlistedEventsAndSeminars
+                    }
+                    console.log(user)
+                    this.$store.commit("setLogin", user);
+                    this.$router.push("myevents");
+                  })
                 })
               })
             })
