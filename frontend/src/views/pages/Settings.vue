@@ -1,7 +1,27 @@
 <template>
 <vue-scroll class="page-dashboard">
-  <div>
-    
+  <div class="timeline-box card-base card-shadow--medium" style="height: 65%; padding: 20px">
+    <!-- Privacy Settings:<br>
+    <el-select placeholder="TBD">
+        <el-option :key="TBD" :label="TBD" :value="TBD">
+       TBD
+        </el-option>
+    </el-select> <br> -->
+    <!-- Home Screen: <br>
+    <el-select placeholder="TBD">
+        <el-option :key="TBD" :label="TBD" :value="TBD">
+        TBD
+        </el-option>
+    </el-select><br> -->
+    <div style="padding:20px; content-align:center">
+        Sidebar Orientations <br>
+        <el-select v-model="sidebar.value" @change="onChangeSidebar">
+            <el-option :key="sidebar.left" :label="sidebar.left" :value="sidebar.left" />
+            <el-option :key="sidebar.right" :label="sidebar.right" :value="sidebar.right" />
+            <el-option :key="sidebar.top" :label="sidebar.top" :value="sidebar.top" />
+            <el-option :key="sidebar.bottom" :label="sidebar.bottom" :value="sidebar.bottom" />
+        </el-select>
+    </div>
   </div>
 </vue-scroll>
 </template>
@@ -16,21 +36,27 @@ import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
 export default {
-  name: 'ManageEventsPage',
+  name: 'Settings',
    data() {
       return {
-        activeName: 'all',
-        filter: "None",
-        currentList: [],
+        sidebar:{
+            left: 'Left',
+            right: 'Right',
+            top: 'Top',
+            bottom: 'Bottom',
+            value: 'Left'
+        },
         user: this.$store.state.user,
-        showAddSeminar: false
-
+        showAddSeminar: false,
+        TBD: 'TBD'
       };
     },
   mounted() {
   },
   methods: {
-    
+      onChangeSidebar(event){
+          console.log('hererererere' + event)
+      }
   },
   components: {
     seminarCard, 

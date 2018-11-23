@@ -20,6 +20,7 @@ import MyEventsPage from '../views/pages/MyEvents.vue'
 import MangeEventsPage from '../views/pages/ManageEvents.vue'
 import CreateEvent from '../views/pages/CreateEvent.vue'
 import CreateSeminar from "../views/pages/CreateSeminar.vue";
+import Settings from "../views/pages/Settings.vue"
 
 
 //ui
@@ -94,6 +95,17 @@ const router = new Router({
       path: "/manageevents",
       name: "manageevents",
       component: MangeEventsPage,
+      meta: {
+        auth: true,
+        layout: layouts.navLeft,
+        searchable: false,
+        tags: ["app"]
+      }
+    },
+    {
+      path: "/settings",
+      name: "settings",
+      component: Settings,
       meta: {
         auth: true,
         layout: layouts.navLeft,
