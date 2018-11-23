@@ -1,5 +1,6 @@
 const { db } = require("../db");
 const bcrypt = require("bcrypt");
+const { getMySchedule } = require("./searchResults");
 
 async function signIn(emailToFind, password) {
   // check if email exists
@@ -96,6 +97,53 @@ async function searchUsers(searchString) {
   return users;
 }
 
+async function checkConflicts(userID, type, startDateTime, endDateTime) {
+  const start = new Date(startDateTime);
+  const end = new Date(endDateTime);
+
+  let userEventsOrSeminars;
+
+  if (type.toLowerCase() === "event") {
+    userEventsOrSeminars = await getMySchedule(
+      userID,
+      "event",
+      null,
+      null,
+      "ATTENDING"
+    );
+  } else if (type.toLowerCase() === "seminar") {
+    userEventsOrSeminars = await getMySchedule(
+      userID,
+      "seminar",
+      null,
+      null,
+      "ATTENDING"
+    );
+  }
+
+  for (var i = 0; i < userEventsOrSeminars.length; i++) {
+    var currStart = new Date(userEventsOrSeminars[i].start_time);
+    var currEnd = new Date(userEventsOrSeminars[i].end_time);
+
+    if (
+      (currStart >= start && currStart <= end) ||
+      (currEnd >= start && currEnd <= end)
+    ) {
+      // conflict found
+      return true;
+    } else if (
+      (start >= currStart && start <= currEnd) ||
+      (end >= currStart && end <= currEnd)
+    ) {
+      // conflict found
+      return true;
+    }
+  }
+
+  // no conflict found
+  return false;
+}
+
 async function getUser(userID) {
   const queryString = `SELECT * from doom_user WHERE id = ?;`;
   const res = await db.raw(queryString, [userID]);
@@ -120,4 +168,4 @@ async function getUser(userID) {
   };
 }
 
-module.exports = { signIn, searchUsers, getUser };
+module.exports = { signIn, searchUsers, checkConflicts, getUser };

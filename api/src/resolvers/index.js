@@ -1,4 +1,4 @@
-const { signIn, searchUsers, getUser } = require("./user");
+const { signIn, searchUsers, checkConflicts, getUser } = require("./user");
 const { queryEventByID } = require("./event");
 const { querySeminarByID, querySeminarsByEventID } = require("./seminar");
 const {
@@ -174,6 +174,18 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to retrieve announcements");
+      }
+    },
+    async checkCalendarConflicts(_, args) {
+      try {
+        const { userID, type, startDateTime, endDateTime } = args;
+        return checkConflicts(userID, type, startDateTime, endDateTime);
+      } catch (err) {
+        console.log(err);
+        return new Error(
+          `Unable to check calendar conflicts for user with ID ${ID}
+           and date range ${startDateTime} to ${endDateTime}`
+        );
       }
     }
   },

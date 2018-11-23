@@ -3,26 +3,36 @@
 		<div class="form-wrapper align-vertical-middle">
 			<div class="form-box card-base card-shadow--extraLarge">
 				<img class="image-logo" src="@/assets/images/logo.svg" alt="logo"/>
-				<span style="color: red;"> {{ form.error }} </span>
+				<span style="color: red;"> {{ form.error.main }} </span>
 				<float-label class="styled">
 					<input type="text" v-model="form.firstName" placeholder="First Name">
+  				<span style="color: red; font-size:75%;"> {{ form.error.firstName }} </span>
+				</float-label>
+        <float-label class="styled">
+					<input type="text" v-model="form.middleName" placeholder="Middle Name">
 				</float-label>
         <float-label class="styled">
 					<input type="text" v-model="form.lastName" placeholder="Last Name">
+	  			<span style="color: red; font-size:75%;"> {{ form.error.lastName }} </span>
 				</float-label>
 				<float-label class="styled">
 					<input type="email" v-model="form.email" placeholder="E-mail">
+				<span style="color: red; font-size:75%;"> {{ form.error.email }} </span>
 				</float-label>
-				<span style="color: red; font-size:75%;"> {{ form.errorPassword }} </span>
 				<float-label class="styled">
 					<input type="password" v-model="form.password" placeholder="Password">
+				<span style="color: red; font-size:75%;"> {{ form.error.password }} </span>
 				</float-label>
 				<float-label class="styled">
 					<input type="password" v-model="form.passwordConfirm" placeholder="Password (confirm)">
+				<span style="color: red; font-size:75%;"> {{ form.error.passwordConfirm }} </span>
 				</float-label>
-				<span style="color: red; font-size:75%;"> {{ form.errorChecked }} </span>
+				<span style="color: red; font-size:75%;"> {{ form.error.passwordCheck }} </span>
 				<div class="flex">
-					<div class="box grow"><el-checkbox v-model="form.checked" >I read and accept terms</el-checkbox></div>
+					<div class="box grow">
+            <el-checkbox v-model="form.checked" >I read and accept terms</el-checkbox> <br>
+				<span style="color: red; font-size:75%;"> {{ form.error.checked }} </span>
+          </div>
 				</div>
 
 				<div class="flex text-center center pt-30 pb-20">			
@@ -48,14 +58,22 @@ export default {
     return {
       form: {
         firstName: "",
+        middleName: "",
         lastName:"",
         email: "",
         password: "",
         passwordConfirm: "",
         checked: false,
-        error: "",
-        errorPassword: "",
-        errorChecked: ""
+        error: {
+          main: "",
+          password: "",
+          passwordConfirm:'',
+          passwordCheck: '',
+          checked: "",
+          firstName: "",
+          lastName: "",
+          email:"",
+        }
       }
     };
   },
@@ -82,13 +100,20 @@ export default {
               password: form.password,
               first_name: form.firstName,
               last_name: form.lastName,
+              middle_name: form.middleName,
               privacy_settings: "Public"
             }
           }
         })
         .then(res => {
           if (res.data) {
-            this.$store.commit("setLogin", res.data.signUp);
+            var userInfo = res.data.signUp
+            userInfo.follow = []
+            userInfo.attend = []
+            userInfo.manage = []
+            userInfo.waitlist = []
+            userInfo.associate = []
+            this.$store.commit("setLogin", userInfo);
             this.$router.push("myevents");
           } else {
             form.error = res.errors[0].message;
@@ -104,6 +129,10 @@ export default {
     },
     checkForm() {
       var form = this.form;
+      for (var property in form.error) {
+        form.error[property] = ''
+      }
+      var required = "This field is required"
       // console.log("in check", form.password === form.passwordConfirm);
       // console.log(form)
       if (
@@ -117,14 +146,19 @@ export default {
       ) {
         return true;
       } else {
-        form.error = "Please complete full form";
+        form.error.main = "Please complete full form";
       }
-      if (form.password !== form.passwordConfirm) {
-        form.errorPassword = "Passwords did not match";
+      if (form.password !== form.passwordConfirm){
+        form.error.passwordCheck = "Passwords did not match"
+      } else {
+        if (!form.password) form.error.password = required
+        if (!form.passwordConfirm) form.error.passwordConfirm = required
       }
-      if (!form.checked) {
-        form.errorChecked = "Must accept terms and conditions";
-      }
+      if (!form.checked) form.error.checked = "Must accept terms and conditions";
+      
+      if (!form.firstName) form.error.firstName = required
+      if (!form.lastName) form.error.lastName = required
+      if (!form.email) form.error.email = required
       return false;
     }
   }

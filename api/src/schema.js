@@ -35,6 +35,8 @@ const SchemaDefinition = `
     getMyEventsAndSeminars(userID: Int!, type: String, limit: Int, offset: Int, participationType: participation_type): [SearchResult!]
     getMyManagingEventsAndSeminars(userID: Int!, type: String, limit: Int, offset: Int): [SearchResult!]
     getMyAnnouncements(userID: Int!, limit: Int, offset: Int): [Announcement!]
+
+    checkCalendarConflicts(userID: Int!, type: String!, startDateTime: String!, endDateTime: String!): Boolean
   }
 
   # The schema allows the following mutations:

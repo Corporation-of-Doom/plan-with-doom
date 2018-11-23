@@ -94,6 +94,7 @@ export default new Vuex.Store({
 		},
 		addToManage(state, payload){
 			state.user.manage.push(payload)
+			state.user.associate.push(payload)
 			if (payload.__typename === 'Event') {
 				state.event.manage = true
 			} else if (payload.__typename === 'Seminar'){
