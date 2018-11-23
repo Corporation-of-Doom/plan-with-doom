@@ -10,7 +10,7 @@
 				<i class="mdi mdi-fullscreen" v-if="!fullscreen"></i>
 				<i class="mdi mdi-fullscreen-exit" v-if="fullscreen"></i>
 			</button>
-			<span class="username">{{ user.first_name }} {{user.last_name}}</span>
+			<span class="username">{{ user.first_name }} {{ user.middle_name }} {{user.last_name}}</span>
 			<el-dropdown trigger="click" @command="onCommand">
 				<span class="el-dropdown-link">
 					<img src="../assets/images/avatar.jpg" class="avatar" alt="avatar">

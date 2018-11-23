@@ -1,5 +1,11 @@
 const { db } = require("../db");
 const { queryEventByID } = require("../resolvers/event");
+const { querySeminarsByEventID } = require("../resolvers/seminar");
+const { alreadyAttendingEvent } = require("../resolvers/user");
+const {
+  updateSeminarWaitlist,
+  updateSeminarParticipation
+} = require("./seminar");
 
 async function insertNewEvent(eventInput) {
   let {
@@ -116,42 +122,28 @@ async function getWaitlistTop(eventid) {
   queryString = `SELECT user_id FROM event_wait_list WHERE event_id=? ORDER BY date_added LIMIT 1;`;
   vals = [eventid];
   const res = await db.raw(`${queryString}`, vals);
-  userid = res.rows[0].user_id;
-  return userid;
+  if (res.rows.length) {
+    return res.rows[0].user_id;
+  }
+  return false;
 }
-
-/* 
-mutation addUserToEventWaitlist($mylife:EventParticipationInput!) {
-  addUserToEventWaitlist(EventParticipation: $mylife)
-}
-
-mutation removeUserFromEventWaitlist($mylife:EventParticipationInput!) {
-  removeUserFromEventWaitlist(EventParticipation: $mylife)
-}
-mutation addUserToEvent($mylife:EventParticipationInput!) {
-  addUserToEvent(EventParticipation: $mylife)
-}
-mutation removeUserFromEvent($mylife:EventParticipationInput!) {
-  removeUserFromEvent(EventParticipation: $mylife)
-}
-
-*/
 
 async function updateEventWaitlist(userid, eventid, adding = true) {
   var queryString = null;
   var vals = [];
   let { current_capacity, max_capacity } = await queryEventByID(eventid);
 
-  // Checks if there is capacity in the event
+  //check if user is already attending event
+  await alreadyAttendingEvent(userid, eventid);
+
   if (adding) {
+    // Checks if there is capacity in the event
     if (current_capacity < max_capacity) {
-      console.log("Event currently has space, user should be added to event");
       return new Error(
         "Event currently has space, user should be added to event"
       );
     }
-  }
-  if (adding) {
+
     var date = new Date();
     queryString = `INSERT INTO Event_Wait_list(user_id, event_id, date_added) VALUES(?, ?, ?);`;
     vals = [userid, eventid, date];
@@ -164,30 +156,49 @@ async function updateEventWaitlist(userid, eventid, adding = true) {
   return true;
 }
 
+async function getSeminars(eventid) {
+  var seminars = await querySeminarsByEventID(eventid);
+  var seminar_ids = [];
+
+  seminars.forEach(seminar => {
+    seminar_ids.push(seminar.id);
+  });
+
+  return seminar_ids;
+}
+
+async function unattendSeminars(userid, eventid) {
+  seminar_ids = await getSeminars(eventid);
+  for (let index = 0; index < seminar_ids.length; index++) {
+    await updateSeminarWaitlist(userid, seminar_ids[index], false);
+    await updateSeminarParticipation(
+      {
+        userid: userid,
+        participationType: "ATTENDING",
+        seminarid: seminar_ids[index]
+      },
+      false
+    );
+  }
+}
+
 async function updateEventParticipation(
   EventParticipationInput,
   adding = true
 ) {
   let { userid, eventid, participationType } = EventParticipationInput;
-  var updateWaitlist = false;
-
   // Adds/removes user from the event
   var queryString = null;
+  let { current_capacity, max_capacity } = await queryEventByID(eventid);
   if (participationType.toUpperCase() === "ATTENDING") {
-    let { current_capacity, max_capacity } = await queryEventByID(eventid);
     // Checking if user can be added to event or should be added to waitlist
-
     if (max_capacity && current_capacity == max_capacity) {
       if (adding) {
-        console.log(userid + ":" + eventid);
-        console.log(
-          "Event is currently at max capacity, user should be added to waitlist"
-        );
         return new Error(
           "Event is currently at max capacity, user should be added to waitlist"
         );
       }
-    } else if (current_capacity > max_capacity) {
+    } else if (max_capacity && current_capacity > max_capacity) {
       throw new Error(
         "Wack: Current capacity(" +
           current_capacity +
@@ -204,22 +215,27 @@ async function updateEventParticipation(
     queryString = `INSERT INTO event_participation (user_id, event_id , following ) VALUES( ? , ? , ?)
         ON CONFLICT (user_id , event_id ) DO UPDATE SET following = excluded.following;`;
   }
+  // Must unattend seminars & seminarwaitlist prior to leaving event
+  await unattendSeminars(userid, eventid);
+
   const vals = [userid, eventid, adding];
   await db.raw(`${queryString}`, vals);
 
   var newCapacity = await updateCurrentCapacity(eventid);
 
   if (participationType.toUpperCase() === "ATTENDING") {
-    // Checks if user unattended event, meaning there's space on the waitlist
-    // Moves participant off waitinglist
+    /* Checks if user unattended event, meaning there's space on the waitlist
+    Moves participant off waitinglist */
     if (current_capacity == max_capacity && newCapacity < current_capacity) {
       var top = await getWaitlistTop(eventid);
-      updateEventWaitlist(top, eventid, false);
-      updateEventParticipation({
-        userid: top,
-        participationType: "ATTENDING",
-        eventid: eventid
-      });
+      if (top) {
+        await updateEventWaitlist(top, eventid, false);
+        await updateEventParticipation({
+          userid: top,
+          participationType: "ATTENDING",
+          eventid: eventid
+        });
+      }
     }
   }
 
