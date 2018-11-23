@@ -98,6 +98,7 @@ export default new Vuex.Store({
 		},
 		addToManage(state, payload){
 			state.user.manage.push(payload)
+			state.user.associate.push(payload)
 			if (payload.__typename === 'Event') {
 				state.event.manage = true
 			} else if (payload.__typename === 'Seminar'){
@@ -129,10 +130,19 @@ export default new Vuex.Store({
 			}
 			state.user.waitlist = state.user.waitlist.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
 		},
-	},
-	actions: {
-		setUser(user){
-			this.state.user = user
+		setUser(state, payload){
+			state.user.first_name = payload.first_name
+			state.user.middle_name = payload.middle_name
+			state.user.last_name = payload.last_name
+			state.user.email = payload.email
+			state.user.orgnization = payload.orgnization
+			state.user.phone_number = payload.phone_number
+			state.user.linked_in =payload.linked_in
+			state.user.twitter = payload.twitter
+			state.user.facebook = payload.facebook
+			state.user.instagram = payload.instagram
+			state.user.about_me = payload.about_me
+			state.user.organization = payload.organization
 		},
 	},
 	getters: {

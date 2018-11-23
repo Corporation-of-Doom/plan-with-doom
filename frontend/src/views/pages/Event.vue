@@ -94,10 +94,22 @@
       </el-tab-pane>
       <el-tab-pane label="Organizers" name="organizers">
         <div v-for="(organizer,key) in info.organizers" :key="key">
-          {{organizer.name}}
-        </div>
+          {{organizer.first_name}} {{ organizer.middle_name }} {{organizer.last_name}}
+         </div>
       </el-tab-pane>
     </el-tabs>
+    <el-dialog
+      title="Conflict Found!"
+      :visible.sync="conflictDialog"
+      width="50%">
+      <span>Oh no! You are attending another event at that time. <br>
+        Are you sure you want to attend this event?
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancelConflictDialog">Cancel</el-button>
+        <el-button type="primary" @click="attend">Confirm</el-button>
+      </span>
+    </el-dialog>
   </div>
     </vue-scroll>
 </template>
@@ -133,12 +145,15 @@ export default {
       user:this.$store.state.user,
       dialogVisible: false,
       postMessage: '',
+      conflictDialog: false,
     };
   },
   methods: {
+    cancelConflictDialog(){
+      this.conflictDialog = false
+    },
     onPost() {
       console.log(typeof(this.$store.state.event.id));
-
       if (this.postMessage) {
         fetch({
             query: ` mutation createEventAnnoucement($announcement: AnnouncementInput!) {
@@ -174,6 +189,21 @@ export default {
           this.followInfo.status = false
         }
       }.bind(this))
+    },
+    conflict(){
+      var start_time = moment(parseInt(this.info.start_time_utc,10)).format('YYYY-MM-DD HH:mm')
+      var end_time = moment(parseInt(this.info.end_time_utc,10)).format('YYYY-MM-DD HH:mm')
+      fetch({ query: `{
+        checkCalendarConflicts(userID: ${this.user.id}, type: "event", startDateTime: "${start_time}", endDateTime: "${end_time}")
+      }`
+      })
+      .then(res => {
+        if (res.data.checkCalendarConflicts) {
+          this.conflictDialog = true
+        } else {
+          this.attend()
+        }
+      })
     },
     attend() {
       console.log(this.info.current_capacity !== this.info.max_capacity)

@@ -10,14 +10,11 @@
 			<h4>All pictures taken from <a href="https://pexels.com/" target="_blank" class="white-text">pexels.com</a></h4>
 		</div>
 
-		<div class="photo-list">
-			<profile-gallery></profile-gallery>
-		</div>
+		
 	</div>
 </template>
 
 <script>
-import ProfileGallery from '@/components/Profile/ProfileGallery'
 
 export default {
 	name: 'Gallery',
@@ -25,7 +22,6 @@ export default {
 		//console.log('Gallery mounted')
 	},
 	components: {
-		ProfileGallery
 	}
 }
 </script>
