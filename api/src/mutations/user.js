@@ -35,6 +35,8 @@ async function registerUser(user) {
   facebook = facebook || null;
   instagram = instagram || null;
   phone_number = phone_number || null;
+  picture_path = picture_path || null;
+  about_me = about_me || null;
 
   const salt = createSalt();
   const hashedPassword = hashPassword(password, salt);
