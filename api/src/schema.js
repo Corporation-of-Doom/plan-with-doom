@@ -18,6 +18,7 @@ const SchemaDefinition = `
   # the schema allows the following queries:
   type Query {
     login(email: String!, password: String!): User!
+    getUserById(userID: Int!): User
 
     getTotal(type: String): Int!
     getTotalSearchResults(searchString: String!, type: String): Int!
@@ -35,6 +36,8 @@ const SchemaDefinition = `
     getMyManagingEventsAndSeminars(userID: Int!, type: String, limit: Int, offset: Int): [SearchResult!]
     getMyWaitlistedEventsAndSeminars(userID: Int!, type: String, limit: Int, offset: Int): [SearchResult!]
     getMyAnnouncements(userID: Int!, limit: Int, offset: Int): [Announcement!]
+
+    checkCalendarConflicts(userID: Int!, type: String!, startDateTime: String!, endDateTime: String!): Boolean
   }
 
   # The schema allows the following mutations:
@@ -58,6 +61,8 @@ const SchemaDefinition = `
 
     createEventAnnouncement(announcement: AnnouncementInput!): Announcement!
     createSeminarAnnouncement(announcement: AnnouncementInput!): Announcement!
+
+    editProfile(userID: Int!, user: UserUpdateInput!): User!
   }
 `;
 

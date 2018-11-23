@@ -1,4 +1,4 @@
-const { signIn, searchUsers } = require("./user");
+const { signIn, searchUsers, checkConflicts, getUser } = require("./user");
 const { queryEventByID } = require("./event");
 const { querySeminarByID, querySeminarsByEventID } = require("./seminar");
 const {
@@ -32,6 +32,16 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Incorrect password or email");
+      }
+    },
+    async getUserById(_, args) {
+      const { userID } = args;
+      try {
+        const user = await getUser(userID);
+        return user;
+      } catch (err) {
+        console.log(err);
+        return new Error(`Unable to get user with ID ${userID}`);
       }
     },
     async getTotal(_, args) {
@@ -179,6 +189,18 @@ const rootResolvers = {
         console.log(err);
         return new Error("Unable to retrieve announcements");
       }
+    },
+    async checkCalendarConflicts(_, args) {
+      try {
+        const { userID, type, startDateTime, endDateTime } = args;
+        return checkConflicts(userID, type, startDateTime, endDateTime);
+      } catch (err) {
+        console.log(err);
+        return new Error(
+          `Unable to check calendar conflicts for user with ID ${ID}
+           and date range ${startDateTime} to ${endDateTime}`
+        );
+      }
     }
   },
   User: {
@@ -193,7 +215,9 @@ const rootResolvers = {
     twitter: ({ twitter }) => twitter,
     facebook: ({ facebook }) => facebook,
     instagram: ({ instagram }) => instagram,
-    phone_number: ({ phone_number }) => phone_number
+    phone_number: ({ phone_number }) => phone_number,
+    about_me: ({ about_me }) => about_me,
+    picture_path: ({ picture_path }) => picture_path
   },
   Event: {
     id: ({ id }) => id,
