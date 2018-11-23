@@ -2,6 +2,10 @@ const { db } = require("../db");
 const { queryEventByID } = require("../resolvers/event");
 const { querySeminarByID } = require("../resolvers/seminar");
 const { queryOrganizerByTypeID } = require("../resolvers/searchResults");
+const {
+  isAttendingEvent,
+  alreadyAttendingSeminar
+} = require("../resolvers/user");
 
 async function insertNewSeminar(seminarInput) {
   let {
@@ -142,7 +146,6 @@ async function updateCurrentCapacity(seminarid) {
 async function getWaitlistTop(seminarid) {
   // Returns the id of the user who's at the top of the waitlist given an seminarid
   var queryString = null;
-  var userid = null;
   queryString = `SELECT user_id FROM seminar_wait_list WHERE seminar_id=? ORDER BY date_added LIMIT 1;`;
   vals = [seminarid];
   const res = await db.raw(`${queryString}`, vals);
@@ -152,38 +155,14 @@ async function getWaitlistTop(seminarid) {
   return false;
 }
 
-async function isAttendingSeminar(userid, seminarid) {
-  // Checks the seminar participation  table to see if user is attending the given seminarid
-  var queryString = null;
-  queryString = `SELECT attending FROM seminar_participation WHERE seminar_id = ? AND user_id = ? LIMIT 1;`;
-  vals = [seminarid, userid];
-
-  const res = await db.raw(`${queryString}`, vals);
-  if (res.rows.length) {
-    return res.rows[0].attending;
-  } else {
-    return false;
-  }
-}
-
-async function alreadyAttendingSeminar(userid, seminarid) {
-  //Will throw error is the user is already attending the seminar
-  if (await isAttendingSeminar(userid, seminarid)) {
-    throw new Error(
-      "User:" + userid + " is already attending Seminar:" + seminarid
-    );
-  }
-}
-
 async function updateSeminarWaitlist(userid, seminarid, adding = true) {
   var queryString = null;
   var vals = [];
   let { current_capacity, max_capacity } = await querySeminarByID(seminarid);
 
   //throws error if user already attending seminar
-  await alreadyAttendingSeminar(userid, seminarid);
-
   if (adding) {
+    await alreadyAttendingSeminar(userid, seminarid);
     // Checks if there is capacity in the Seminar
     if (current_capacity < max_capacity) {
       var msg = "Seminar currently has space, user should be added to Seminar";
@@ -211,19 +190,24 @@ async function updateSeminarParticipation(
   let { userid, seminarid, participationType } = SeminarParticipationInput;
 
   var queryString = null;
-  let { current_capacity, max_capacity } = await querySeminarByID(seminarid);
-  if (participationType.toUpperCase() === "ATTENDING") {
+  let { current_capacity, max_capacity, event_id } = await querySeminarByID(
+    seminarid
+  );
+
+  if (!(await isAttendingEvent(userid, event_id))) {
+    return new Error("User must be attending event of this seminar");
+  }
+
+  if (participationType.toUpperCase() == "ATTENDING") {
     // throws if error user already attending when trying to add to a seminar
     if (adding) {
       await alreadyAttendingSeminar(userid, seminarid);
     }
     // Checking if user can be added to event or should be added to waitlist
-    if (max_capacity && current_capacity == max_capacity) {
-      if (adding) {
-        return new Error(
-          "Seminar is currently at max capacity, user should be added to waitlist"
-        );
-      }
+    if (max_capacity && current_capacity == max_capacity && adding) {
+      return new Error(
+        "Seminar is currently at max capacity, user should be added to waitlist"
+      );
     } else if (max_capacity && current_capacity > max_capacity) {
       throw new Error(
         "Wack: Current capacity(" +
@@ -244,7 +228,6 @@ async function updateSeminarParticipation(
   }
   const vals = [userid, seminarid, adding];
   await db.raw(`${queryString}`, vals);
-
   var newCapacity = await updateCurrentCapacity(seminarid);
 
   if (participationType.toUpperCase() === "ATTENDING") {
@@ -253,8 +236,8 @@ async function updateSeminarParticipation(
     if (current_capacity == max_capacity && newCapacity < current_capacity) {
       var top = await getWaitlistTop(seminarid);
       if (top) {
-        updateSeminarWaitlist(top, seminarid, false);
-        updateSeminarParticipation({
+        await updateSeminarWaitlist(top, seminarid, false);
+        await updateSeminarParticipation({
           userid: top,
           participationType: "ATTENDING",
           seminarid: seminarid

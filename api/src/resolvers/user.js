@@ -90,4 +90,57 @@ async function searchUsers(searchString) {
   return users;
 }
 
-module.exports = { signIn, searchUsers };
+async function isAttendingEvent(userid, eventid) {
+  // Checks the Eventparticipation  table to see if user is attending the given event
+  var queryString = null;
+  queryString = `SELECT attending FROM event_participation WHERE event_id = ? AND user_id = ? LIMIT 1;`;
+  vals = [eventid, userid];
+
+  const res = await db.raw(`${queryString}`, vals);
+  if (res.rows.length) {
+    return res.rows[0].attending;
+  } else {
+    return false;
+  }
+}
+
+async function alreadyAttendingEvent(userid, eventid) {
+  //Will throw error is the user is already attending the Event
+  if (await isAttendingEvent(userid, eventid)) {
+    throw new Error(
+      "User:" + userid + " is already attending Event:" + eventid
+    );
+  }
+}
+
+async function isAttendingSeminar(userid, seminarid) {
+  // Checks the seminar participation  table to see if user is attending the given seminarid
+  var queryString = null;
+  queryString = `SELECT attending FROM seminar_participation WHERE seminar_id = ? AND user_id = ? LIMIT 1;`;
+  vals = [seminarid, userid];
+
+  const res = await db.raw(`${queryString}`, vals);
+  if (res.rows.length) {
+    return res.rows[0].attending;
+  } else {
+    return false;
+  }
+}
+
+async function alreadyAttendingSeminar(userid, seminarid) {
+  //Will throw error is the user is already attending the seminar
+  if (await isAttendingSeminar(userid, seminarid)) {
+    throw new Error(
+      "User:" + userid + " is already attending Seminar:" + seminarid
+    );
+  }
+}
+
+module.exports = {
+  signIn,
+  searchUsers,
+  isAttendingEvent,
+  alreadyAttendingEvent,
+  isAttendingSeminar,
+  alreadyAttendingSeminar
+};

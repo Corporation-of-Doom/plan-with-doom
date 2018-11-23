@@ -1,5 +1,11 @@
 const { db } = require("../db");
 const { queryEventByID } = require("../resolvers/event");
+const { querySeminarsByEventID } = require("../resolvers/seminar");
+const { alreadyAttendingEvent } = require("../resolvers/user");
+const {
+  updateSeminarWaitlist,
+  updateSeminarParticipation
+} = require("./seminar");
 
 async function insertNewEvent(eventInput) {
   let {
@@ -122,28 +128,6 @@ async function getWaitlistTop(eventid) {
   return false;
 }
 
-async function isAttendingEvent(userid, eventid) {
-  // Checks the Eventparticipation  table to see if user is attending the given event
-  var queryString = null;
-  queryString = `SELECT attending FROM event_participation WHERE event_id = ? AND user_id = ? LIMIT 1;`;
-  vals = [eventid, userid];
-
-  const res = await db.raw(`${queryString}`, vals);
-  if (res.rows.length > 0) {
-    return res.rows[0].attending;
-  } else {
-    return false;
-  }
-}
-async function alreadyAttendingEvent(userid, eventid) {
-  //Will throw error is the user is already attending the Event
-  if (await isAttendingEvent(userid, eventid)) {
-    throw new Error(
-      "User:" + userid + " is already attending Event:" + eventid
-    );
-  }
-}
-
 async function updateEventWaitlist(userid, eventid, adding = true) {
   var queryString = null;
   var vals = [];
@@ -172,12 +156,37 @@ async function updateEventWaitlist(userid, eventid, adding = true) {
   return true;
 }
 
+async function getSeminars(eventid) {
+  var seminars = await querySeminarsByEventID(eventid);
+  var seminar_ids = [];
+
+  seminars.forEach(seminar => {
+    seminar_ids.push(seminar.id);
+  });
+
+  return seminar_ids;
+}
+
+async function unattendSeminars(userid, eventid) {
+  seminar_ids = await getSeminars(eventid);
+  for (let index = 0; index < seminar_ids.length; index++) {
+    await updateSeminarWaitlist(userid, seminar_ids[index], false);
+    await updateSeminarParticipation(
+      {
+        userid: userid,
+        participationType: "ATTENDING",
+        seminarid: seminar_ids[index]
+      },
+      false
+    );
+  }
+}
+
 async function updateEventParticipation(
   EventParticipationInput,
   adding = true
 ) {
   let { userid, eventid, participationType } = EventParticipationInput;
-
   // Adds/removes user from the event
   var queryString = null;
   let { current_capacity, max_capacity } = await queryEventByID(eventid);
@@ -206,9 +215,12 @@ async function updateEventParticipation(
     queryString = `INSERT INTO event_participation (user_id, event_id , following ) VALUES( ? , ? , ?)
         ON CONFLICT (user_id , event_id ) DO UPDATE SET following = excluded.following;`;
   }
+  // TODO: Unattend all related seminars #101
+  // Must unattend seminars & seminarwaitlist prior to leaving event
+  await unattendSeminars(userid, eventid);
+
   const vals = [userid, eventid, adding];
   await db.raw(`${queryString}`, vals);
-  // TODO: Unattend all related seminars #101
 
   var newCapacity = await updateCurrentCapacity(eventid);
 
@@ -218,8 +230,8 @@ async function updateEventParticipation(
     if (current_capacity == max_capacity && newCapacity < current_capacity) {
       var top = await getWaitlistTop(eventid);
       if (top) {
-        updateEventWaitlist(top, eventid, false);
-        updateEventParticipation({
+        await updateEventWaitlist(top, eventid, false);
+        await updateEventParticipation({
           userid: top,
           participationType: "ATTENDING",
           eventid: eventid
