@@ -215,7 +215,6 @@ async function updateEventParticipation(
     queryString = `INSERT INTO event_participation (user_id, event_id , following ) VALUES( ? , ? , ?)
         ON CONFLICT (user_id , event_id ) DO UPDATE SET following = excluded.following;`;
   }
-  // TODO: Unattend all related seminars #101
   // Must unattend seminars & seminarwaitlist prior to leaving event
   await unattendSeminars(userid, eventid);
 
