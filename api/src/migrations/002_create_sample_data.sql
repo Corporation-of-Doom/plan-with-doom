@@ -46,7 +46,7 @@ INSERT INTO Seminar_Organizer (user_id, seminar_id) VALUES (5,5);
 -- Adding users to events
 insert into Event_Participation (user_id, event_id, attending) values (10,1,True);
 
-INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (2,2,True);
+INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (1,2,True);
 INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (3,2,True);
 INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (5,2,True);
 
@@ -77,6 +77,7 @@ INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (4,5,T
 INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (5,5,True);
 
 INSERT INTO Seminar_Wait_list (user_id, seminar_id,date_added) VALUES (3,2, TIMESTAMP '2019-10-23 8:30:00+02');
+INSERT INTO Event_Wait_list (user_id, event_id,date_added) VALUES (10,2, TIMESTAMP '2019-10-29 8:30:00+02');
 
 
 -- 2 Annoucements
