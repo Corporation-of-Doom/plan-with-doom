@@ -30,6 +30,7 @@ insert into Event_Organizer (user_id, event_id) values (3,4);
 insert into Event_Organizer (user_id, event_id) values (5,5);
 
 
+
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type) VALUES (3,'Preparing for your doom',TIMESTAMP '2019-10-20 10:30:00+02', TIMESTAMP '2019-11-20 12:30:00+02', 'FFA');
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity) VALUES (2,'How to Weeb',TIMESTAMP '2019-10-22 12:30:00+02', TIMESTAMP '2019-11-22 13:30:00+02', 'FCFS_E',2);
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity) VALUES (1,'Hackathon',TIMESTAMP '2019-10-24 8:30:00+02', TIMESTAMP '2019-11-24 10:30:00+02', 'FCFS_P',6);
