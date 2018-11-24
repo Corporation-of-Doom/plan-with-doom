@@ -1,7 +1,8 @@
 <template>
   <vue-scroll class="page-vuechartist" style="background:white;">
   <div style="background:white;">
-    <h1 style="margin:10px; margin-top:20px;text-align:center;">{{info.name}} </h1>
+    <h1 style="margin-bottom:0px;margin-top:20px;text-align:center;">{{info.name}} </h1>
+    <div v-if="info.max_capacity" style="text-align:center;margin:10px">Capacity: {{info.current_capacity}} / {{info.max_capacity}}  </div>
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
         <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Event </el-button>
@@ -38,9 +39,10 @@
 
         </div>
 
-
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
-        <el-button v-else @click="conflict" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
+        <el-button v-else-if="waitlist" title="Unwaitlist" @click="unlist" plain type="primary"> Waitlisted </el-button>
+        <el-button v-else-if="info.current_capacity === info.max_capacity" @click="list" title="Waitlist" type="primary"> Add to Waitlist </el-button>
+        <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
     </el-row>
     <el-row type="flex" class="row-bg">
@@ -137,6 +139,7 @@ export default {
         edit: "Edit",
         announcement: "Post Announcment"
       },
+      waitlist: this.$store.state.event.waitlist,
       activeName: "news",
       info:this.$store.state.event,
       user:this.$store.state.user,
@@ -203,14 +206,36 @@ export default {
       })
     },
     attend() {
-      this.conflictDialog = false
-      followAndAttend('Event', 'ATTENDING').then(function(result) {
-        if (result){
-          this.attendInfo.status = true
-        } else{
-          this.attendInfo.status = false
+      console.log(this.info.current_capacity !== this.info.max_capacity)
+      console.log(this.info.current_capacity, this.info.max_capacity)
+      console.log(this.info)
+      if (this.info.current_capacity !== this.info.max_capacity) {
+        followAndAttend('Event', 'ATTENDING').then(function(result) {
+          if (result){
+            this.attendInfo.status = true
+          } else{
+            this.waitlisted()
+          }
+        }.bind(this))        
+      }
+    },
+    list(){
+      this.waitlist = true
+      fetch({
+        query: `mutation addUserToEventWaitlist($user: Int!, $event: Int!) {
+          addUserToEventWaitlist(userID: $user, eventID: $event) 
+        }`,
+        variables: {
+            "user": this.user.id,
+            "event": this.info.id,
         }
-      }.bind(this))
+      })
+      .then(res => {
+        console.log(res)
+        if(res.data){
+          this.$store.commit("addToWaitlist",{__typename: 'Event', id: this.info.id})
+        }
+      })
     },
     loadSeminar(id) {
       loadSeminars(id).then(function(result) {
@@ -232,13 +257,33 @@ export default {
       }.bind(this))
     },
     unattend(){
-      unfollowAndUnattend('Event', 'ATTENDING').then(function(result) {
-        if (result){
-          this.attendInfo.status = false
-        } else{
-          this.attendInfo.status = true
+      if (this.attendInfo.current_capacity !== 0) {        
+        unfollowAndUnattend('Event', 'ATTENDING').then(function(result) {
+          if (result){
+            this.attendInfo.status = false
+          } else{
+            this.attendInfo.status = true
+          }
+        }.bind(this))
+      }
+    },
+    unlist(){
+      this.waitlist = false
+      fetch({
+        query: `mutation removeUserFromEventWaitlist($user: Int!, $event: Int!) {
+          removeUserFromEventWaitlist(userID: $user, eventID: $event)
+        }`,
+        variables: {
+            "user": this.user.id,
+            "event": this.info.id,
         }
-      }.bind(this))
+      })
+      .then(res => {
+        console.log(res)
+        if(res.data){
+          this.$store.commit("removeFromWaitlist",{__typename: 'Event', id: this.info.id})
+        }
+      })
     }
   },
   components: {}
