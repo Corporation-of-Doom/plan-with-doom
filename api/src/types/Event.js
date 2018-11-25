@@ -19,7 +19,6 @@ const Event = `
     # still need to add photo
     picture_path: String
     
-    #Testing attaching announcements to an event
     announcements: [Announcement!]
     organizers: [User!]
     seminars: [Seminar!]
@@ -47,15 +46,29 @@ const Event = `
     website: String
   }
 
+  input EventUpdateInput {
+    name: String
+    description: String
+    
+    start_time: String
+    end_time: String
+    
+    capacity_type: capacity_type
+    max_capacity: Int
+    
+    organizer_ids: [Int!]
+    
+    location: String
+    location_link: String
+    picture_path: String
+    website: String
+  }
 
   input EventParticipationInput {
     userid: Int!
     eventid: Int!
     participationType: participation_type!
-
   }
-
-
 `;
 
 module.exports = { Event };

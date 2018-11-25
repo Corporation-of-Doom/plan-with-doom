@@ -1,7 +1,8 @@
 const {
   insertNewEvent,
   updateEventParticipation,
-  updateEventWaitlist
+  updateEventWaitlist,
+  updateEvent
 } = require("./event");
 const {
   insertNewSeminar,
@@ -10,6 +11,7 @@ const {
 } = require("./seminar");
 const { registerUser, editUserProfile } = require("./user");
 const { insertNewAnnouncement } = require("./announcement");
+const { queryEventByID, getEventByID } = require("../resolvers/event");
 
 const mutations = {
   Mutation: {
@@ -145,6 +147,17 @@ const mutations = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to update user profile");
+      }
+    },
+    async editEvent(_, args) {
+      const { eventID, event } = args;
+      try {
+        errors = await updateEvent(eventID, event);
+        if (errors) return errors;
+        return await getEventByID(eventID);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to update event");
       }
     }
   }

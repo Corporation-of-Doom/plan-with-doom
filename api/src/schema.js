@@ -63,6 +63,8 @@ const SchemaDefinition = `
     createSeminarAnnouncement(announcement: AnnouncementInput!): Announcement!
 
     editProfile(userID: Int!, user: UserUpdateInput!): User!
+   
+    editEvent(eventID: Int!, event: EventUpdateInput!): Event!
   }
 `;
 
