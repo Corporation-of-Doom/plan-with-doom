@@ -14,6 +14,8 @@ export function loadEvents(id){
           start_time
           end_time
           location
+          max_capacity
+					current_capacity
           announcements{
             date_modified
             message
@@ -73,6 +75,16 @@ export function loadEvents(id){
         }else{
             eventInfo.manage = false
         }
+        if(user.waitlist.filter(item => item.__typename === "Event" && item.id === id).length > 0){
+            eventInfo.waitlist = true
+        }else{
+            eventInfo.waitlist = false
+        }
+        console.log('Follow: '+eventInfo.follow)
+        console.log('Attend: '+eventInfo.attend)
+        console.log('Manage: '+eventInfo.manage)
+        console.log('Waitlist: '+eventInfo.waitlist)
+
         eventInfo.creator_id = eventInfo.organizers.filter(organizer => organizer.id === eventInfo.creator_id)[0].name
         eventInfo.id = id
         store.commit("setEvent",eventInfo)
@@ -82,7 +94,6 @@ export function loadEvents(id){
 }
 
 export function loadSeminars(id){
-    console.log("lololololol")
     // gets all the information about a seminar
     return fetch({
         query: `{
@@ -97,7 +108,9 @@ export function loadSeminars(id){
             description
             start_time
             end_time
-            location
+						location
+						max_capacity
+						current_capacity
             organizers{
               id
               first_name
@@ -133,23 +146,28 @@ export function loadSeminars(id){
               seminarInfo.event_name = nameRes.data.getEventByID.name
             }
             // chekcs if user is following the event
-            if(user.follow.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-              seminarInfo.follow = true
-            }else{
-              seminarInfo.follow = false
-            }
-            if(user.attend.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-              seminarInfo.attend = true
-            }else{
-              seminarInfo.attend = false
-            }
-            if(user.manage.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-              seminarInfo.manage = true
-            }else{
-              seminarInfo.manage = false
-            }
             if(user.attend.filter(item => item.__typename === "Event" && item.id === seminarInfo.event_id).length > 0){
-              seminarInfo.hideAttend = false
+                seminarInfo.hideAttend = false
+                if(user.follow.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.follow = true
+                }else{
+                    seminarInfo.follow = false
+                }
+                if(user.attend.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.attend = true
+                }else{
+                    seminarInfo.attend = false
+                }
+                if(user.manage.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.manage = true
+                }else{
+                    seminarInfo.manage = false
+                }
+                if(user.waitlist.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.waitlist = true
+                }else{
+                    seminarInfo.waitlist = false
+                }
             } else {
               seminarInfo.hideAttend = true
             }
@@ -203,6 +221,7 @@ export function followAndAttend(type, partType){
         variables: call.variables
     })
     .then(res =>{
+        console.log(res, call)
         if(res.data){
             var payload = {
               __typename: type,
