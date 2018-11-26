@@ -26,7 +26,9 @@ async function signIn(emailToFind, password) {
     phone_number,
     privacy_settings,
     about_me,
-    picture_path
+    picture_path,
+    landing_page,
+    menu_orientation
   } = res.rows[0];
 
   // check if password is correct
@@ -45,7 +47,9 @@ async function signIn(emailToFind, password) {
       phone_number,
       privacy_settings,
       about_me,
-      picture_path
+      picture_path,
+      landing_page,
+      menu_orientation
     };
   }
 
@@ -90,7 +94,9 @@ async function searchUsers(searchString) {
       phone_number: user.phone_number,
       privacy_settings: user.privacy_settings,
       about_me: user.about_me,
-      picture_path: user.picture_path
+      picture_path: user.picture_path,
+      landing_page: landing_page,
+      menu_orientation: menu_orientation
     });
   });
 
