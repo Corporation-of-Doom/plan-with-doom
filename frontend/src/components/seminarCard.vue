@@ -3,7 +3,7 @@
     <el-col style="background: white;" :xs="21" :sm="22" :md="22" :lg="23" :xl="23">
       <div style="padding-left:20px">
         <h3>{{item.name}}</h3>
-        <p>{{item.event_id}}</p>
+        <p>{{item.event_name}}</p>
         <el-row >
           <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
             <p>Location: {{item.location}}</p>
