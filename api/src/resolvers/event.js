@@ -1,5 +1,7 @@
 const { db } = require("../db");
-
+const { querySeminarsByEventID } = require("./seminar");
+const { queryAnnouncementByTypeID } = require("./announcement");
+const { queryOrganizerByTypeID } = require("./searchResults");
 async function queryEventByID(id) {
   return await db
     .raw("select * from Event where id = ?;", [id])
@@ -12,22 +14,17 @@ async function queryEventByID(id) {
     });
 }
 
-/*async function getMyEvents(user_id, event_type = null) {
-  var querystring;
-  if (event_type) {
-  } else {
-    querystring = "select * from Event where id = ?;";
+async function getEventByID(id) {
+  try {
+    const newEvent = await queryEventByID(id);
+    newEvent.announcements = await queryAnnouncementByTypeID(id, "Event");
+    newEvent.organizers = await queryOrganizerByTypeID(id, "Event");
+    newEvent.seminars = await querySeminarsByEventID(id);
+    return newEvent;
+  } catch (err) {
+    console.log(err);
+    return new Error("Unable to retrieve event");
   }
-  return await db
-    .raw(querystring, [id])
-    .then(res => {
-      return res.rows;
-    })
-    .catch(err => {
-      console.log(err);
-      throw err;
-    });
 }
 
-*/
-module.exports = { queryEventByID };
+module.exports = { queryEventByID, getEventByID };

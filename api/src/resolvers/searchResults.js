@@ -19,7 +19,7 @@ async function searchEventsAndSeminars(
            description AS description, start_time AS start_time,
            end_time AS end_time, capacity_type AS capacity_type,
            max_capacity AS max_capacity, current_capacity AS current_capacity,
-           location AS location, picture_path AS picture_path
+           location AS location, picture_path AS picture_path, website AS website, location_link AS location_link
     FROM ??`;
     vals.push("event_id", "event");
   } else {
@@ -51,7 +51,7 @@ async function searchEventsAndSeminars(
            description AS description, start_time AS start_time,
            end_time AS end_time, capacity_type AS capacity_type,
            max_capacity AS max_capacity, current_capacity AS current_capacity,
-           location AS location, picture_path AS picture_path
+           location AS location, picture_path AS picture_path, website AS website, location_link AS location_link
     FROM ??
     ${whereClause}`;
     vals.push("creator_id", "seminar");
@@ -83,7 +83,9 @@ async function searchEventsAndSeminars(
       max_capacity: searchResult.max_capacity,
       current_capacity: searchResult.current_capacity,
       location: searchResult.location,
-      picture_path: searchResult.picture_path
+      picture_path: searchResult.picture_path,
+      website: searchResult.website,
+      location_link: searchResult.location_link
     };
 
     if (searchResult.creator_id)
@@ -151,7 +153,7 @@ async function getMySchedule(
          ??.description AS description, ??.start_time AS start_time,
          ??.end_time AS end_time, ??.capacity_type AS capacity_type,
          ??.max_capacity AS max_capacity, ??.current_capacity AS current_capacity,
-         ??.location AS location, ??.picture_path AS picture_path,`;
+         ??.location AS location, ??.picture_path AS picture_path, ??.website AS website, ??.location_link AS location_link, `;
   var whereQueryString = `WHERE ??.user_id = ?`;
 
   if (!participationType) {
@@ -163,12 +165,12 @@ async function getMySchedule(
   }
 
   if (!type || type.toLowerCase() === "event") {
-    // do both types. Start w/ event and UION ALL w/ seminar
+    // do both types. Start w/ event and UNION ALL w/ seminar
     queryString = `
       ${selectQueryString} "event".creator_id AS creator_id, NULL AS event_id
       FROM ?? JOIN ?? ON (??.?? = ??.id) ${whereQueryString}`;
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 12; i++) {
       vals.push("event");
     }
     vals.push(
@@ -197,7 +199,7 @@ async function getMySchedule(
       ${queryString} ${selectQueryString} NULL AS creator_id, "seminar".event_id AS event_id
       FROM ?? JOIN ?? ON (??.?? = ??.id) ${whereQueryString}`;
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 12; i++) {
       vals.push("seminar");
     }
     vals.push(
@@ -240,7 +242,9 @@ async function getMySchedule(
       max_capacity: result.max_capacity,
       current_capacity: result.current_capacity,
       location: result.location,
-      picture_path: result.picture_path
+      picture_path: result.picture_path,
+      website: result.website,
+      location_link: result.location_link
     };
 
     if (result.creator_id) eventOrSeminar.creator_id = result.creator_id;
@@ -319,7 +323,7 @@ async function getMyManagingSchedule(
     WHERE user_id = ?`;
 
   if (!type || type.toLowerCase() === "event") {
-    // do both types. Start w/ event and UION ALL w/ seminar
+    // do both types. Start w/ event and UNION ALL w/ seminar
     vals.push(
       "event_type",
       "event_organizer",
@@ -372,6 +376,93 @@ async function getMyManagingSchedule(
       max_capacity: result.max_capacity,
       current_capacity: result.current_capacity,
       location: result.location,
+      picture_path: result.picture_path,
+      website: result.website,
+      location_link: result.location_link
+    };
+
+    if (result.type === "event_type")
+      eventOrSeminar.creator_id = result.creator_id;
+    else if (result.type === "seminar_type")
+      eventOrSeminar.event_id = result.event_id;
+
+    results.push(eventOrSeminar);
+  });
+
+  return results;
+}
+
+async function getMyWaitlist(userID, type = null, limit = null, offset = null) {
+  if (
+    type &&
+    type.toLowerCase() !== "event" &&
+    type.toLowerCase() !== "seminar"
+  ) {
+    return new Error("Valid inputs for type are 'event' and 'seminar'");
+  }
+
+  const results = [];
+  const vals = [];
+  var queryString = `
+    SELECT *, ? AS type
+    FROM ??
+      JOIN ?? ON (??.?? = ??.id)
+    WHERE user_id = ?`;
+
+  if (!type || type.toLowerCase() === "event") {
+    // do both types. Start w/ event and UION ALL w/ seminar
+    vals.push(
+      "event_type",
+      "event_wait_list",
+      "event",
+      "event_wait_list",
+      "event_id",
+      "event",
+      userID
+    );
+  }
+
+  if (!type) {
+    queryString = `${queryString} UNION ALL ${queryString}`;
+  }
+
+  if (!type || type.toLowerCase() === "seminar") {
+    vals.push(
+      "seminar_type",
+      "seminar_wait_list",
+      "seminar",
+      "seminar_wait_list",
+      "seminar_id",
+      "seminar",
+      userID
+    );
+  }
+
+  queryString = `${queryString} ORDER BY start_time DESC`;
+
+  if (limit) {
+    queryString = `${queryString} LIMIT ?`;
+    vals.push(limit);
+  }
+  if (offset) {
+    queryString = `${queryString} OFFSET ?`;
+    vals.push(offset);
+  }
+  queryString = `${queryString};`;
+
+  const res = await db.raw(queryString, vals);
+
+  res.rows.forEach(result => {
+    const eventOrSeminar = {
+      id: result.id,
+      name: result.name,
+      description: result.description,
+      start_time: result.start_time,
+      end_time: result.end_time,
+      capacity_type: result.capacity_type,
+      max_capacity: result.max_capacity,
+      current_capacity: result.current_capacity,
+      location: result.location,
       picture_path: result.picture_path
     };
 
@@ -391,5 +482,6 @@ module.exports = {
   getTotalCount,
   getMySchedule,
   queryOrganizerByTypeID,
-  getMyManagingSchedule
+  getMyManagingSchedule,
+  getMyWaitlist
 };

@@ -131,7 +131,7 @@ export default {
           }`
         })
         .then(res =>{
-          if(res.data){
+          if(res.data.getMyEventsAndSeminars){
             var result = res.data.getMyEventsAndSeminars
             result.forEach(element => {
               if (element.__typename === "Seminar") {
