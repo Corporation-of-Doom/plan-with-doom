@@ -192,7 +192,7 @@ async function updateEvent(eventid, event) {
         "+ event must end after"
     );
   }
-  if (max_capacity < originalEvent["current_capacity"]) {
+  if (max_capacity && max_capacity < originalEvent["current_capacity"]) {
     return new Error("Max Capacity cannot be less than Current Capacity");
   }
   queryString = `${queryString}, start_time = '${event_start_time.toISOString()}'`;
@@ -207,11 +207,12 @@ async function updateEvent(eventid, event) {
   }
   queryString = `${queryString} WHERE id = ? RETURNING *;`;
   await db.raw(queryString, [eventid]);
+
   // Check if there are people on the waitlist and updates accordingly
   if (
+    max_capacity == null ||
     (max_capacity > originalEvent["max_capacity"] &&
-      originalEvent["max_capacity"] == originalEvent["current_capacity"]) ||
-    max_capacity == null
+      originalEvent["max_capacity"] == originalEvent["current_capacity"])
   ) {
     var top = await getWaitlistTop(eventid);
     var newCapacity = await updateCurrentCapacity(eventid);

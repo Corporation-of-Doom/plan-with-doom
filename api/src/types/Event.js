@@ -47,21 +47,21 @@ const Event = `
   }
 
   input EventUpdateInput {
-    name: String
-    description: String
+    name: String!
+    description: String!
     
-    start_time: String
-    end_time: String
+    start_time: String!
+    end_time: String!
     
-    capacity_type: capacity_type
+    capacity_type: capacity_type!
     max_capacity: Int
     
-    organizer_ids: [Int!]
+    organizer_ids: [Int!]!
     
-    location: String
-    location_link: String
-    picture_path: String
-    website: String
+    location: String!
+    location_link: String!
+    picture_path: String!
+    website: String!
   }
 
   input EventParticipationInput {
