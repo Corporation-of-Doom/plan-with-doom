@@ -65,6 +65,7 @@ const SchemaDefinition = `
     editProfile(userID: Int!, user: UserUpdateInput!): User!
    
     editEvent(eventID: Int!, event: EventUpdateInput!): Event!
+    editSeminar(seminarID: Int!, seminar: SeminarUpdateInput!): Seminar!
   }
 `;
 

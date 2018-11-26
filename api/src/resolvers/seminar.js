@@ -1,4 +1,6 @@
 const { db } = require("../db");
+const { queryAnnouncementByTypeID } = require("./announcement");
+const { queryOrganizerByTypeID } = require("./searchResults");
 
 async function querySeminarByID(id) {
   return await db
@@ -43,4 +45,16 @@ async function querySeminarsByEventID(id, offset = null, limit = null) {
     });
 }
 
-module.exports = { querySeminarByID, querySeminarsByEventID };
+async function getSeminarByID(id) {
+  try {
+    const newSeminar = await querySeminarByID(id);
+    newSeminar.announcements = await queryAnnouncementByTypeID(id, "Seminar");
+    newSeminar.organizers = await queryOrganizerByTypeID(id, "Seminar");
+    return newSeminar;
+  } catch (err) {
+    console.log(err);
+    return new Error("Unable to retrieve seminar");
+  }
+}
+
+module.exports = { querySeminarByID, querySeminarsByEventID, getSeminarByID };

@@ -7,11 +7,13 @@ const {
 const {
   insertNewSeminar,
   updateSeminarParticipation,
-  updateSeminarWaitlist
+  updateSeminarWaitlist,
+  updateSeminar
 } = require("./seminar");
 const { registerUser, editUserProfile } = require("./user");
 const { insertNewAnnouncement } = require("./announcement");
-const { queryEventByID, getEventByID } = require("../resolvers/event");
+const { getEventByID } = require("../resolvers/event");
+const { getSeminarByID } = require("../resolvers/seminar");
 
 const mutations = {
   Mutation: {
@@ -158,6 +160,17 @@ const mutations = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to update event");
+      }
+    },
+    async editSeminar(_, args) {
+      const { seminarID, seminar } = args;
+      try {
+        errors = await updateSeminar(seminarID, seminar);
+        if (errors) return errors;
+        return await getSeminarByID(seminarID);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to update seminar");
       }
     }
   }
