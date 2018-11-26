@@ -15,8 +15,8 @@ const User = `
     about_me: String
     picture_path: String
 
-    # still need to add photo
-    # Will deal with that when we have DB set up
+    landing_page: String
+    menu_orientation: menu_orientation!
   }
 
   input UserInput {
@@ -33,12 +33,14 @@ const User = `
     phone_number: String
     privacy_settings: String!
     about_me: String
-
-    # still need to add photo
     picture_path: String
-
+    
+    landing_page: String
+    menu_orientation: menu_orientation
+    
+    
   }
-
+  
   input UserUpdateInput {
     email: String
     password: String
@@ -53,11 +55,13 @@ const User = `
     phone_number: String
     privacy_settings: String
     about_me: String
-
+    
     # still need to add photo
     picture_path: String
-
+    
+    landing_page: String
+    menu_orientation: menu_orientation
   }
-`;
+  `;
 
 module.exports = { User };
