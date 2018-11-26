@@ -70,7 +70,7 @@ export default {
   methods: {
       onChangeSidebar(event){
           console.log('hererererere' + event)
-          this.$store.commit("setLayout", {navPos: event})
+          this.$store.commit("changeLayout", {navPos: event})
       }
   },
   components: {

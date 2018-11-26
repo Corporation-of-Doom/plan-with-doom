@@ -123,6 +123,9 @@ export default new Vuex.Store({
 			state.user.about_me = payload.about_me
 			state.user.organization = payload.organization
 		},
+		changeLayout(state, payload){
+			state.layout.navPos = payload.navPos
+		}
 	},
 	getters: {
 		layout(state, getters) {

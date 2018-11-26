@@ -53,7 +53,6 @@ const router = new Router({
       component: Calendar,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["app"]
       }
@@ -64,7 +63,6 @@ const router = new Router({
       component: SearchPage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["app"]
       }
@@ -75,7 +73,6 @@ const router = new Router({
       component: EventPage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: false,
         tags: ["app"]
       }
@@ -86,7 +83,6 @@ const router = new Router({
       component: SeminarPage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: false,
         tags: ["app"]
       }
@@ -97,7 +93,6 @@ const router = new Router({
       component: MangeEventsPage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: false,
         tags: ["app"]
       }
@@ -108,7 +103,6 @@ const router = new Router({
       component: Settings,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: false,
         tags: ["app"]
       }
@@ -131,7 +125,6 @@ const router = new Router({
       component: Contacts,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["users", "address", "book", "app"]
       }
@@ -142,7 +135,6 @@ const router = new Router({
       component: Gallery,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["photo", "app"]
       }
@@ -153,7 +145,6 @@ const router = new Router({
       component: Timeline,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["app"]
       }
@@ -164,7 +155,6 @@ const router = new Router({
       component: Themes,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["ui"]
       }
@@ -175,7 +165,6 @@ const router = new Router({
       component: Icons,
       meta: {
         auth: true,
-        layout: layouts.navLeft
       },
       children: [
         {
@@ -184,7 +173,6 @@ const router = new Router({
           component: MdIcons,
           meta: {
             auth: true,
-            layout: layouts.navLeft,
             searchable: true,
             title: "Material Design Icons",
             tags: ["material design"]
@@ -293,7 +281,6 @@ const router = new Router({
       component: NotFound,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         tags: ["pages"]
       }
     },
@@ -303,7 +290,6 @@ const router = new Router({
       component: CreateEvent,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         tags: ["pages"]
       }
     },
@@ -313,7 +299,6 @@ const router = new Router({
       component: CreateSeminar,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         tags: ["pages"]
       }
     }
