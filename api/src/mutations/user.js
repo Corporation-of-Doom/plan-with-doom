@@ -120,7 +120,9 @@ async function editUserProfile(userID, user) {
     phone_number: res.rows[0].phone_number,
     privacy_settings: res.rows[0].privacy_settings,
     picture_path: res.rows[0].picture_path,
-    about_me: res.rows[0].about_me
+    about_me: res.rows[0].about_me,
+    landing_page: res.rows[0].landing_page,
+    menu_orientation: res.rows[0].menu_orientation
   };
 }
 

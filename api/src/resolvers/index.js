@@ -10,7 +10,8 @@ const {
   getTotalCount,
   getMySchedule,
   queryOrganizerByTypeID,
-  getMyManagingSchedule
+  getMyManagingSchedule,
+  getMyWaitlist
 } = require("./searchResults");
 
 const rootResolvers = {
@@ -161,6 +162,19 @@ const rootResolvers = {
         return new Error(`Unable to get Managing ${type}s.`);
       }
     },
+    async getMyWaitlistedEventsAndSeminars(_, args) {
+      const { userID, type, limit, offset } = args;
+      try {
+        return await getMyWaitlist(userID, type, limit, offset);
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error(
+            "Unable to retrieve waitlisted Events and Managing Seminars."
+          );
+        return new Error(`Unable to get waitlisted ${type}s.`);
+      }
+    },
     async getMyAnnouncements(_, args) {
       try {
         const { userID, type, offset, limit } = args;
@@ -203,7 +217,9 @@ const rootResolvers = {
     instagram: ({ instagram }) => instagram,
     phone_number: ({ phone_number }) => phone_number,
     about_me: ({ about_me }) => about_me,
-    picture_path: ({ picture_path }) => picture_path
+    picture_path: ({ picture_path }) => picture_path,
+    landing_page: ({ landing_page }) => landing_page,
+    menu_orientation: ({ menu_orientation }) => menu_orientation
   },
   Event: {
     id: ({ id }) => id,
@@ -215,7 +231,9 @@ const rootResolvers = {
     capacity_type: ({ capacity_type }) => capacity_type,
     max_capacity: ({ max_capacity }) => max_capacity,
     current_capacity: ({ current_capacity }) => current_capacity,
+    website: ({ website }) => website,
     location: ({ location }) => location,
+    location_link: ({ location_link }) => location_link,
     picture_path: ({ picture_path }) => picture_path,
     announcements: ({ announcements }) => announcements,
     organizers: ({ organizers }) => organizers,
@@ -231,7 +249,9 @@ const rootResolvers = {
     capacity_type: ({ capacity_type }) => capacity_type,
     max_capacity: ({ max_capacity }) => max_capacity,
     current_capacity: ({ current_capacity }) => current_capacity,
+    website: ({ website }) => website,
     location: ({ location }) => location,
+    location_link: ({ location_link }) => location_link,
     picture_path: ({ picture_path }) => picture_path,
     announcements: ({ announcements }) => announcements,
     organizers: ({ organizers }) => organizers

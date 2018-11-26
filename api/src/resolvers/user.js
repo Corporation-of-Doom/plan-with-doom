@@ -97,6 +97,52 @@ async function searchUsers(searchString) {
   return users;
 }
 
+async function isAttendingEvent(userid, eventid) {
+  // Checks the Eventparticipation  table to see if user is attending the given event
+  var queryString = null;
+  queryString = `SELECT attending FROM event_participation WHERE event_id = ? AND user_id = ? LIMIT 1;`;
+  vals = [eventid, userid];
+
+  const res = await db.raw(`${queryString}`, vals);
+  if (res.rows.length) {
+    return res.rows[0].attending;
+  } else {
+    return false;
+  }
+}
+
+async function alreadyAttendingEvent(userid, eventid) {
+  //Will throw error is the user is already attending the Event
+  if (await isAttendingEvent(userid, eventid)) {
+    throw new Error(
+      "User:" + userid + " is already attending Event:" + eventid
+    );
+  }
+}
+
+async function isAttendingSeminar(userid, seminarid) {
+  // Checks the seminar participation  table to see if user is attending the given seminarid
+  var queryString = null;
+  queryString = `SELECT attending FROM seminar_participation WHERE seminar_id = ? AND user_id = ? LIMIT 1;`;
+  vals = [seminarid, userid];
+
+  const res = await db.raw(`${queryString}`, vals);
+  if (res.rows.length) {
+    return res.rows[0].attending;
+  } else {
+    return false;
+  }
+}
+
+async function alreadyAttendingSeminar(userid, seminarid) {
+  //Will throw error is the user is already attending the seminar
+  if (await isAttendingSeminar(userid, seminarid)) {
+    throw new Error(
+      "User:" + userid + " is already attending Seminar:" + seminarid
+    );
+  }
+}
+
 async function checkConflicts(userID, type, startDateTime, endDateTime) {
   const start = new Date(startDateTime);
   const end = new Date(endDateTime);
@@ -164,8 +210,19 @@ async function getUser(userID) {
     phone_number: res.rows[0].phone_number,
     privacy_settings: res.rows[0].privacy_settings,
     picture_path: res.rows[0].picture_path,
-    about_me: res.rows[0].about_me
+    about_me: res.rows[0].about_me,
+    landing_page: res.rows[0].landing_page,
+    menu_orientation: res.rows[0].menu_orientation
   };
 }
 
-module.exports = { signIn, searchUsers, checkConflicts, getUser };
+module.exports = {
+  signIn,
+  searchUsers,
+  checkConflicts,
+  getUser,
+  isAttendingEvent,
+  alreadyAttendingEvent,
+  isAttendingSeminar,
+  alreadyAttendingSeminar
+};

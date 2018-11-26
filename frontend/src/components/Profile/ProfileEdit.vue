@@ -6,8 +6,6 @@
 
 		<el-form ref="form" :model="form" label-width="120px" :label-position="labelPosition">
 			<el-col>
-			</el-col>
-			<el-col>
 				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
 					<el-form-item label="First name">
 						<el-input :disabled="!edit" v-model="form.first_name"/>
@@ -69,7 +67,6 @@
 					</el-form-item>
 				</el-col>
 			</el-col>
-			
 			<el-col class="col-p">
 				<!-- <el-form-item label="About me">
 					<el-input placeholder="Tell me about yourself" :disabled="!edit" type="textarea" v-model="form.about_me" autosize></el-input>

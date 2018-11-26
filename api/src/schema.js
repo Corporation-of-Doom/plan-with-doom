@@ -34,6 +34,7 @@ const SchemaDefinition = `
 
     getMyEventsAndSeminars(userID: Int!, type: String, limit: Int, offset: Int, participationType: participation_type): [SearchResult!]
     getMyManagingEventsAndSeminars(userID: Int!, type: String, limit: Int, offset: Int): [SearchResult!]
+    getMyWaitlistedEventsAndSeminars(userID: Int!, type: String, limit: Int, offset: Int): [SearchResult!]
     getMyAnnouncements(userID: Int!, limit: Int, offset: Int): [Announcement!]
 
     checkCalendarConflicts(userID: Int!, type: String!, startDateTime: String!, endDateTime: String!): Boolean
@@ -45,11 +46,18 @@ const SchemaDefinition = `
     # Creates a new event
     createEvent(event: EventInput!): Event!
     createSeminar(seminar: SeminarInput!): Seminar!
+
     addUserToEvent(EventParticipation: EventParticipationInput!): Int!
     removeUserFromEvent(EventParticipation: EventParticipationInput!): Int!
 
+    addUserToEventWaitlist(userID: Int!, eventID: Int!): Int!
+    removeUserFromEventWaitlist(userID: Int!, eventID: Int!): Int!
+
     addUserToSeminar(SeminarParticipation: SeminarParticipationInput!): Int!
     removeUserFromSeminar(SeminarParticipation: SeminarParticipationInput!): Int!
+
+    addUserToSeminarWaitlist(userID: Int!, seminarID: Int!): Int!
+    removeUserFromSeminarWaitlist(userID: Int!, seminarID: Int!): Int!
 
     createEventAnnouncement(announcement: AnnouncementInput!): Announcement!
     createSeminarAnnouncement(announcement: AnnouncementInput!): Announcement!

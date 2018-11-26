@@ -2,6 +2,8 @@
   <vue-scroll style="background:white;">
     <h1 style="margin-bottom:5px; margin-top:20px;text-align:center;">{{info.name}} </h1>
     <p style="margin:10px;margin-top:0px;text-align:center;">  {{info.event_name}} </p>
+    <div v-if="info.max_capacity" style="text-align:center;margin:10px">Capacity: {{info.current_capacity}} / {{info.max_capacity}}  </div>
+    
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
         <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Seminar </el-button>
@@ -10,9 +12,10 @@
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin-left:10px">
         <el-button v-if="hideAttend" @click="attend" type="primary" title="Must attend the event" disabled>{{attendInfo.attend}}</el-button>
-        <el-button v-else-if="manageInfo.status" title="Post Announcement" type="primary"> {{manageInfo.announcement}} </el-button>
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
-        <el-button v-else @click="conflict" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
+        <el-button v-else-if="waitlist" title="Unwaitlist" @click="unlist" plain type="primary"> Waitlisted </el-button>
+        <el-button v-else-if="info.current_capacity === info.max_capacity" @click="list" title="Waitlist" type="primary"> Add to Waitlist </el-button>
+        <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
     </el-row>
     <el-row type="flex" class="row-bg">
@@ -89,6 +92,7 @@ export default {
       info: this.$store.state.seminar,
       userid:this.$store.state.user.id,
       conflictDialog: false,
+      waitlist: this.$store.state.seminar.waitlist,
     };
   },
   methods: {
@@ -129,6 +133,24 @@ export default {
         }
       }.bind(this))
     },
+    list(){
+      this.waitlist = true
+      fetch({
+        query: `mutation addUserToSeminarWaitlist($user: Int!, $seminar: Int!) {
+          addUserToSeminarWaitlist(userID: $user, seminarID: $seminar) 
+        }`,
+        variables: {
+            "user": this.userid,
+            "seminar": this.info.id,
+        }
+      })
+      .then(res => {
+        console.log(res)
+        if(res.data){
+          this.$store.commit("addToWaitlist",{__typename: 'Seminar', id: this.info.id})
+        }
+      })
+    },
     changeTab(tab, event) {
         console.log(tab, event);
       },
@@ -149,6 +171,24 @@ export default {
           this.attendInfo.status = true
         }
       }.bind(this))
+    },
+    unlist(){
+      this.waitlist = false
+      fetch({
+        query: `mutation removeUserFromSeminarWaitlist($user: Int!, $seminar: Int!) {
+          removeUserFromSeminarWaitlist(userID: $user, seminarID: $seminar)
+        }`,
+        variables: {
+            "user": this.userid,
+            "seminar": this.info.id,
+        }
+      })
+      .then(res => {
+        console.log(res)
+        if(res.data){
+          this.$store.commit("removeFromWaitlist",{__typename: 'Seminar', id: this.info.id})
+        }
+      })
     }
   },
   components: {}
