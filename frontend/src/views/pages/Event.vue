@@ -1,7 +1,8 @@
 <template>
   <vue-scroll class="page-vuechartist" style="background:white;">
   <div style="background:white;">
-    <h1 style="margin:10px; margin-top:20px;text-align:center;">{{info.name}} </h1>
+    <h1 style="margin-bottom:0px;margin-top:20px;text-align:center;">{{info.name}} </h1>
+    <div v-if="info.max_capacity" style="text-align:center;margin:10px">Capacity: {{info.current_capacity}} / {{info.max_capacity}}  </div>
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
         <el-button v-if="manageInfo.status" title="Edit" type="primary" @click="onEdit"> {{manageInfo.edit}} Event </el-button>
@@ -38,8 +39,9 @@
 
         </div>
 
-
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
+        <el-button v-else-if="waitlist" title="Unwaitlist" @click="unlist" plain type="primary"> Waitlisted </el-button>
+        <el-button v-else-if="info.current_capacity === info.max_capacity" @click="list" title="Waitlist" type="primary"> Add to Waitlist </el-button>
         <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
     </el-row>
@@ -92,10 +94,22 @@
       </el-tab-pane>
       <el-tab-pane label="Organizers" name="organizers">
         <div v-for="(organizer,key) in info.organizers" :key="key">
-          {{organizer.name}}
-        </div>
+          {{organizer.first_name}} {{ organizer.middle_name }} {{organizer.last_name}}
+         </div>
       </el-tab-pane>
     </el-tabs>
+    <el-dialog
+      title="Conflict Found!"
+      :visible.sync="conflictDialog"
+      width="50%">
+      <span>Oh no! You are attending another event at that time. <br>
+        Are you sure you want to attend this event?
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancelConflictDialog">Cancel</el-button>
+        <el-button type="primary" @click="attend">Confirm</el-button>
+      </span>
+    </el-dialog>
   </div>
     </vue-scroll>
 </template>
@@ -126,16 +140,21 @@ export default {
         edit: "Edit",
         announcement: "Post Announcment"
       },
+      waitlist: this.$store.state.event.waitlist,
       activeName: "news",
       info:this.$store.state.event,
       user:this.$store.state.user,
-      dialogVisible: false
+      dialogVisible: false,
+      postMessage: '',
+      conflictDialog: false,
     };
   },
   methods: {
     onEdit() {
-      this.$router.push('CreateEvent')
-
+      this.$router.push('CreateEvent')    
+    },
+    cancelConflictDialog(){
+      this.conflictDialog = false
     },
     onPost() {
       console.clear()
@@ -180,14 +199,52 @@ export default {
         }
       }.bind(this))
     },
-    attend() {
-      followAndAttend('Event', 'ATTENDING').then(function(result) {
-        if (result){
-          this.attendInfo.status = true
-        } else{
-          this.attendInfo.status = false
+    conflict(){
+      var start_time = moment(parseInt(this.info.start_time_utc,10)).format('YYYY-MM-DD HH:mm')
+      var end_time = moment(parseInt(this.info.end_time_utc,10)).format('YYYY-MM-DD HH:mm')
+      fetch({ query: `{
+        checkCalendarConflicts(userID: ${this.user.id}, type: "event", startDateTime: "${start_time}", endDateTime: "${end_time}")
+      }`
+      })
+      .then(res => {
+        if (res.data.checkCalendarConflicts) {
+          this.conflictDialog = true
+        } else {
+          this.attend()
         }
-      }.bind(this))
+      })
+    },
+    attend() {
+      console.log(this.info.current_capacity !== this.info.max_capacity)
+      console.log(this.info.current_capacity, this.info.max_capacity)
+      console.log(this.info)
+      if (this.info.current_capacity !== this.info.max_capacity) {
+        followAndAttend('Event', 'ATTENDING').then(function(result) {
+          if (result){
+            this.attendInfo.status = true
+          } else{
+            this.waitlisted()
+          }
+        }.bind(this))        
+      }
+    },
+    list(){
+      this.waitlist = true
+      fetch({
+        query: `mutation addUserToEventWaitlist($user: Int!, $event: Int!) {
+          addUserToEventWaitlist(userID: $user, eventID: $event) 
+        }`,
+        variables: {
+            "user": this.user.id,
+            "event": this.info.id,
+        }
+      })
+      .then(res => {
+        console.log(res)
+        if(res.data){
+          this.$store.commit("addToWaitlist",{__typename: 'Event', id: this.info.id})
+        }
+      })
     },
     loadSeminar(id) {
       loadSeminars(id).then(function(result) {
@@ -209,14 +266,33 @@ export default {
       }.bind(this))
     },
     unattend(){
-      console.log(this.user.attend)
-      unfollowAndUnattend('Event', 'ATTENDING').then(function(result) {
-        if (result){
-          this.attendInfo.status = false
-        } else{
-          this.attendInfo.status = true
+      if (this.attendInfo.current_capacity !== 0) {        
+        unfollowAndUnattend('Event', 'ATTENDING').then(function(result) {
+          if (result){
+            this.attendInfo.status = false
+          } else{
+            this.attendInfo.status = true
+          }
+        }.bind(this))
+      }
+    },
+    unlist(){
+      this.waitlist = false
+      fetch({
+        query: `mutation removeUserFromEventWaitlist($user: Int!, $event: Int!) {
+          removeUserFromEventWaitlist(userID: $user, eventID: $event)
+        }`,
+        variables: {
+            "user": this.user.id,
+            "event": this.info.id,
         }
-      }.bind(this))
+      })
+      .then(res => {
+        console.log(res)
+        if(res.data){
+          this.$store.commit("removeFromWaitlist",{__typename: 'Event', id: this.info.id})
+        }
+      })
     }
   },
   components: {}

@@ -1,6 +1,14 @@
-const { insertNewEvent, updateEventParticipation } = require("./event");
-const { insertNewSeminar, updateSeminarParticipation } = require("./seminar");
-const { registerUser } = require("./user");
+const {
+  insertNewEvent,
+  updateEventParticipation,
+  updateEventWaitlist
+} = require("./event");
+const {
+  insertNewSeminar,
+  updateSeminarParticipation,
+  updateSeminarWaitlist
+} = require("./seminar");
+const { registerUser, editUserProfile } = require("./user");
 const { insertNewAnnouncement } = require("./announcement");
 
 const mutations = {
@@ -52,6 +60,42 @@ const mutations = {
         return new Error("Unable to remove user from event");
       }
     },
+    async addUserToEventWaitlist(_, args) {
+      try {
+        const { userID, eventID } = args;
+        return await updateEventWaitlist(userID, eventID);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to add user to event waitlist");
+      }
+    },
+    async removeUserFromEventWaitlist(_, args) {
+      try {
+        const { userID, eventID } = args;
+        return await updateEventWaitlist(userID, eventID, false);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to remove user from event waitlist");
+      }
+    },
+    async addUserToSeminarWaitlist(_, args) {
+      try {
+        const { userID, seminarID } = args;
+        return await updateSeminarWaitlist(userID, seminarID);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to add user to seminar waitlist");
+      }
+    },
+    async removeUserFromSeminarWaitlist(_, args) {
+      try {
+        const { userID, seminarID } = args;
+        return await updateSeminarWaitlist(userID, seminarID, false);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to remove user from seminar waitlist");
+      }
+    },
     async addUserToSeminar(_, args) {
       try {
         const { SeminarParticipation } = args;
@@ -91,6 +135,16 @@ const mutations = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to create seminar announcement");
+      }
+    },
+    async editProfile(_, args) {
+      const { userID, user } = args;
+      try {
+        const updatedUser = await editUserProfile(userID, user);
+        return updatedUser;
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to update user profile");
       }
     }
   }
