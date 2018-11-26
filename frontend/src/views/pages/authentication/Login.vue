@@ -99,6 +99,7 @@ export default {
               } else {
                 user.follow = []
               }
+              console.log(user.follow)
               fetch({
                 query: `{
                   getMyEventsAndSeminars(userID:${user.id}, participationType:ATTENDING){
