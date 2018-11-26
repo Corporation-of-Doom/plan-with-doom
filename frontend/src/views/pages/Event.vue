@@ -4,7 +4,7 @@
     <h1 style="margin:10px; margin-top:20px;text-align:center;">{{info.name}} </h1>
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
-        <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Event </el-button>
+        <el-button v-if="manageInfo.status" title="Edit" type="primary" @click="onEdit"> {{manageInfo.edit}} Event </el-button>
         <el-button v-else-if="followInfo.status" @click="unfollow" type="primary" plain title="Unfollow">{{followInfo.following}}</el-button>
         <el-button v-else @click="follow" type="primary" title="Follow">{{followInfo.follow}}</el-button>
       </el-col>
@@ -110,6 +110,7 @@ export default {
   name: "EventPage",
   data() {
     return {
+      postMessage: '',
       followInfo: {
         status: this.$store.state.event.follow,
         follow: "Follow",
@@ -128,19 +129,23 @@ export default {
       activeName: "news",
       info:this.$store.state.event,
       user:this.$store.state.user,
-      dialogVisible: false,
-      postMessage: '',
+      dialogVisible: false
     };
   },
   methods: {
-    onPost() {
-      console.log(typeof(this.$store.state.event.id));
+    onEdit() {
+      this.$router.push('CreateEvent')
 
+    },
+    onPost() {
+      console.clear()
+      console.log(typeof(this.$store.state.event.id));
       if (this.postMessage) {
         fetch({
             query: ` mutation createEventAnnoucement($announcement: AnnouncementInput!) {
               createEventAnnouncement(announcement: $announcement) {
                   id
+                  date_modified
                 }
               }`,
             variables: {
@@ -151,6 +156,9 @@ export default {
             }
             }).then(res => {
             if (res.data) {
+              console.log("Test: " + JSON.stringify(res.data.createEventAnnouncement));
+              var temp =  moment(parseInt(res.data.createEventAnnouncement.date_modified,10)).format("MMMM Do YYYY, h:mm a")
+              this.$store.commit("addAnnouncement", {type: "Event", message: this.postMessage, date_modified: temp})
               this.dialogVisible = false
               this.postMessage=''   
             } else {

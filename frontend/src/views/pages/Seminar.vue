@@ -10,7 +10,38 @@
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin-left:10px">
         <el-button v-if="hideAttend" @click="attend" type="primary" title="Must attend the event" disabled>{{attendInfo.attend}}</el-button>
-        <el-button v-else-if="manageInfo.status" title="Post Announcement" type="primary"> {{manageInfo.announcement}} </el-button>
+        
+        
+        <div v-if="manageInfo.status">
+
+        <el-button title="Announcement" type="primary" @click="dialogVisible = true"> {{manageInfo.announcement}} </el-button>
+
+          <el-dialog
+            
+            title="Post an announcement"
+            :visible.sync="dialogVisible"
+            width="30%">
+
+            <el-input
+              id="post"
+              type="textarea"
+              :rows="2"
+              placeholder="Message here"
+              clearable
+              v-model="postMessage">
+            </el-input>
+
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="dialogVisible = false">Cancel</el-button>
+              <el-button type="primary" @click="onPost">Post</el-button>
+            </span>
+
+          </el-dialog>
+
+        </div>
+        
+        
+
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
         <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
@@ -49,6 +80,7 @@
 
 <script>
 import { createApolloFetch } from "apollo-fetch"
+import * as moment from 'moment'
 import {followAndAttend, unfollowAndUnattend} from './helper'
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
@@ -56,6 +88,7 @@ export default {
   name: "SeminarPage",
   data() {
     return {
+      postMessage: '',
       followInfo: {
         status: this.$store.state.seminar.follow,
         follow: "Follow",
@@ -74,10 +107,45 @@ export default {
       hideAttend: this.$store.state.seminar.hideAttend,
       activeName:'news',
       info: this.$store.state.seminar,
-      userid:this.$store.state.user.id
+      userid:this.$store.state.user.id,
+      dialogVisible: false
     };
   },
   methods: {
+    onPost() {
+      console.log(typeof(this.$store.state.event.id));
+
+      if (this.postMessage) {
+        fetch({
+            query: ` mutation createSeminarAnnoucement($announcement: AnnouncementInput!) {
+              createSeminarAnnouncement(announcement: $announcement) {
+                  id
+                  date_modified
+                }
+              }`,
+            variables: {
+              announcement: {		
+                type_id: this.$store.state.seminar.id,
+                message: this.postMessage
+              }
+            }
+            }).then(res => {
+            if (res.data) {
+              console.log("Test: " + JSON.stringify(res.data.createSeminarAnnouncement));
+              var temp =  moment(parseInt(res.data.createSeminarAnnouncement.date_modified,10)).format("MMMM Do YYYY, h:mm a")
+              this.$store.commit("addAnnouncement", {type: "Seminar", message: this.postMessage, date_modified: temp})
+              this.dialogVisible = false
+              this.postMessage=''   
+            } else {
+              console.log(res.errors)
+            }		
+          }).catch(err => {
+            console.log(err);
+          }); 
+      } else {
+        alert("There is nothing to post.")
+      }
+    },
     follow() {
       followAndAttend('Seminar', 'FOLLOWING').then(function(result) {
         if (result){
