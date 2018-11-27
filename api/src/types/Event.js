@@ -48,7 +48,7 @@ const Event = `
 
   input EventUpdateInput {
     name: String!
-    description: String!
+    description: String
     
     start_time: String!
     end_time: String!
@@ -58,10 +58,10 @@ const Event = `
     
     organizer_ids: [Int!]!
     
-    location: String!
-    location_link: String!
-    picture_path: String!
-    website: String!
+    location: String
+    location_link: String
+    picture_path: String
+    website: String
   }
 
   input EventParticipationInput {
