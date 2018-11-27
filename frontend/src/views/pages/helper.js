@@ -80,10 +80,6 @@ export function loadEvents(id){
         }else{
             eventInfo.waitlist = false
         }
-        console.log('Follow: '+eventInfo.follow)
-        console.log('Attend: '+eventInfo.attend)
-        console.log('Manage: '+eventInfo.manage)
-        console.log('Waitlist: '+eventInfo.waitlist)
 
         eventInfo.creator_id = eventInfo.organizers.filter(organizer => organizer.id === eventInfo.creator_id)[0].name
         eventInfo.id = id
@@ -146,22 +142,22 @@ export function loadSeminars(id){
               seminarInfo.event_name = nameRes.data.getEventByID.name
             }
             // chekcs if user is following the event
+            if(user.follow.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                seminarInfo.follow = true
+            }else{
+                seminarInfo.follow = false
+            }
+            if(user.manage.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                seminarInfo.manage = true
+            }else{
+                seminarInfo.manage = false
+            }
             if(user.attend.filter(item => item.__typename === "Event" && item.id === seminarInfo.event_id).length > 0){
                 seminarInfo.hideAttend = false
-                if(user.follow.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-                    seminarInfo.follow = true
-                }else{
-                    seminarInfo.follow = false
-                }
                 if(user.attend.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
                     seminarInfo.attend = true
                 }else{
                     seminarInfo.attend = false
-                }
-                if(user.manage.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-                    seminarInfo.manage = true
-                }else{
-                    seminarInfo.manage = false
                 }
                 if(user.waitlist.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
                     seminarInfo.waitlist = true
@@ -171,6 +167,10 @@ export function loadSeminars(id){
             } else {
               seminarInfo.hideAttend = true
             }
+            console.log('Follow: '+ seminarInfo.follow)
+            console.log('Attend: '+ seminarInfo.attend)
+            console.log('Manage: '+ seminarInfo.manage)
+            console.log('Waitlist: '+ seminarInfo.waitlist)
             seminarInfo.id=id
             store.commit("setSeminar",seminarInfo)
             return true
