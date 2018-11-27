@@ -174,7 +174,9 @@ async function updateEvent(eventid, event) {
     }
   });
 
-  if (event_start_time > Date.parse(earliestStart)) {
+  if (!earliestStart || !latestEnd) {
+    console.log("No seminars related to this event");
+  } else if (event_start_time > Date.parse(earliestStart)) {
     return new Error(
       "Invalid Event start date: First Seminar: ",
       firstSem,
@@ -182,8 +184,7 @@ async function updateEvent(eventid, event) {
       earliestStart,
       ", event must start prior"
     );
-  }
-  if (event_end_time < Date.parse(latestEnd)) {
+  } else if (event_end_time < Date.parse(latestEnd)) {
     return new Error(
       "Invalid Event end date: Last Seminar: " +
         lastSem +
