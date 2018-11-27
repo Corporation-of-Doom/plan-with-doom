@@ -8,6 +8,12 @@ const Capacity = `
     ATTENDING
     FOLLOWING
   }
+  enum menu_orientation {
+    LEFT
+    RIGHT
+    TOP
+    BOTTOM
+  }
 `;
 
 module.exports = { Capacity };
