@@ -134,13 +134,15 @@ async function updateEvent(eventid, event) {
 
   let queryString = `UPDATE event SET`;
   let first = 1;
+  const vals = [];
 
   // Adding basic properties of simpleEvent to queryString
   for (var key in simpleEvent) {
     if (simpleEvent[key] !== null && simpleEvent[key] !== undefined) {
       if (!first) queryString = `${queryString}, `;
       first = 0;
-      queryString = `${queryString} ${key} = '${simpleEvent[key]}'`;
+      queryString = `${queryString} ${key} = ?`;
+      vals.push(simpleEvent[key]);
     }
   }
   originalEvent = await getEventByID(eventid);
@@ -207,7 +209,8 @@ async function updateEvent(eventid, event) {
     queryString = `${queryString}, max_capacity = '${max_capacity}'`;
   }
   queryString = `${queryString} WHERE id = ? RETURNING *;`;
-  await db.raw(queryString, [eventid]);
+  vals.push(eventid);
+  await db.raw(queryString, vals);
 
   // Check if there are people on the waitlist and updates accordingly
   if (
@@ -218,8 +221,8 @@ async function updateEvent(eventid, event) {
     var top = await getWaitlistTop(eventid);
     var newCapacity = await updateCurrentCapacity(eventid);
     while (
-      (top && newCapacity < max_capacity) ||
-      (top && max_capacity == null)
+      (top && max_capacity == null) ||
+      (top && newCapacity < max_capacity)
     ) {
       if (top) {
         await updateEventWaitlist(top, eventid, false);
@@ -276,7 +279,6 @@ async function updateCurrentCapacity(eventid) {
 async function getWaitlistTop(eventid) {
   // Returns the id of the user who's at the top of the waitlist given an eventid
   var queryString = null;
-  var userid = null;
   queryString = `SELECT user_id FROM event_wait_list WHERE event_id=? ORDER BY date_added LIMIT 1;`;
   vals = [eventid];
   const res = await db.raw(`${queryString}`, vals);
