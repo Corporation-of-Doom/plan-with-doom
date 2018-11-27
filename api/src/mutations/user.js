@@ -94,18 +94,21 @@ async function editUserProfile(userID, user) {
 
   let queryString = `UPDATE doom_user SET`;
   let first = 1;
+  const vals = [];
 
   for (var key in user) {
     if (user[key] !== null) {
       if (!first) queryString = `${queryString}, `;
       first = 0;
-      queryString = `${queryString} ${key} = '${user[key]}'`;
+      queryString = `${queryString} ${key} = ?`;
+      vals.push(user[key]);
     }
   }
+  vals.push(userID);
 
   queryString = `${queryString} WHERE id = ? RETURNING *;`;
 
-  const res = await db.raw(queryString, [userID]);
+  const res = await db.raw(queryString, vals);
 
   return {
     id: res.rows[0].id,
