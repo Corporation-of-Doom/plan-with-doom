@@ -99,46 +99,44 @@ export default {
   mounted() {
   },
   methods: {
-      onChangeSidebar(event){
-        fetch({query:`mutation {
-          editProfile(userID: ${this.user.id}, user: {menu_orientation: ${event.toUpperCase()}}){
-            first_name
-          }
-        }`})
-        .then(res => {
-          console.log(res)
-          if (res.data){ 
-            this.$store.commit("setLayout", {navPos: event})
-          } else{
-            this.$message({
-              message: 'Something went wrong when updating your menu bar. :(',
-              type: 'error'
-            });
-          }
-        })
-      },
-      onChangeLandingPage(event){
-        fetch({query:`mutation {
-            editProfile(userID: ${this.user.id}, user: {landing_page: "${event}"}) {
-              first_name
-            }
-          }`})
-          .then(res => {
-            console.log(typeof(event))
-            if (res.data){ 
-              this.$store.commit("setUser", {landing_page: event})
-              this.$message({
-                message: 'Your landing page has been change! :)',
-                type: 'success'
-              });
-            } else {
-              this.$message({
-                message: 'Something went wrong when updating your landing page. :(',
-                type: 'error'
-              });
-            }
-          })
-      }
+    onChangeSidebar(event){
+      fetch({query:`mutation {
+        editProfile(userID: ${this.user.id}, user: {menu_orientation: ${event.toUpperCase()}}){
+          first_name
+        }
+      }`})
+      .then(res => {
+        if (res.data){ 
+          this.$store.commit("setLayout", {navPos: event})
+        } else{
+          this.$message({
+            message: 'Something went wrong when updating your menu bar. :(',
+            type: 'error'
+          });
+        }
+      })
+    },
+    onChangeLandingPage(event){
+      fetch({query:`mutation {
+        editProfile(userID: ${this.user.id}, user: {landing_page: "${event}"}) {
+          first_name
+        }
+      }`})
+      .then(res => {
+        if (res.data){ 
+          this.$store.commit("setUser", {landing_page: event})
+          this.$message({
+            message: 'Your landing page has been change! :)',
+            type: 'success'
+          });
+        } else {
+          this.$message({
+            message: 'Something went wrong when updating your landing page. :(',
+            type: 'error'
+          });
+        }
+      })
+    }
   },
   components: {
     seminarCard, 
