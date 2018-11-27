@@ -32,7 +32,7 @@
 import seminarCard from '@/components/seminarCard.vue'
 import addEvent from '@/components/addEvent.vue'
 import addSeminar from '@/components/addSeminar.vue'
-import {loadSeminars,loadEvents} from './helper'
+import {loadSeminars,loadEvents,capitialLetter } from './helper'
 import * as moment from 'moment'
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
@@ -58,7 +58,7 @@ export default {
               text: 'Bottom',
               value: 'bottom'
             },
-            value: 'Left'
+            value: capitialLetter(this.$store.state.user.menu_orientation)
         },
         user: this.$store.state.user,
         showAddSeminar: false,
@@ -70,7 +70,19 @@ export default {
   methods: {
       onChangeSidebar(event){
           console.log('hererererere' + event)
-          this.$store.commit("changeLayout", {navPos: event})
+          fetch({query:`mutation {
+            editProfile(userID: ${this.user.id}, user: {menu_orientation: ${event.toUpperCase()}}) {
+              first_name
+              middle_name
+              last_name
+              landing_page
+              menu_orientation
+            }
+          }`})
+          .then(res => {
+            console.log(res)
+            if (res.data) this.$store.commit("setLayout", {navPos: event})
+          })
       }
   },
   components: {

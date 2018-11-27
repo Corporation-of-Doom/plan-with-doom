@@ -352,3 +352,6 @@ export function unfollowAndUnattend(type, partType) {
       return false;
     });
 }
+export function capitialLetter(string){
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}

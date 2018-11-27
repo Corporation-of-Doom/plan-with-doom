@@ -182,7 +182,6 @@ const router = new Router({
           component: FlagIcons,
           meta: {
             auth: true,
-            layout: layouts.navLeft,
             searchable: true,
             title: "Flag Icons",
             tags: ["list", "ui"]
@@ -196,7 +195,6 @@ const router = new Router({
       component: MultiLanguage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["ui", "translate"]
       }
@@ -207,7 +205,6 @@ const router = new Router({
       component: HelperClasses,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         title: "Helper Classes",
         tags: ["ui"]
@@ -219,7 +216,6 @@ const router = new Router({
       component: Typography,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         title: "Typography",
         tags: ["ui"]
@@ -237,7 +233,6 @@ const router = new Router({
       component: Profile,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["pages"]
       }
