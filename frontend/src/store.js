@@ -113,7 +113,6 @@ export default new Vuex.Store({
 			}
 			state.user.manage = state.user.manage.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
 		},
-
 		addAnnouncement(state, payload){
 			if (payload.type === 'Event') {
 				state.event.announcements.unshift({message: payload.message, date_modified: payload.date_modified})
@@ -128,6 +127,7 @@ export default new Vuex.Store({
 				state.seminar.manage = false
 			}
 		},
+
 		addToWaitlist(state, payload){
 			console.log(state.user.waitlist)
 			state.user.waitlist.push(payload)

@@ -154,11 +154,13 @@ export function loadSeminars(id){
             }
             if(user.attend.filter(item => item.__typename === "Event" && item.id === seminarInfo.event_id).length > 0){
                 seminarInfo.hideAttend = false
+
                 if(user.attend.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
                     seminarInfo.attend = true
                 }else{
                     seminarInfo.attend = false
                 }
+
                 if(user.waitlist.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
                     seminarInfo.waitlist = true
                 }else{
