@@ -7,16 +7,7 @@
        TBD
         </el-option>
     </el-select> <br> -->
-    <el-dialog
-      title="Updated"
-      :visible.sync="dialog"
-      width="30%">
-      <span>{{message}}</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialog = false">Cancel</el-button>
-        <el-button type="primary" @click="dialog = false">Confirm</el-button>
-      </span>
-    </el-dialog>
+    
     <font size="+1" style="padding:10px">Autosave </font> <br>
     <hr>
     <div style="padding:20px; content-align:center">
@@ -118,8 +109,11 @@ export default {
           console.log(res)
           if (res.data){ 
             this.$store.commit("setLayout", {navPos: event})
-            this.message = "Menu Orientation has been updated!"
-            this.dialog = true
+          } else{
+            this.$message({
+              message: 'Something went wrong when updating your menu bar. :(',
+              type: 'error'
+            });
           }
         })
       },
@@ -130,9 +124,18 @@ export default {
             }
           }`})
           .then(res => {
+            console.log(typeof(event))
             if (res.data){ 
-              this.message = "Landing page has been updated!"
-              this.dialog = true
+              this.$store.commit("setUser", {landing_page: event})
+              this.$message({
+                message: 'Your landing page has been change! :)',
+                type: 'success'
+              });
+            } else {
+              this.$message({
+                message: 'Something went wrong when updating your landing page. :(',
+                type: 'error'
+              });
             }
           })
       }
