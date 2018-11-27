@@ -32,7 +32,7 @@
             </el-input>
 
             <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">Cancel</el-button>
+              <el-button @click="onCancel">Cancel</el-button>
               <el-button type="primary" @click="onPost">Post</el-button>
             </span>
 
@@ -112,8 +112,12 @@ export default {
     };
   },
   methods: {
+    onCancel() {
+      this.dialogVisible = false
+      this.postMessage = ''
+    },
+
     onPost() {
-      console.log(typeof(this.$store.state.event.id));
 
       if (this.postMessage) {
         fetch({
