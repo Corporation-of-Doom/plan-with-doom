@@ -14,6 +14,7 @@ export function loadEvents(id){
           start_time
           end_time
           location
+          capacity_type
           max_capacity
 					current_capacity
           announcements{

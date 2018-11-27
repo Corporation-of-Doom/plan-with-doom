@@ -20,8 +20,8 @@
 					v-model="startDate"
 					value-format="yyyy-MM-dd"
 					type="date"
-					placeholder="Start Date">
 					clearable
+					placeholder="Start Date">
 				</el-date-picker>
 
 				<el-time-picker
@@ -36,8 +36,8 @@
 					v-model="endDate"
 					value-format="yyyy-MM-dd"
 					type="date"
-					placeholder="End Date">
 					clearable
+					placeholder="End Date">
 				</el-date-picker>
 
 				<el-time-picker
@@ -178,30 +178,28 @@ export default {
 					
 					var eventInfo = this.$store.state.event
 
-					console.log("Name: " + eventInfo.name);
-					console.log("Description: " + eventInfo.description);
-					console.log("start date: " + moment(parseInt(eventInfo.start_time,10)).format("YYYY-MM-DD"));
-					console.log("end date: " + moment(parseInt(eventInfo.end_time,10)).format("YYYY-MM-DD"));
-					console.log("capacity type: " + eventInfo.capacity_type);
-					console.log("max capacity: " + eventInfo.max_capacity);
+					this.eventName = eventInfo.name
+					this.descriptionInput = eventInfo.description
+					this.startDate = moment(parseInt(eventInfo.start_time_utc,10)).format("YYYY-MM-DD")
+					this.endDate = moment(parseInt(eventInfo.end_time_utc,10)).format("YYYY-MM-DD")
+					this.startTime = moment(parseInt(eventInfo.start_time_utc,10)).format("HH:mm")
+					this.endTime = moment(parseInt(eventInfo.end_time_utc,10)).format("HH:mm")
+					this.capacityType = eventInfo.capacity_type
+					this.capacityNum = eventInfo.max_capacity
 
-					// this.eventName = eventInfo.name
-					// this.descriptionInput = eventInfo.description
-					// this.start_date = toString(moment(parseInt(eventInfo.start_time,10)).format("YYYY-MM-DD"))
-					// this.end_date = moment(parseInt(eventInfo.end_time,10)).format("YYYY-MM-DD")
-					// this.start_time = moment(parseInt(eventInfo.start_time,10)).format("HH:mm")
-					// this.end_time = moment(parseInt(eventInfo.end_time,10)).format("HH:mm")
-					// this.capacityType = eventInfo.capacity_type
-					// this.capacityNum = eventInfo.max_capacity
+					for (var i = 0; i < eventInfo.organizers.length; i++) {
+						this.selectedOrganizers.push(eventInfo.organizers[i].id)
+					}
 
-					this.eventName = "Vivian's Nap Time"
-					this.descriptionInput = " Do not disturb Vivian's nap time"
-					this.startDate = "2014-10-10"
-					this.endDate =  "2018-11-17"
-					this.startTime = "08:30"
-					this.endTime = "10:30"
-					this.capacityType = "FCFS_E"
-					this.capacityNum = 100			
+					console.log("Name: " + this.eventName);
+					console.log("Description: " + this.descriptionInput);
+					console.log("start date: " + this.startDate);
+					console.log("start time: " + this.startTime);
+					console.log("end date: " + this.endDate);
+					console.log("end time: " + this.endTime);
+					console.log("capacity type: " + this.capacityType);
+					console.log("max capacity: " + this.capacityNum);	
+					console.log("organizers: " + this.selectedOrganizers);	
 				}
 			
 		},
