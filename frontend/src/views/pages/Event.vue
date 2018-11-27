@@ -5,7 +5,7 @@
     <div v-if="info.max_capacity" style="text-align:center;margin:10px">Capacity: {{info.current_capacity}} / {{info.max_capacity}}  </div>
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
-        <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Event </el-button>
+        <el-button v-if="manageInfo.status" title="Edit" type="primary" @click="onEdit"> {{manageInfo.edit}} Event </el-button>
         <el-button v-else-if="followInfo.status" @click="unfollow" type="primary" plain title="Unfollow">{{followInfo.following}}</el-button>
         <el-button v-else @click="follow" type="primary" title="Follow">{{followInfo.follow}}</el-button>
       </el-col>
@@ -31,7 +31,7 @@
             </el-input>
 
             <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">Cancel</el-button>
+              <el-button @click="onCancel">Cancel</el-button>
               <el-button type="primary" @click="onPost">Post</el-button>
             </span>
 
@@ -124,6 +124,7 @@ export default {
   name: "EventPage",
   data() {
     return {
+      postMessage: '',
       followInfo: {
         status: this.$store.state.event.follow,
         follow: "Follow",
@@ -149,16 +150,24 @@ export default {
     };
   },
   methods: {
+    onEdit() {
+      this.$router.push('CreateEvent')    
+    },
     cancelConflictDialog(){
       this.conflictDialog = false
     },
+    onCancel() {
+      this.dialogVisible = false
+      this.postMessage = ''
+    },
     onPost() {
-      console.log(typeof(this.$store.state.event.id));
+      console.clear()
       if (this.postMessage) {
         fetch({
             query: ` mutation createEventAnnoucement($announcement: AnnouncementInput!) {
               createEventAnnouncement(announcement: $announcement) {
                   id
+                  date_modified
                 }
               }`,
             variables: {
@@ -169,6 +178,9 @@ export default {
             }
             }).then(res => {
             if (res.data) {
+              console.log("Test: " + JSON.stringify(res.data.createEventAnnouncement));
+              var temp =  moment(parseInt(res.data.createEventAnnouncement.date_modified,10)).format("MMMM Do YYYY, h:mm a")
+              this.$store.commit("addAnnouncement", {type: "Event", message: this.postMessage, date_modified: temp})
               this.dialogVisible = false
               this.postMessage=''   
             } else {

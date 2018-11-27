@@ -17,6 +17,7 @@ export default {
 	},
 	methods: {
 		createEvent() {
+			this.$store.commit('resetEditState','Event')
 			this.$router.push('CreateEvent')
 		},
 	},

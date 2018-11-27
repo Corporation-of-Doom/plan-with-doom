@@ -3,8 +3,8 @@
 		<div class="create-event">
 			<div class="eventForm">
 
-				<h1>Creating an event</h1>
-
+				<h1 v-if="editEvent"> Editing an event </h1>
+				<h1 v-else>Creating an event</h1>
 
 				<!-- event image allow user to upload a photo -->
 				<div class="image-cropper" id="eventImg">
@@ -113,6 +113,7 @@
 <script>
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
+import * as moment from 'moment'
 console.clear();
 export default {
   	name: 'CreateEvent',
@@ -134,11 +135,13 @@ export default {
 				urlInput: '',
 				descriptionInput: '',
 				transferData: [],
-				selectedOrganizers: []			
+				selectedOrganizers: [],
+				editEvent: this.$store.state.event.manage,
 			};
 		},
 
 		mounted() {
+		
 			// fetches a list of organizers to be displayed in the transfer component
 				fetch({
 					query: `{
@@ -170,11 +173,41 @@ export default {
 				}).catch(err => {
 					console.log(err);
 				}); 
+
+				if (this.editEvent === true) {
+					
+					var eventInfo = this.$store.state.event
+
+					console.log("Name: " + eventInfo.name);
+					console.log("Description: " + eventInfo.description);
+					console.log("start date: " + moment(parseInt(eventInfo.start_time,10)).format("YYYY-MM-DD"));
+					console.log("end date: " + moment(parseInt(eventInfo.end_time,10)).format("YYYY-MM-DD"));
+					console.log("capacity type: " + eventInfo.capacity_type);
+					console.log("max capacity: " + eventInfo.max_capacity);
+
+					// this.eventName = eventInfo.name
+					// this.descriptionInput = eventInfo.description
+					// this.start_date = toString(moment(parseInt(eventInfo.start_time,10)).format("YYYY-MM-DD"))
+					// this.end_date = moment(parseInt(eventInfo.end_time,10)).format("YYYY-MM-DD")
+					// this.start_time = moment(parseInt(eventInfo.start_time,10)).format("HH:mm")
+					// this.end_time = moment(parseInt(eventInfo.end_time,10)).format("HH:mm")
+					// this.capacityType = eventInfo.capacity_type
+					// this.capacityNum = eventInfo.max_capacity
+
+					this.eventName = "Vivian's Nap Time"
+					this.descriptionInput = " Do not disturb Vivian's nap time"
+					this.startDate = "2014-10-10"
+					this.endDate =  "2018-11-17"
+					this.startTime = "08:30"
+					this.endTime = "10:30"
+					this.capacityType = "FCFS_E"
+					this.capacityNum = 100			
+				}
+			
 		},
 	
     methods: {
 		onSubmit: function(event) {
-
 			if (this.eventName && 
 			this.startDate && this.endDate && 
 			this.startTime && this.endTime &&
@@ -306,7 +339,6 @@ export default {
   };
 
 </script>
-
 <style lang="scss" scoped>
 @import '../../assets/scss/_variables';
 @import '../../assets/scss/_mixins';
