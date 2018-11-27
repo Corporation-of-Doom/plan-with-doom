@@ -63,6 +63,9 @@ const SchemaDefinition = `
     createSeminarAnnouncement(announcement: AnnouncementInput!): Announcement!
 
     editProfile(userID: Int!, user: UserUpdateInput!): User!
+    
+    followUser(userID: Int!, followingID: Int!): User!
+    unFollowUser(userID: Int!, followingID: Int!): User!
   }
 `;
 

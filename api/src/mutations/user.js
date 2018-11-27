@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const { db } = require("../db");
-const { getUser } = require("../resolvers/user");
+const { getUser, getFollowers, getFollowing } = require("../resolvers/user");
 
 function createSalt(len = 12) {
   return bcrypt.genSaltSync(len);
@@ -130,4 +130,30 @@ async function editUserProfile(userID, user) {
   };
 }
 
-module.exports = { registerUser, editUserProfile };
+async function updateUserFollowing(userID, followingID, follow = true) {
+  // check valid userid
+  // validfollowingID
+  user = await getUser(userID);
+  followee = await getUser(followingID);
+  const vals = [userID, followingID];
+  var queryString = null;
+
+  // await getFollowers(userID);
+  // await getFollowing(userID);
+  // check if already following
+  // can't unfollow somone you're not following
+  // can't refollow someone
+
+  // check if following/unfollowing
+  if (follow) {
+    queryString = ` INSERT INTO user_following (user_id, following_user_id) VALUES (?,?)`;
+  } else {
+    queryString = ` delete from user_following where (user_id = ? and following_user_id = ?)`;
+  }
+
+  const res = await db.raw(queryString, vals);
+
+  return user;
+}
+
+module.exports = { registerUser, editUserProfile, updateUserFollowing };

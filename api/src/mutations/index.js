@@ -8,7 +8,11 @@ const {
   updateSeminarParticipation,
   updateSeminarWaitlist
 } = require("./seminar");
-const { registerUser, editUserProfile } = require("./user");
+const {
+  registerUser,
+  editUserProfile,
+  updateUserFollowing
+} = require("./user");
 const { insertNewAnnouncement } = require("./announcement");
 
 const mutations = {
@@ -145,6 +149,24 @@ const mutations = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to update user profile");
+      }
+    },
+    async followUser(_, args) {
+      try {
+        const { userID, followingID } = args;
+        return await updateUserFollowing(userID, followingID);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to follow user");
+      }
+    },
+    async unFollowUser(_, args) {
+      try {
+        const { userID, followingID } = args;
+        return await updateUserFollowing(userID, followingID, false);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to unfollow user");
       }
     }
   }
