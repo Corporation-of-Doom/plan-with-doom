@@ -1,4 +1,4 @@
-const { signIn, searchUsers, getUser } = require("./user");
+const { signIn, searchUsers, checkConflicts, getUser } = require("./user");
 const { queryEventByID } = require("./event");
 const { querySeminarByID, querySeminarsByEventID } = require("./seminar");
 const {
@@ -10,7 +10,8 @@ const {
   getTotalCount,
   getMySchedule,
   queryOrganizerByTypeID,
-  getMyManagingSchedule
+  getMyManagingSchedule,
+  getMyWaitlist
 } = require("./searchResults");
 
 const rootResolvers = {
@@ -161,6 +162,19 @@ const rootResolvers = {
         return new Error(`Unable to get Managing ${type}s.`);
       }
     },
+    async getMyWaitlistedEventsAndSeminars(_, args) {
+      const { userID, type, limit, offset } = args;
+      try {
+        return await getMyWaitlist(userID, type, limit, offset);
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error(
+            "Unable to retrieve waitlisted Events and Managing Seminars."
+          );
+        return new Error(`Unable to get waitlisted ${type}s.`);
+      }
+    },
     async getMyAnnouncements(_, args) {
       try {
         const { userID, type, offset, limit } = args;
@@ -174,6 +188,18 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to retrieve announcements");
+      }
+    },
+    async checkCalendarConflicts(_, args) {
+      try {
+        const { userID, type, startDateTime, endDateTime } = args;
+        return checkConflicts(userID, type, startDateTime, endDateTime);
+      } catch (err) {
+        console.log(err);
+        return new Error(
+          `Unable to check calendar conflicts for user with ID ${ID}
+           and date range ${startDateTime} to ${endDateTime}`
+        );
       }
     }
   },

@@ -126,7 +126,6 @@ export default {
 				startTime: '',
 				endTime: '',
 				capacityType: 'FFA',
-
 				capacityNum: 1,
 				countryInput: '',
 				cityInput: '',
@@ -295,6 +294,7 @@ export default {
 					type: 'success',
 					message: 'Delete completed'
 				});
+				this.$router.push('ManageEvents')
 			}).catch(() => {
 				this.$message({
 					type: 'info',
