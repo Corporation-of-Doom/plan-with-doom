@@ -145,9 +145,12 @@ export default new Vuex.Store({
       console.log(state.user.waitlist);
       state.user.waitlist.push(payload);
       if (payload.__typename === "Event") {
+        state.event.current_capacity = state.event.max_capacity
         state.event.waitlist = true;
       } else if (payload.__typename === "Seminar") {
         state.seminar.waitlist = true;
+        state.seminar.current_capacity = state.seminar.max_capacity
+
       }
     },
     removeFromWaitlist(state, payload) {
