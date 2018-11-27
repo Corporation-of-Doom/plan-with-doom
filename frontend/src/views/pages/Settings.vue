@@ -126,7 +126,7 @@ export default {
         if (res.data){ 
           this.$store.commit("setUser", {landing_page: event})
           this.$message({
-            message: 'Your landing page has been change! :)',
+            message: 'Your landing page has been changed! :)',
             type: 'success'
           });
         } else {

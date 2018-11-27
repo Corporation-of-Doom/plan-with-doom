@@ -139,12 +139,12 @@ export default {
 				if (res.data.editProfile) {
 					this.$store.commit("setUser",this.form)
 					this.$message({
-						message: 'Your profile has been upadted! :)',
+						message: 'Your profile has been updated! :)',
 						type: 'success'
 					});
 				} else {
 					this.$message({
-						message: 'Something went wrong with updating your profile! :)',
+						message: 'Something went wrong with updating your profile! :(',
 						type: 'error'
 					});
 				}
