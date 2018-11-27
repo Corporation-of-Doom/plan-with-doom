@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS Doom_User(
   picture_path		      TEXT,
   password_hash         TEXT                NOT NULL,
   confirmed             BOOL                DEFAULT FALSE,
-
+  about_me              TEXT,
+  website	  		        TEXT,
   PRIMARY KEY (ID)
 );
 
@@ -31,8 +32,9 @@ CREATE TABLE IF NOT EXISTS Event(
   max_capacity	 		    INT,
   current_capacity      INT,
   location			        TEXT,
+  location_link			    TEXT,
   picture_path		      TEXT,
-
+  website	  		        TEXT,
   PRIMARY KEY (ID),
   FOREIGN KEY (creator_id) REFERENCES Doom_User (ID)
 );
@@ -48,8 +50,9 @@ CREATE TABLE IF NOT EXISTS Seminar(
   max_capacity	 		    INT,
   current_capacity      INT,
   location			        TEXT,
+  location_link			    TEXT,
   picture_path		      TEXT,
-
+  website	  		        TEXT,
   PRIMARY KEY (ID),
   FOREIGN KEY (event_id) REFERENCES Event (ID)
 );

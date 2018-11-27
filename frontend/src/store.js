@@ -64,15 +64,19 @@ export default new Vuex.Store({
 			state.user.attend.push(payload)
 			if (payload.__typename === 'Event') {
 				state.event.attend = true
+				state.event.current_capacity++
 			} else if (payload.__typename === 'Seminar'){
 				state.seminar.attend = true
+				state.seminar.current_capacity++
 			}
 		},
 		removeFromAttend(state, payload){
 			if (payload.__typename === 'Event') {
 				state.event.attend = false
+				state.event.current_capacity--
 			} else if (payload.__typename === 'Seminar'){
 				state.seminar.attend = false
+				state.seminar.current_capacity--
 			}
 			state.user.attend = state.user.attend.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
 		}, 
@@ -94,6 +98,7 @@ export default new Vuex.Store({
 		},
 		addToManage(state, payload){
 			state.user.manage.push(payload)
+			state.user.associate.push(payload)
 			if (payload.__typename === 'Event') {
 				state.event.manage = true
 			} else if (payload.__typename === 'Seminar'){
@@ -108,6 +113,7 @@ export default new Vuex.Store({
 			}
 			state.user.manage = state.user.manage.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
 		},
+
 		addAnnouncement(state, payload){
 			if (payload.type === 'Event') {
 				state.event.announcements.unshift({message: payload.message, date_modified: payload.date_modified})
@@ -121,11 +127,37 @@ export default new Vuex.Store({
 			} else if (payload === 'Seminar') {
 				state.seminar.manage = false
 			}
-		}
-	},
-	actions: {
-		setUser(user){
-			this.state.user = user
+		},
+		addToWaitlist(state, payload){
+			console.log(state.user.waitlist)
+			state.user.waitlist.push(payload)
+			if (payload.__typename === 'Event') {
+				state.event.waitlist = true
+			} else if (payload.__typename === 'Seminar'){
+				state.seminar.waitlist = true
+			}
+		},
+		removeFromWaitlist(state, payload){
+			if (payload.__typename === 'Event') {
+				state.event.waitlist = false
+			} else if (payload.__typename === 'Seminar'){
+				state.seminar.waitlist = false
+			}
+			state.user.waitlist = state.user.waitlist.filter(item => item.id !== payload.id && item.__typename !== payload.__typename)
+		},
+		setUser(state, payload){
+			state.user.first_name = payload.first_name
+			state.user.middle_name = payload.middle_name
+			state.user.last_name = payload.last_name
+			state.user.email = payload.email
+			state.user.orgnization = payload.orgnization
+			state.user.phone_number = payload.phone_number
+			state.user.linked_in =payload.linked_in
+			state.user.twitter = payload.twitter
+			state.user.facebook = payload.facebook
+			state.user.instagram = payload.instagram
+			state.user.about_me = payload.about_me
+			state.user.organization = payload.organization
 		},
 	},
 	getters: {

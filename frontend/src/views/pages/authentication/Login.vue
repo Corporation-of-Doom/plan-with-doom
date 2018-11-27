@@ -73,6 +73,7 @@ export default {
             facebook
             instagram
             organization
+            about_me
           }
         }`
       })
@@ -134,19 +135,45 @@ export default {
                 .then(res => {
                   if (res.data){
                     user.manage = []
-                    res.data.getMyManagingEventsAndSeminars.forEach(element => {
-                      if (element.creator_id === user.id) {
-                        user.manage.push(element)
-                      } else if (element.__typename === "Seminar") {
-                        user.manage.push(element)
-                      }
-                    })
+                    user.associate = []
+                      console.log(res.data.getMyManagingEventsAndSeminars)
+                    if(res.data.getMyManagingEventsAndSeminars.length > 0){
+                      user.associate = res.data.getMyManagingEventsAndSeminars
+                      res.data.getMyManagingEventsAndSeminars.forEach(element => {
+                        if (element.creator_id === user.id) {
+                          user.manage.push(element)
+                        } else if (element.__typename === "Seminar") {
+                          user.manage.push(element)
+                        }
+                      })
+                    }
                   } else {
                     user.manage = []
+                    console.log("no manging")
                   }
-                  console.log(user)
-                  this.$store.commit("setLogin", user);
-                  this.$router.push("myevents");
+                  fetch({
+                  query: `{
+                      getMyWaitlistedEventsAndSeminars(userID: ${user.id}) {
+                        __typename
+                        ... on Event {
+                          id
+                        }
+                        ... on Seminar {
+                          id
+                        }
+                      }
+                    }`
+                  })
+                  .then(res => {
+                    console.log(res)
+                    user.waitlist = []
+                    if (res.data) {
+                      user.waitlist = res.data.getMyWaitlistedEventsAndSeminars
+                    }
+                    console.log(user)
+                    this.$store.commit("setLogin", user);
+                    this.$router.push("myevents");
+                  })
                 })
               })
             })

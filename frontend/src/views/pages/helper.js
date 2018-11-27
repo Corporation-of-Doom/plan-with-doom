@@ -14,6 +14,8 @@ export function loadEvents(id){
           start_time
           end_time
           location
+          max_capacity
+					current_capacity
           announcements{
             date_modified
             message
@@ -46,6 +48,8 @@ export function loadEvents(id){
         // formats event for Events page
         var eventInfo = res.data.getEventByID
         var user = store.getters.getUser
+        eventInfo.start_time_utc = eventInfo.start_time
+        eventInfo.end_time_utc = eventInfo.end_time
         eventInfo.start_time =  moment(parseInt(eventInfo.start_time,10)).format("MMMM Do YYYY, h:mm a")
         eventInfo.end_time =  moment(parseInt(eventInfo.end_time,10)).format("MMMM Do YYYY, h:mm a")
         eventInfo.announcements.forEach(event => {
@@ -54,19 +58,6 @@ export function loadEvents(id){
         eventInfo.seminars.forEach(seminar => {
             seminar.start_time =  moment(parseInt(seminar.start_time,10)).format("MMMM Do YYYY, h:mm a")
             seminar.end_time =  moment(parseInt(seminar.end_time,10)).format("MMMM Do YYYY, h:mm a")
-        })
-        eventInfo.organizers.forEach(organizer => {
-            organizer.name = ''
-            if (organizer.first_name) {
-            organizer.name = organizer.first_name
-            }
-            if (organizer.middle_name) {
-            organizer.name +=  " " + organizer.middle_name
-            }
-            if (organizer.last_name) {
-            organizer.name +=  " " + organizer.last_name
-            }
-            
         })
         // checks to see if the user is following the event
         if(user.follow.filter(item => item.__typename === "Event" && item.id === id).length > 0){
@@ -84,6 +75,16 @@ export function loadEvents(id){
         }else{
             eventInfo.manage = false
         }
+        if(user.waitlist.filter(item => item.__typename === "Event" && item.id === id).length > 0){
+            eventInfo.waitlist = true
+        }else{
+            eventInfo.waitlist = false
+        }
+        console.log('Follow: '+eventInfo.follow)
+        console.log('Attend: '+eventInfo.attend)
+        console.log('Manage: '+eventInfo.manage)
+        console.log('Waitlist: '+eventInfo.waitlist)
+
         eventInfo.creator_id = eventInfo.organizers.filter(organizer => organizer.id === eventInfo.creator_id)[0].name
         eventInfo.id = id
         store.commit("setEvent",eventInfo)
@@ -93,7 +94,6 @@ export function loadEvents(id){
 }
 
 export function loadSeminars(id){
-    console.log("lololololol")
     // gets all the information about a seminar
     return fetch({
         query: `{
@@ -108,7 +108,9 @@ export function loadSeminars(id){
             description
             start_time
             end_time
-            location
+						location
+						max_capacity
+						current_capacity
             organizers{
               id
               first_name
@@ -123,6 +125,8 @@ export function loadSeminars(id){
         var user = store.getters.getUser
         if(res.data){
           var seminarInfo = res.data.getSeminarByID
+          seminarInfo.start_time_utc = seminarInfo.start_time
+          seminarInfo.end_time_utc = seminarInfo.end_time
           seminarInfo.start_time =  moment(parseInt(seminarInfo.start_time,10)).format("MMMM Do YYYY, h:mm a")
           seminarInfo.end_time =  moment(parseInt(seminarInfo.end_time,10)).format("MMMM Do YYYY, h:mm a")
           seminarInfo.announcements.forEach(seminar => {
@@ -138,35 +142,36 @@ export function loadSeminars(id){
           })
           .then(nameRes => {
             if(nameRes.data){
-              seminarInfo.event_id = nameRes.data.getEventByID.name
-            }
-            if(nameRes.data){
               console.log(nameRes.data.getEventByID.name)
               seminarInfo.event_name = nameRes.data.getEventByID.name
             }
             // chekcs if user is following the event
-            if(user.follow.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-              seminarInfo.follow = true
-            }else{
-              seminarInfo.follow = false
-            }
-            if(user.attend.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-              seminarInfo.attend = true
-            }else{
-              seminarInfo.attend = false
-            }
-            if(user.manage.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
-              seminarInfo.manage = true
-            }else{
-              seminarInfo.manage = false
-            }
-            if(user.follow.filter(item => item.__typename === "Event" && item.event_id === seminarInfo.event_id).length > 0){
-              seminarInfo.hideAttend = true
+            if(user.attend.filter(item => item.__typename === "Event" && item.id === seminarInfo.event_id).length > 0){
+                seminarInfo.hideAttend = false
+                if(user.follow.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.follow = true
+                }else{
+                    seminarInfo.follow = false
+                }
+                if(user.attend.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.attend = true
+                }else{
+                    seminarInfo.attend = false
+                }
+                if(user.manage.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.manage = true
+                }else{
+                    seminarInfo.manage = false
+                }
+                if(user.waitlist.filter(item => item.__typename === "Seminar" && item.id === id).length > 0){
+                    seminarInfo.waitlist = true
+                }else{
+                    seminarInfo.waitlist = false
+                }
             } else {
-              seminarInfo.hideAttend = false
+              seminarInfo.hideAttend = true
             }
             seminarInfo.id=id
-            console.log(seminarInfo)
             store.commit("setSeminar",seminarInfo)
             return true
           })
@@ -216,6 +221,7 @@ export function followAndAttend(type, partType){
         variables: call.variables
     })
     .then(res =>{
+        console.log(res, call)
         if(res.data){
             var payload = {
               __typename: type,

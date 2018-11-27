@@ -1,4 +1,4 @@
-const { signIn, searchUsers } = require("./user");
+const { signIn, searchUsers, checkConflicts, getUser } = require("./user");
 const { queryEventByID } = require("./event");
 const { querySeminarByID, querySeminarsByEventID } = require("./seminar");
 const {
@@ -10,7 +10,8 @@ const {
   getTotalCount,
   getMySchedule,
   queryOrganizerByTypeID,
-  getMyManagingSchedule
+  getMyManagingSchedule,
+  getMyWaitlist
 } = require("./searchResults");
 
 const rootResolvers = {
@@ -31,6 +32,16 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Incorrect password or email");
+      }
+    },
+    async getUserById(_, args) {
+      const { userID } = args;
+      try {
+        const user = await getUser(userID);
+        return user;
+      } catch (err) {
+        console.log(err);
+        return new Error(`Unable to get user with ID ${userID}`);
       }
     },
     async getTotal(_, args) {
@@ -151,6 +162,19 @@ const rootResolvers = {
         return new Error(`Unable to get Managing ${type}s.`);
       }
     },
+    async getMyWaitlistedEventsAndSeminars(_, args) {
+      const { userID, type, limit, offset } = args;
+      try {
+        return await getMyWaitlist(userID, type, limit, offset);
+      } catch (err) {
+        console.log(err);
+        if (!type)
+          return new Error(
+            "Unable to retrieve waitlisted Events and Managing Seminars."
+          );
+        return new Error(`Unable to get waitlisted ${type}s.`);
+      }
+    },
     async getMyAnnouncements(_, args) {
       try {
         const { userID, type, offset, limit } = args;
@@ -164,6 +188,18 @@ const rootResolvers = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to retrieve announcements");
+      }
+    },
+    async checkCalendarConflicts(_, args) {
+      try {
+        const { userID, type, startDateTime, endDateTime } = args;
+        return checkConflicts(userID, type, startDateTime, endDateTime);
+      } catch (err) {
+        console.log(err);
+        return new Error(
+          `Unable to check calendar conflicts for user with ID ${ID}
+           and date range ${startDateTime} to ${endDateTime}`
+        );
       }
     }
   },
@@ -179,7 +215,9 @@ const rootResolvers = {
     twitter: ({ twitter }) => twitter,
     facebook: ({ facebook }) => facebook,
     instagram: ({ instagram }) => instagram,
-    phone_number: ({ phone_number }) => phone_number
+    phone_number: ({ phone_number }) => phone_number,
+    about_me: ({ about_me }) => about_me,
+    picture_path: ({ picture_path }) => picture_path
   },
   Event: {
     id: ({ id }) => id,
@@ -211,6 +249,15 @@ const rootResolvers = {
     picture_path: ({ picture_path }) => picture_path,
     announcements: ({ announcements }) => announcements,
     organizers: ({ organizers }) => organizers
+  },
+  Announcement: {
+    id: ({ id }) => id,
+    type_name: ({ type_name }) => type_name,
+    type_id: ({ type_id }) => type_id,
+    message: ({ message }) => message,
+    date_created: ({ date_created }) => date_created,
+    date_modified: ({ date_modified }) => date_modified,
+    type: ({ type }) => type
   }
 };
 
