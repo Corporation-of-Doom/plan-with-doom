@@ -194,14 +194,13 @@ async function updateSeminarParticipation(
     seminarid
   );
 
-  if (!(await isAttendingEvent(userid, event_id))) {
-    return new Error("User must be attending event of this seminar");
-  }
-
   if (participationType.toUpperCase() == "ATTENDING") {
     // throws if error user already attending when trying to add to a seminar
     if (adding) {
       await alreadyAttendingSeminar(userid, seminarid);
+      if (!(await isAttendingEvent(userid, event_id))) {
+        return new Error("User must be attending event of this seminar");
+      }
     }
     // Checking if user can be added to event or should be added to waitlist
     if (max_capacity && current_capacity == max_capacity && adding) {
