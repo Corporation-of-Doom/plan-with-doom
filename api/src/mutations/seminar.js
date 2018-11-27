@@ -1,6 +1,6 @@
 const { db } = require("../db");
 const { queryEventByID } = require("../resolvers/event");
-const { querySeminarByID } = require("../resolvers/seminar");
+const { querySeminarByID, getSeminarByID } = require("../resolvers/seminar");
 const { queryOrganizerByTypeID } = require("../resolvers/searchResults");
 const {
   isAttendingEvent,
@@ -130,6 +130,154 @@ async function insertNewSeminar(seminarInput) {
   };
 }
 
+/* User is not allowed to change eventid */
+async function updateSeminar(seminarid, seminar) {
+  let {
+    name,
+    description,
+    location,
+    picture_path,
+    website,
+    location_link,
+    start_time,
+    end_time,
+    capacity_type,
+    max_capacity,
+    organizer_ids
+  } = seminar;
+
+  let simpleSeminar = {
+    name,
+    description,
+    location,
+    picture_path,
+    website,
+    location_link
+  };
+
+  if (Object.keys(simpleSeminar).length === 0) return;
+
+  let queryString = `UPDATE seminar SET`;
+  let first = 1;
+
+  // Adding basic properties of simpleSeminar to queryString
+  for (var key in simpleSeminar) {
+    if (simpleSeminar[key] !== null && simpleSeminar[key] !== undefined) {
+      if (!first) queryString = `${queryString}, `;
+      first = 0;
+      queryString = `${queryString} ${key} = '${simpleSeminar[key]}'`;
+    }
+  }
+
+  originalSeminar = await getSeminarByID(seminarid);
+  const parentEvent = await queryEventByID(originalSeminar.event_id);
+
+  // Validating time
+  const sem_start_time = new Date(start_time);
+  const sem_end_time = new Date(end_time);
+  if (sem_start_time > sem_end_time) {
+    console.log("Invalid Start Time: Seminar cannot start after Seminar ends");
+    return new Error(
+      "Unable to create a Seminar: Invalid Start Time: Seminar cannot start after Seminar ends"
+    );
+  }
+  if (sem_start_time < parentEvent.start_time) {
+    console.log("Invalid Start Time: Seminar cannot start before Event starts");
+    return new Error(
+      "Unable to create a Seminar: Invalid Start Time: Seminar cannot start before Event starts"
+    );
+  }
+  if (sem_start_time > parentEvent.end_time) {
+    console.log("Invalid Start Time: Seminar cannot start after Event ends");
+    return new Error(
+      "Unable to create a Seminar: Invalid Start Time: Seminar cannot start after Event ends"
+    );
+  }
+  if (sem_end_time > parentEvent.end_time) {
+    console.log("Invalid End Time: Seminar cannot end after Event ends");
+    return new Error(
+      "Unable to create a Seminar: Invalid End Time: Seminar cannot end after Event ends"
+    );
+  }
+
+  if (max_capacity < originalSeminar["current_capacity"]) {
+    return new Error("Max Capacity cannot be less than Current Capacity");
+  }
+
+  // adding the more complex parts of the query post validation
+  queryString = `${queryString}, start_time = '${sem_start_time.toISOString()}'`;
+  queryString = `${queryString}, end_time = '${sem_end_time.toISOString()}'`;
+  queryString = `${queryString}, capacity_type = '${capacity_type}'`;
+  if (capacity_type == "FFA") {
+    max_capacity = null;
+    queryString = `${queryString}, max_capacity = ${max_capacity}`;
+  } else {
+    queryString = `${queryString}, max_capacity = '${max_capacity}'`;
+  }
+  queryString = `${queryString} WHERE id = ? RETURNING *;`;
+  await db.raw(queryString, [seminarid]);
+
+  // Check if there are people on the waitlist and updates accordingly
+  if (
+    (max_capacity > originalSeminar["max_capacity"] &&
+      originalSeminar["max_capacity"] == originalSeminar["current_capacity"]) ||
+    max_capacity == null
+  ) {
+    var top = await getWaitlistTop(seminarid);
+    var newCapacity = await updateCurrentCapacity(seminarid);
+    while (
+      (top && newCapacity < max_capacity) ||
+      (top && max_capacity == null)
+    ) {
+      if (top) {
+        await updateSeminarWaitlist(top, seminarid, false);
+        await updateSeminarParticipation({
+          userid: top,
+          participationType: "ATTENDING",
+          seminarid: seminarid
+        });
+      }
+      top = await getWaitlistTop(seminarid);
+      newCapacity = await updateCurrentCapacity(seminarid);
+    }
+  }
+  await updateCurrentCapacity(seminarid);
+
+  /*
+  NOTE: revise this method to make use of set operations
+  Simplest sol'n atm was remove all organizers then add them all back
+  */
+  //retrieving old organizers
+  var oldOrganizerIDs = [];
+  originalSeminar["organizers"].forEach(organizer => {
+    oldOrganizerIDs.push(organizer.id);
+  });
+
+  for (var i = 0; i < oldOrganizerIDs.length; i++) {
+    const queryString = `delete from seminar_organizer where user_id = ? and seminar_id = ?; `;
+    if (originalSeminar["creator_id"] != oldOrganizerIDs[i]) {
+      await db.raw(`${queryString}`, [oldOrganizerIDs[i], seminarid]);
+    }
+  }
+
+  // adding organizers from the event
+  const organizers = await queryOrganizerByTypeID(originalSeminar.event_id);
+  organizers.forEach(user => {
+    organizer_ids.push(user.id);
+  });
+  organizer_ids = new Set(organizer_ids);
+  organizer_ids = Array.from(organizer_ids);
+
+  // inserting organizers into the table
+  for (var i = 0; i < organizer_ids.length; i++) {
+    const queryString = `INSERT INTO seminar_Organizer
+    (user_id, seminar_id) VALUES (?, ?); `;
+    await db.raw(`${queryString}`, [organizer_ids[i], seminarid]);
+  }
+
+  return;
+}
+
 async function updateCurrentCapacity(seminarid) {
   // Will recalculate and update the table's current capacity
   var queryString = `UPDATE "seminar" 
@@ -252,5 +400,6 @@ async function updateSeminarParticipation(
 module.exports = {
   insertNewSeminar,
   updateSeminarParticipation,
-  updateSeminarWaitlist
+  updateSeminarWaitlist,
+  updateSeminar
 };

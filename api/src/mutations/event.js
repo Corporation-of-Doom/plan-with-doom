@@ -104,7 +104,6 @@ async function insertNewEvent(eventInput) {
 
 /* 
 NOTE: Remember she'll always give me the whole object
-
 */
 async function updateEvent(eventid, event) {
   let {
