@@ -159,13 +159,15 @@ async function updateSeminar(seminarid, seminar) {
 
   let queryString = `UPDATE seminar SET`;
   let first = 1;
+  const vals = [];
 
   // Adding basic properties of simpleSeminar to queryString
   for (var key in simpleSeminar) {
     if (simpleSeminar[key] !== null && simpleSeminar[key] !== undefined) {
       if (!first) queryString = `${queryString}, `;
       first = 0;
-      queryString = `${queryString} ${key} = '${simpleSeminar[key]}'`;
+      queryString = `${queryString} ${key} = ?`;
+      vals.push(simpleSeminar[key]);
     }
   }
 
@@ -215,19 +217,20 @@ async function updateSeminar(seminarid, seminar) {
     queryString = `${queryString}, max_capacity = '${max_capacity}'`;
   }
   queryString = `${queryString} WHERE id = ? RETURNING *;`;
-  await db.raw(queryString, [seminarid]);
+  vals.push(seminarid);
+  await db.raw(queryString, vals);
 
   // Check if there are people on the waitlist and updates accordingly
   if (
+    max_capacity == null ||
     (max_capacity > originalSeminar["max_capacity"] &&
-      originalSeminar["max_capacity"] == originalSeminar["current_capacity"]) ||
-    max_capacity == null
+      originalSeminar["max_capacity"] == originalSeminar["current_capacity"])
   ) {
     var top = await getWaitlistTop(seminarid);
     var newCapacity = await updateCurrentCapacity(seminarid);
     while (
-      (top && newCapacity < max_capacity) ||
-      (top && max_capacity == null)
+      (top && max_capacity == null) ||
+      (top && newCapacity < max_capacity)
     ) {
       if (top) {
         await updateSeminarWaitlist(top, seminarid, false);
@@ -342,14 +345,13 @@ async function updateSeminarParticipation(
     seminarid
   );
 
-  if (!(await isAttendingEvent(userid, event_id))) {
-    return new Error("User must be attending event of this seminar");
-  }
-
   if (participationType.toUpperCase() == "ATTENDING") {
     // throws if error user already attending when trying to add to a seminar
     if (adding) {
       await alreadyAttendingSeminar(userid, seminarid);
+      if (!(await isAttendingEvent(userid, event_id))) {
+        return new Error("User must be attending event of this seminar");
+      }
     }
     // Checking if user can be added to event or should be added to waitlist
     if (max_capacity && current_capacity == max_capacity && adding) {

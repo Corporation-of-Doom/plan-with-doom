@@ -45,7 +45,7 @@ const Seminar = `
     capacity_type: capacity_type!
     max_capacity: Int
     
-    organizer_ids: [Int!]
+    organizer_ids: [Int!]!
     
     location: String
     location_link: String
