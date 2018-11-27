@@ -355,3 +355,38 @@ export function unfollowAndUnattend(type, partType) {
 export function capitialLetter(string){
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
+export function getLandingPage(value){
+  var home = {
+    search: {
+      text:'Search',
+      value: 'search'
+    },
+    myEvent: {
+      text:'My Events',
+      value: 'myevents'
+    },
+    calendar: {
+      text:'Calendar',
+      value: 'calendar'
+    },
+    newsFeed: {
+      text:'News Feed',
+      value: 'timeline'
+    },
+    manageEvent: {
+      text:'Manage Event',
+      value: 'manageevents'
+    },
+    profile: {
+      text:'Profile',
+      value: 'profile'
+    },
+    settings: {
+      text:'Settings',
+      value: 'settings'
+    }
+  }
+  for (var property in home){
+    if(value === home[property].value) return home[property].text
+  }
+}
