@@ -203,7 +203,7 @@ export function followAndAttend(type, partType){
         }
     } else if(type === 'Seminar') {
         call = {
-            query: `mutation addreUserToSeminar($newUser: SeminarParticipationInput!) {
+            query: `mutation addUserToSeminar($newUser: SeminarParticipationInput!) {
                 addUserToSeminar(SeminarParticipation: $newUser)
               }`,
             variables: {
