@@ -89,6 +89,18 @@
         <el-button type="primary" @click="attend">Confirm</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="Already Full!"
+      :visible.sync="fullDialog"
+      width="50%">
+      <span>Oh no! This semianr is full. <br>
+        Would you like to be added to the waitlist?
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancelConflictDialog">Cancel</el-button>
+        <el-button type="primary" @click="list">Confirm</el-button>
+      </span>
+    </el-dialog>
   </vue-scroll>
 </template>
 
@@ -125,6 +137,7 @@ export default {
       dialogVisible: false,
       conflictDialog: false,
       waitlist: this.$store.state.seminar.waitlist,
+      fullDialog: false,
     };
   },
   methods: {
@@ -134,7 +147,6 @@ export default {
     },
 
     onPost() {
-
       if (this.postMessage) {
         fetch({
             query: ` mutation createSeminarAnnoucement($announcement: AnnouncementInput!) {
@@ -200,7 +212,7 @@ export default {
         if (result){
           this.attendInfo.status = true
         } else{
-          this.attendInfo.status = false
+          this.fullDialog = true
         }
       }.bind(this))
     },
@@ -216,9 +228,14 @@ export default {
         }
       })
       .then(res => {
-        console.log(res)
         if(res.data){
           this.$store.commit("addToWaitlist",{__typename: 'Seminar', id: this.info.id})
+          this.fullDialog = false
+        } else {
+          this.$message({
+            message: 'Someething went wrong with adding to the waitlist',
+            type: 'error'
+          });
         }
       })
     },

@@ -7,22 +7,20 @@
        TBD
         </el-option>
     </el-select> <br> -->
-    <!-- Home Screen: <br>
-    <el-select placeholder="TBD">
-        <el-option :key="TBD" :label="TBD" :value="TBD">
-        TBD
-        </el-option>
-    </el-select><br> -->
+    
     <font size="+1" style="padding:10px">Autosave </font> <br>
     <hr>
     <div style="padding:20px; content-align:center">
         Sidebar Orientations <br>
-        <el-select v-model="sidebar.value" @change="onChangeSidebar">
-            <el-option :key="sidebar.left.text" :label="sidebar.left.text" :value="sidebar.left.value" />
-            <el-option :key="sidebar.right.text" :label="sidebar.right.text" :value="sidebar.right.value" />
-            <el-option :key="sidebar.top.text" :label="sidebar.top.text" :value="sidebar.top.value" />
-            <el-option :key="sidebar.bottom.text" :label="sidebar.bottom.text" :value="sidebar.bottom.value" />
+        <el-select  v-model="sidebarValue" @change="onChangeSidebar">
+          <el-option v-for="item in sidebar" :key="item.text" :label="item.text" :value="item.value" />
         </el-select>
+    </div>
+    <div style="padding:20px; content-align:center">
+        Landing Page: <br>
+        <el-select v-model="landingPageValue" @change="onChangeLandingPage">
+          <el-option v-for="item in home" :key="item.text" :label="item.text" :value="item.value" />
+        </el-select><br>
     </div>
   </div>
 </vue-scroll>
@@ -32,7 +30,7 @@
 import seminarCard from '@/components/seminarCard.vue'
 import addEvent from '@/components/addEvent.vue'
 import addSeminar from '@/components/addSeminar.vue'
-import {loadSeminars,loadEvents,capitialLetter } from './helper'
+import {loadSeminars,loadEvents,capitialLetter,getLandingPage } from './helper'
 import * as moment from 'moment'
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
@@ -42,48 +40,103 @@ export default {
    data() {
       return {
         sidebar:{
-            left: {
-              text:'Left',
-              value: 'left'
-            },
-            right: {
-              text: 'Right',
-              value: 'right'
-            },
-            top: {
-              text: 'Top',
-              value: 'top'
-            },
-            bottom: {
-              text: 'Bottom',
-              value: 'bottom'
-            },
-            value: capitialLetter(this.$store.state.user.menu_orientation)
+          left: {
+            text:'Left',
+            value: 'left'
+          },
+          right: {
+            text: 'Right',
+            value: 'right'
+          },
+          top: {
+            text: 'Top',
+            value: 'top'
+          },
+          bottom: {
+            text: 'Bottom',
+            value: 'bottom'
+          },
         },
+        home:{
+          search: {
+            text:'Search',
+            value: 'search'
+          },
+          myEvent: {
+            text:'My Events',
+            value: 'myevents'
+          },
+          calendar: {
+            text:'Calendar',
+            value: 'calendar'
+          },
+          newsFeed: {
+            text:'News Feed',
+            value: 'timeline'
+          },
+          manageEvent: {
+            text:'Manage Event',
+            value: 'manageevents'
+          },
+          profile: {
+            text:'Profile',
+            value: 'profile'
+          },
+          settings: {
+            text:'Settings',
+            value: 'settings'
+          },          
+        },
+        sidebarValue: capitialLetter(this.$store.state.user.menu_orientation),
+        landingPageValue: getLandingPage(this.$store.state.user.landing_page),
         user: this.$store.state.user,
         showAddSeminar: false,
+        dialog: false,
+        message: "",
         TBD: 'TBD'
       };
     },
   mounted() {
   },
   methods: {
-      onChangeSidebar(event){
-          console.log('hererererere' + event)
-          fetch({query:`mutation {
-            editProfile(userID: ${this.user.id}, user: {menu_orientation: ${event.toUpperCase()}}) {
-              first_name
-              middle_name
-              last_name
-              landing_page
-              menu_orientation
-            }
-          }`})
-          .then(res => {
-            console.log(res)
-            if (res.data) this.$store.commit("setLayout", {navPos: event})
-          })
-      }
+    onChangeSidebar(event){
+      fetch({query:`mutation {
+        editProfile(userID: ${this.user.id}, user: {menu_orientation: ${event.toUpperCase()}}){
+          first_name
+        }
+      }`})
+      .then(res => {
+        if (res.data){ 
+          this.$store.commit("setLayout", {navPos: event})
+        } else{
+          this.$message({
+            message: 'Something went wrong when updating your menu bar. :(',
+            type: 'error'
+          });
+        }
+      })
+    },
+    onChangeLandingPage(event){
+      fetch({query:`mutation {
+        editProfile(userID: ${this.user.id}, user: {landing_page: "${event}"}) {
+          first_name
+        }
+      }`})
+      .then(res => {
+        if (res.data){ 
+          this.$store.commit("setUser", {landing_page: event})
+          this.$message({
+            message: 'Your landing page has been changed! :)',
+            type: 'success'
+          });
+        } else {
+          this.$message({
+            message: 'Something went wrong when updating your landing page. :(',
+            type: 'error'
+          });
+        }
+      })
+    }
   },
   components: {
     seminarCard, 

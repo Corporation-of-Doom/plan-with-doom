@@ -145,9 +145,12 @@ export default new Vuex.Store({
       console.log(state.user.waitlist);
       state.user.waitlist.push(payload);
       if (payload.__typename === "Event") {
+        state.event.current_capacity = state.event.max_capacity
         state.event.waitlist = true;
       } else if (payload.__typename === "Seminar") {
         state.seminar.waitlist = true;
+        state.seminar.current_capacity = state.seminar.max_capacity
+
       }
     },
     removeFromWaitlist(state, payload) {
@@ -161,18 +164,9 @@ export default new Vuex.Store({
       );
     },
     setUser(state, payload) {
-      state.user.first_name = payload.first_name;
-      state.user.middle_name = payload.middle_name;
-      state.user.last_name = payload.last_name;
-      state.user.email = payload.email;
-      state.user.orgnization = payload.orgnization;
-      state.user.phone_number = payload.phone_number;
-      state.user.linked_in = payload.linked_in;
-      state.user.twitter = payload.twitter;
-      state.user.facebook = payload.facebook;
-      state.user.instagram = payload.instagram;
-      state.user.about_me = payload.about_me;
-      state.user.organization = payload.organization;
+      for(var prop in payload){
+        state.user[prop] = payload[prop]
+      }
     }
   },
   getters: {
