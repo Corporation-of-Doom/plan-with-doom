@@ -27,7 +27,7 @@
 		<el-menu-item index="/profile">
 			<i class="mdi mdi-face"></i><span slot="title">Profile</span>
 		</el-menu-item>
-		<el-menu-item index="/not-found">
+		<el-menu-item index="/settings">
 			<i class="mdi mdi-settings"></i><span slot="title">Settings</span>
 		</el-menu-item>
 		<el-menu-item index="/logout">

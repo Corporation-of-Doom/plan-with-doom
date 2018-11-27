@@ -1,3 +1,6 @@
+CREATE TYPE Capacity_Type AS ENUM ('FCFS_P', 'FCFS_E', 'FFA');
+CREATE TYPE Menu_Orientation AS ENUM ('LEFT','RIGHT','TOP','BOTTOM');
+
 CREATE TABLE IF NOT EXISTS Doom_User(
   ID          		      SERIAL,
   first_name 			      TEXT                NOT NULL,
@@ -16,10 +19,11 @@ CREATE TABLE IF NOT EXISTS Doom_User(
   confirmed             BOOL                DEFAULT FALSE,
   about_me              TEXT,
   website	  		        TEXT,
+  landing_page          TEXT                DEFAULT 'myevents',
+  menu_orientation      Menu_Orientation    DEFAULT 'LEFT',
   PRIMARY KEY (ID)
 );
 
-CREATE TYPE Capacity_Type AS ENUM ('FCFS_P', 'FCFS_E', 'FFA');
 
 CREATE TABLE IF NOT EXISTS Event(
   ID          		      SERIAL,

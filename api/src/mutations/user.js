@@ -46,7 +46,7 @@ async function registerUser(user) {
       (first_name, last_name, email, privacy_settings, password_hash,
        middle_name, organization, linked_in, twitter, facebook,
        instagram, phone_number, about_me, picture_path)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;`;
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, landing_page, menu_orientation;`;
 
   const vals = [
     first_name,
@@ -67,9 +67,8 @@ async function registerUser(user) {
 
   const res = await db.raw(`${queryString}`, vals);
 
-  const { id } = res.rows[0];
+  const { id, landing_page, menu_orientation } = res.rows[0];
   // TODO: send email verification
-
   return {
     id,
     email,
@@ -84,7 +83,9 @@ async function registerUser(user) {
     phone_number,
     privacy_settings,
     about_me,
-    picture_path
+    picture_path,
+    landing_page,
+    menu_orientation
   };
 }
 
@@ -120,7 +121,9 @@ async function editUserProfile(userID, user) {
     phone_number: res.rows[0].phone_number,
     privacy_settings: res.rows[0].privacy_settings,
     picture_path: res.rows[0].picture_path,
-    about_me: res.rows[0].about_me
+    about_me: res.rows[0].about_me,
+    landing_page: res.rows[0].landing_page,
+    menu_orientation: res.rows[0].menu_orientation
   };
 }
 

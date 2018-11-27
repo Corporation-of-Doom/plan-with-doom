@@ -15,7 +15,7 @@ export function loadEvents(id) {
           end_time
           location
           max_capacity
-					current_capacity
+		  current_capacity
           announcements{
             date_modified
             message
@@ -351,4 +351,7 @@ export function unfollowAndUnattend(type, partType) {
       console.log(err);
       return false;
     });
+}
+export function capitialLetter(string){
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }

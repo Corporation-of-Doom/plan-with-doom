@@ -24,9 +24,10 @@ export default new Vuex.Store({
   },
   mutations: {
     setLayout(state, payload) {
-      if (payload && payload.navPos !== undefined)
-        state.layout.navPos = payload.navPos;
-
+      if (payload && payload.navPos !== undefined){
+        state.layout.navPos = payload.navPos
+        state.user.menu_orientation = payload.navPos
+      }
       if (payload && payload.toolbar !== undefined)
         state.layout.toolbar = payload.toolbar;
 
