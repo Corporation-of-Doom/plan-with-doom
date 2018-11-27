@@ -270,7 +270,6 @@ export function followAndAttend(type, partType) {
 
   return fetch({ query: call.query, variables: call.variables })
     .then(res => {
-      console.log(res, call);
       if (res.data) {
         var payload = {
           __typename: type,
@@ -278,7 +277,7 @@ export function followAndAttend(type, partType) {
         };
         if (partType === "FOLLOWING") {
           store.commit("addToFollow", payload);
-        } else if ([artType === "ATTENDING"]) {
+        } else if (partType === "ATTENDING") {
           store.commit("addToAttend", payload);
         }
         return true;
@@ -338,7 +337,7 @@ export function unfollowAndUnattend(type, partType) {
         };
         if (partType === "FOLLOWING") {
           store.commit("removeFromFollow", payload);
-        } else if ([artType === "ATTENDING"]) {
+        } else if (partType === "ATTENDING") {
           store.commit("removeFromAttend", payload);
         }
         return true;
