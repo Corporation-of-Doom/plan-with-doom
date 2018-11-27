@@ -34,6 +34,7 @@
 				<el-time-picker
 					v-model="startTime"
 					format="hh:mm A"
+					value-format="hh:mm"
 					clearable
 					placeholder="Start Time">
 				</el-time-picker>
@@ -50,31 +51,51 @@
 				<el-time-picker
 					v-model="endTime"
 					format="hh:mm A"
+					value-format="hh:mm"
 					clearable
 					placeholder="End Time">
 				</el-time-picker>
 		
 				<p>Capacity Type</p>
 				<el-radio v-model="capacityType" label="FFA">Free for all</el-radio>
-				<el-radio v-model="capacityType" label="FCFS_P">First come first serve (physically)</el-radio>
-				<el-radio v-model="capacityType" label="FCFS_E">First come first serve (electronically)</el-radio>
-
-				<el-input-number
-					v-if="capacityType=='FFA'"
-					disabled
-					v-model="capacityNum" 
-					:precision="0"
-					:min="1" 
-					:max="9999">
-				</el-input-number>
-
-				<el-input-number
-					v-if="capacityType!='FFA'"
-					v-model="capacityNum" 
-					:precision="0"
-					:min="1" 
-					:max="9999">
-				</el-input-number>
+				
+				<div class="capacity-box-fcfsp">
+					<el-radio v-model="capacityType" label="FCFS_P">First come first serve (physically)</el-radio>
+					<el-input-number
+						v-if="capacityType=='FFA'|| capacityType=='FCFS_E'"
+						disabled
+						v-model="capacityNum" 
+						:precision="0"
+						:min="1" 
+						:max="9999">
+					</el-input-number>
+					<el-input-number
+						v-if="capacityType=='FCFS_P'"
+						v-model="capacityNum" 
+						:precision="0"
+						:min="1" 
+						:max="9999">
+					</el-input-number>
+				</div>
+				
+				<div class="capacity-box-fcfse">
+					<el-radio v-model="capacityType" label="FCFS_E">First come first serve (electronically)</el-radio>
+					<el-input-number
+						v-if="capacityType=='FFA' || capacityType=='FCFS_P'"
+						disabled
+						v-model="capacityNum" 
+						:precision="0"
+						:min="1" 
+						:max="9999">
+					</el-input-number>
+					<el-input-number
+						v-if="capacityType=='FCFS_E'"
+						v-model="capacityNum" 
+						:precision="0"
+						:min="1" 
+						:max="9999">
+					</el-input-number>
+				</div>
 
 				<p>Location</p>
 				<p>Country</p>
@@ -143,7 +164,8 @@ export default {
 				transferData: [],
                 selectedOrganizers: [],	
 				managingEvents: [],
-				eventSelected: null
+				eventSelected: null,
+				editEvent: this.$store.state.editMode,
 			};
 		},
 		mounted() {
