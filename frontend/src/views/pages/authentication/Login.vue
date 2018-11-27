@@ -44,6 +44,7 @@
 
 <script>
 // import gql from 'graphql-tag'
+import layouts from '../../../layout'
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 export default {
@@ -74,6 +75,8 @@ export default {
             instagram
             organization
             about_me
+            landing_page
+            menu_orientation
           }
         }`
       })
@@ -171,8 +174,11 @@ export default {
                       user.waitlist = res.data.getMyWaitlistedEventsAndSeminars
                     }
                     console.log(user)
-                    this.$store.commit("setLogin", user);
-                    this.$router.push("myevents");
+                    var layout = layouts.navRight
+                    layout.navPos = user.menu_orientation.toLowerCase()
+                    this.$store.commit("setLayout", layout)
+                    this.$store.commit("setLogin", user)
+                    this.$router.push("myevents")
                   })
                 })
               })

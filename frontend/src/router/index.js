@@ -43,7 +43,6 @@ import store from '../store'
 
 Vue.use(Router)
 
-
 const router = new Router({
   mode: "history",
   routes: [
@@ -114,7 +113,6 @@ const router = new Router({
       component: MyEventsPage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: false,
         tags: ["app"]
       }
@@ -304,7 +302,6 @@ const router = new Router({
     }
   ]
 });
-
 
 const l = {
 	contenOnly(){
