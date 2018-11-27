@@ -21,6 +21,7 @@ export default new Vuex.Store({
 		user:{},
 		event: {},
 		seminar:{},
+		editMode: false,
 	},
 	mutations: {
 		setLayout(state, payload) {
@@ -143,7 +144,10 @@ export default new Vuex.Store({
 			state.user.instagram = payload.instagram
 			state.user.about_me = payload.about_me
 			state.user.organization = payload.organization
-		},
+		}, 
+		setEdit(state,payload){
+			state.editMode = payload.editMode
+		}
 	},
 	getters: {
 		layout(state, getters) {

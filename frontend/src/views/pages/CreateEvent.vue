@@ -27,6 +27,7 @@
 				<el-time-picker
 					v-model="startTime"
 					format="hh:mm A"
+					value-format="hh:mm"
 					clearable
 					placeholder="Start Time">
 				</el-time-picker>
@@ -43,31 +44,52 @@
 				<el-time-picker
 					v-model="endTime"
 					format="hh:mm A"
+					value-format="hh:mm"
 					clearable
 					placeholder="End Time">
 				</el-time-picker>
 		
 				<p>Capacity Type</p>
+				
 				<el-radio v-model="capacityType" label="FFA">Free for all</el-radio>
-				<el-radio v-model="capacityType" label="FCFS_P">First come first serve (physically)</el-radio>
-				<el-radio v-model="capacityType" label="FCFS_E">First come first serve (electronically)</el-radio>
-
-				<el-input-number
-					v-if="capacityType=='FFA'"
-					disabled
-					v-model="capacityNum" 
-					:precision="0"
-					:min="1" 
-					:max="9999">
-				</el-input-number>
-
-				<el-input-number
-					v-if="capacityType!='FFA'"
-					v-model="capacityNum" 
-					:precision="0"
-					:min="1" 
-					:max="9999">
-				</el-input-number>
+				
+				<div class="capacity-box-fcfsp">
+					<el-radio v-model="capacityType" label="FCFS_P">First come first serve (physically)</el-radio>
+					<el-input-number
+						v-if="capacityType=='FFA'|| capacityType=='FCFS_E'"
+						disabled
+						v-model="capacityNum" 
+						:precision="0"
+						:min="1" 
+						:max="9999">
+					</el-input-number>
+					<el-input-number
+						v-if="capacityType=='FCFS_P'"
+						v-model="capacityNum" 
+						:precision="0"
+						:min="1" 
+						:max="9999">
+					</el-input-number>
+				</div>
+				
+				<div class="capacity-box-fcfse">
+					<el-radio v-model="capacityType" label="FCFS_E">First come first serve (electronically)</el-radio>
+					<el-input-number
+						v-if="capacityType=='FFA' || capacityType=='FCFS_P'"
+						disabled
+						v-model="capacityNum" 
+						:precision="0"
+						:min="1" 
+						:max="9999">
+					</el-input-number>
+					<el-input-number
+						v-if="capacityType=='FCFS_E'"
+						v-model="capacityNum" 
+						:precision="0"
+						:min="1" 
+						:max="9999">
+					</el-input-number>
+				</div>
 
 				<p>Location</p>
 				<p>Country</p>
@@ -136,12 +158,17 @@ export default {
 				descriptionInput: '',
 				transferData: [],
 				selectedOrganizers: [],
-				editEvent: this.$store.state.event.manage,
+				editEvent: this.$store.state.editMode,
 			};
 		},
 
 		mounted() {
-		
+
+			if (this.editEvent == false)
+				console.log("EDIT MODE FALSE");
+			else 
+				console.log("EDIT MODE TRUE");
+
 			// fetches a list of organizers to be displayed in the transfer component
 				fetch({
 					query: `{
@@ -178,11 +205,13 @@ export default {
 					
 					var eventInfo = this.$store.state.event
 
+
+
 					this.eventName = eventInfo.name
 					this.descriptionInput = eventInfo.description
 					this.startDate = moment(parseInt(eventInfo.start_time_utc,10)).format("YYYY-MM-DD")
 					this.endDate = moment(parseInt(eventInfo.end_time_utc,10)).format("YYYY-MM-DD")
-					this.startTime = moment(parseInt(eventInfo.start_time_utc,10)).format("HH:mm")
+					this.startTime = eventInfo.start_time_utc
 					this.endTime = moment(parseInt(eventInfo.end_time_utc,10)).format("HH:mm")
 					this.capacityType = eventInfo.capacity_type
 					this.capacityNum = eventInfo.max_capacity
@@ -211,6 +240,11 @@ export default {
 			this.startTime && this.endTime &&
 			this.capacityType)
 			{					
+
+				console.log("STARTTIME: " + this.startTime);
+				console.log("ENDTIME: " + this.endTime);
+
+
 				var temp = ''
 
 				// parse the start time
@@ -237,6 +271,55 @@ export default {
 				console.log("capacity_type: " + this.capacityType)
 				console.log("max_capacity: " + this.capacityNum)
 				console.log("organizer_ids: " + this.selectedOrganizers)
+
+				if (this.editEvent === true) {
+					console.log("---------");
+					console.log('EVENT ID:  ' + this.$store.state.event.id);
+					console.log("******");
+					console.log("description: " + this.descriptionInput);
+					console.log("max_capacity: " + this.capacityNum);
+					console.log("start_time: " + this.startDate + " " + startT);
+					console.log("end_time: " + this.endDate + " " + endT);
+					console.log("name: " + this.eventName);
+					console.log("capacity_type: " + this.capacityType);
+					console.log("organizer_ids: " + this.selectedOrganizers);
+
+					fetch({
+					query: `mutation editEvent($myid: Int!, $myEvent: EventUpdateInput!){
+						editEvent(eventID:$myid, event: $myEvent){
+						name
+						}
+					}`,
+					variables: {
+						myid: this.$store.state.event.id,
+						myEvent: {
+							description: this.descriptionInput,
+							max_capacity: this.capacityNum,
+							start_time: this.startDate + " " + startT,
+							end_time: this.endDate + " " + endT,
+							name: this.eventName,
+							capacity_type: this.capacityType,
+							organizer_ids: this.selectedOrganizers
+						}
+					}			
+				}).then(res => {
+					console.log(res.data)
+					if (res.data) {
+						alert("Event updated successfully!")
+						var payload = {
+							__typename: "Event",
+							id: res.data.editEvent.id
+						}
+						this.$store.commit("addToManage",payload)
+						this.$router.push('ManageEvents')
+					} else {
+						console.log(res.errors)
+					}
+				}).catch(err => {
+					console.log(err);
+				})
+
+				} else {
 
 				fetch({
 					query: `mutation createEvent($event: EventInput!){
@@ -273,6 +356,8 @@ export default {
 				}).catch(err => {
 					console.log(err);
 				});
+
+				}
 			}
 
 			// Make sure the user enter information in the required fields
@@ -358,6 +443,7 @@ img {
 .event-name {
 	position: relative;
 }
+
 
 </style>
 

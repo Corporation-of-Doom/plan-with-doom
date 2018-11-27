@@ -151,7 +151,8 @@ export default {
   },
   methods: {
     onEdit() {
-      this.$router.push('CreateEvent')    
+      this.$store.commit("setEdit", {editMode: true})    
+      this.$router.push('CreateEvent')
     },
     cancelConflictDialog(){
       this.conflictDialog = false
