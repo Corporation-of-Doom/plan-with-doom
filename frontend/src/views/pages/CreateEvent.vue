@@ -52,7 +52,7 @@
 				<p>Capacity Type</p>
 				
 				<el-radio v-model="capacityType" label="FFA">Free for all</el-radio>
-				
+				<br>
 					<el-radio v-model="capacityType" @click="capacityVisibleFCFSP=true" label="FCFS_P">First come first serve (physically)</el-radio>
 					<el-input-number
 						:visible.sync="capacityVisibleFCFSP"
@@ -62,7 +62,7 @@
 						:min="1" 
 						:max="9999">
 					</el-input-number>
-				
+				<br>
 				<div class="capacity-box-fcfse">
 					<el-radio v-model="capacityType" @click="capacityVisibleFCFSE=true" label="FCFS_E">First come first serve (electronically)</el-radio>
 					<el-input-number
@@ -110,7 +110,8 @@
 			<br>
 			<el-button v-if="editEvent" type="success" v-on:click="onSubmit" round >Update Event</el-button>
 			<el-button v-else type="success" v-on:click="onSubmit" round >Create Event</el-button>
-			<el-button type="danger" @click="onCancel" round>Cancel</el-button>
+			<el-button v-if="editEvent" type="danger" @click="onCancell" round>Cancel</el-button>
+			<el-button v-else type="danger" @click="onCancel" round>Cancel</el-button>
 	
 		</div>	
 	</vue-scroll>
@@ -396,6 +397,25 @@ export default {
 				this.$message({
 					type: 'success',
 					message: 'Delete completed'
+				});
+				this.$router.push('ManageEvents')
+			}).catch(() => {
+				this.$message({
+					type: 'info',
+					message: 'Delete canceled'
+				});
+			});
+		},
+		onCancell() {
+			this.$confirm('The event information will be discarded. Continue?', 'Warning', {
+				confirmButtonText: 'OK',
+				cancelButtonText: 'Cancel',
+				type: 'warning',
+				center: true
+			}).then(() => {
+				this.$message({
+					type: 'success',
+					message: 'No changes were made'
 				});
 				this.$router.push('ManageEvents')
 			}).catch(() => {
