@@ -99,10 +99,16 @@ export default {
 					menu_orientation
 					phone_number
 					followers {
-					id
+						id
+						first_name
+						middle_name
+						last_name
 					}
 					following {
-					id
+						id
+						first_name
+						middle_name
+						last_name
 					}
 				}}`
 			})
@@ -138,10 +144,16 @@ export default {
 					menu_orientation
 					phone_number
 					followers {
-					id
+						id
+						first_name
+						middle_name
+						last_name
 					}
 					following {
-					id
+						id
+						first_name
+						middle_name
+						last_name
 					}
 				}}`
 			})
