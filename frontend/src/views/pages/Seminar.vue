@@ -1,7 +1,7 @@
 <template>
   <vue-scroll style="background:white;">
     <h1 style="margin-bottom:5px; margin-top:20px;text-align:center;">{{info.name}} </h1>
-    <p style="margin:10px;margin-top:0px;text-align:center;">  {{info.event_name}} </p>
+    <p @click="loadEvent" style="margin:10px;margin-top:0px;text-align:center;color:#2581e3">  {{info.event_name}} </p>
     <div v-if="info.max_capacity" style="text-align:center;margin:10px">Capacity: {{info.current_capacity}} / {{info.max_capacity}}  </div>
 
     <el-row type="flex" class="row-bg">
@@ -113,7 +113,7 @@
 <script>
 import { createApolloFetch } from "apollo-fetch"
 import * as moment from 'moment'
-import {followAndAttend, unfollowAndUnattend} from './helper'
+import {followAndAttend, unfollowAndUnattend, loadEvents} from './helper'
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
 export default {
@@ -164,7 +164,18 @@ export default {
       this.dialogVisible = false
       this.postMessage = ''
     },
-
+    loadEvent(){
+       loadEvents(this.info.event_id).then(function(result) {
+        if (result){
+          this.$router.push("event")
+        } else{
+          this.$message({
+            message: "something went wrong loading the event",
+            type: 'error'
+          })
+        }
+      }.bind(this))
+    },
     onPost() {
       if (this.postMessage) {
         fetch({

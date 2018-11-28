@@ -15,20 +15,19 @@
                 <div v-if="item" >
                   <seminar-card v-if="item.event_id" 
                     @click.native="loadSeminar(item.id)"
-                      :item="item"
-                    />
+                    :item="item"
+                    :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                    :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                    :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                  />
                   <event-card v-else 
                   @click.native="loadEvent(item.id)"
+                  :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                  :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                  :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
                   :item="item" /> 
                 </div>
               </div>
-
-              <el-pagination
-                  :page-size="10"
-                  layout="prev, pager, next"
-                  :total="total">
-                >
-              </el-pagination>
           </div>
         </el-tab-pane>
 
@@ -45,17 +44,14 @@
                 <div v-if="item" >
                   
                   <event-card
-                  @click.native="loadEvent(item.id)"
-                  :item="item" /> 
+                    @click.native="loadEvent(item.id)"
+                    :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                    :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                    :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                    :item="item"
+                  /> 
                 </div>
               </div>
-
-              <el-pagination
-                  :page-size="10"
-                  layout="prev, pager, next"
-                  :total="total">
-                >
-              </el-pagination>
           </div>
         </el-tab-pane>
         <!-- Seminar only -->
@@ -71,17 +67,13 @@
                 <div v-if="item" >
                   <seminar-card
                     @click.native="loadSeminar(item.id)"
-                      :item="item"
-                    />
+                    :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                    :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                    :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                    :item="item"
+                  />
                 </div>
               </div>
-
-              <el-pagination
-                  :page-size="10"
-                  layout="prev, pager, next"
-                  :total="total">
-                >
-              </el-pagination>
           </div>
         </el-tab-pane>       
       </el-tabs>

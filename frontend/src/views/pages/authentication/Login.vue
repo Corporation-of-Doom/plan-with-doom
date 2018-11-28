@@ -80,9 +80,15 @@ export default {
             phone_number
             followers {
               id
+              first_name
+              middle_name
+              last_name
             }
             following {
               id
+              first_name
+              middle_name
+              last_name
             }
           }
         }`

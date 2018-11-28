@@ -19,12 +19,19 @@
           <div v-for="(item,key) in currentList" :key="key">
             <div v-if="item" >
               <seminar-card v-if="item.event_id" 
-                @click.native="loadSeminar(item.id)"
+                  @click.native="loadSeminar(item.id)"
                   :item="item"
+                  :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                  :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                  :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
                 />
               <event-card v-else 
-              @click.native="loadEvent(item.id)"
-              :item="item" /> 
+                @click.native="loadEvent(item.id)"
+                :item="item"
+                :follow="user.follow.filter(element => element.id === item.id && element.__typename === 'Event').length>0"
+                :attend="user.attend.filter(element => element.id === item.id && element.__typename === 'Event').length>0"
+                :waitlist="user.waitlist.filter(element => element.id === item.id && element.__typename === 'Event').length>0"
+               /> 
             </div>
           </div>
         </el-tab-pane>
@@ -46,11 +53,18 @@
             <div v-if="item" >
               <seminar-card v-if="item.event_id" 
                 @click.native="loadSeminar(item.id)"
-                  :item="item"
-                />
+                :item="item"
+                :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+              />
               <event-card v-else 
-              @click.native="loadEvent(item.id)"
-              :item="item" /> 
+                @click.native="loadEvent(item.id)"
+                :item="item"
+                :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+               /> 
             </div>
           </div>
         </el-tab-pane>
@@ -72,11 +86,18 @@
             <div v-if="item" >
               <seminar-card v-if="item.event_id" 
                 @click.native="loadSeminar(item.id)"
-                  :item="item"
-                />
+                :item="item"
+                :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+              />
               <event-card v-else 
-              @click.native="loadEvent(item.id)"
-              :item="item" /> 
+                @click.native="loadEvent(item.id)"
+                :item="item" 
+                :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+              /> 
             </div>
           </div>
         </el-tab-pane>
@@ -108,6 +129,9 @@ export default {
     },
     methods: {
       getAll(){
+       console.log(this.user.attend)
+        console.log(this.user.attend.filter(event => event.id === 3 && event.__typename === 'Event'))
+        console.log((this.user.attend.filter(event => event.id === 3 && event.__typename === 'Event').length)>0)
         this.currentList = []
         var call
         if (this.filter === "None") {
@@ -233,9 +257,9 @@ export default {
               })
               .then(nameRes => {
                 if(nameRes.data){
-                  info.event_id = nameRes.data.getEventByID.name
+                  info.event_name = nameRes.data.getEventByID.name
                 } else {
-                  info.event_id = "Event Name Not Found"
+                  info.event_name = "Event Name Not Found"
                 }
                 this.currentList.push(info)
               })

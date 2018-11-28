@@ -286,7 +286,6 @@ export default {
     },
     loadSeminar(id) {
       loadSeminars(id).then(function(result) {
-        console.log(result)
         if (result){
           this.$router.push("seminar")
         } else{

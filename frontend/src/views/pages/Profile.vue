@@ -42,6 +42,20 @@
 					<hr>
 					{{user.about_me}}
 				</el-tab-pane>
+				<el-tab-pane label="Following" name="following">
+					<div style="height:20%" v-for="item in user.following" :key="item.id">
+						<el-card shadow="always" style="text-align:center;padding:20px;margin-bottom:10px;height:20%" @click.native="loadUser(item.id)">
+						<el-col> {{item.first_name}} {{item.middle_name}} {{item.last_name}} </el-col>
+						</el-card>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane label="Followers" name="followers">
+					<div style="height:20%" v-for="item in user.followers" :key="item.id">
+						<el-card shadow="always" style="text-align:center;padding:20px;margin-bottom:10px;height:20%" @click.native="loadUser(item.id)">
+						<el-col> {{item.first_name}} {{item.middle_name}} {{item.last_name}} </el-col>
+						</el-card>
+					</div>
+				</el-tab-pane>
 				<el-tab-pane label="Personal Infomation" name="info">
 					<profile-edit></profile-edit>
 				</el-tab-pane>
@@ -55,6 +69,7 @@ import ColorThief from 'color-thief-browser'
 import Affix from '@/components/Affix'
 import ProfileEdit from '@/components/Profile/ProfileEdit'
 import { createApolloFetch } from "apollo-fetch"
+import { loadUser } from "./helper"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
 export default {
@@ -74,6 +89,39 @@ export default {
 	methods: {
 		onClick(id){
 			console.log(id)
+		}, loadUser(id){
+			fetch({
+			query: `{
+				getUserById(userID: ${id}){
+				first_name
+				middle_name
+				last_name
+				email
+				organization
+				linked_in
+				twitter
+				facebook
+				instagram
+				phone_number
+				privacy_settings
+				about_me
+				id
+				} 
+			}`
+			})
+			.then(res => {
+				if(res.data.getUserById){
+					var info = res.data.getUserById
+					info.following = this.user.following.filter(user => user.id === id).length>0
+					
+					this.$store.commit("loadUser",res.data.getUserById)
+					this.$router.push("userprofile")
+				} else {
+					this.$message({
+					message: "Something went wrong loading the user :("
+					})
+				}
+			})
 		}
 	},
 	components: {
