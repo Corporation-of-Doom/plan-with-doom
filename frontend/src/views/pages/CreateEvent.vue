@@ -97,14 +97,8 @@
 						<template slot="prepend">Google Map Link</template>
 					</el-input>
 				</div>
-				<p>Country</p>
-				<el-input v-model="countryInput" placeholder="Canada" ></el-input>
-				<p>City</p>
-				<el-input v-model="cityInput" placeholder="Guelph"></el-input>
-				<p>Postal Code</p>	
-				<el-input v-model="postalInput" placeholder="N1G 2W1"></el-input>
-				<p>Address</p>	
-				<el-input v-model="addressInput" placeholder="50 Stone Rd E"></el-input>
+				<p>Address</p>
+				<el-input v-model="addressInput" placeholder="50 Stone Rd E, Guelph, ON N1G 2W1" ></el-input>
 				
 				<p>Website</p>
 				<el-input v-model="urlInput" placeholder="www.planwithdoom.com"></el-input>
@@ -130,7 +124,8 @@
 
 			<!-- buttons -->
 			<br>
-			<el-button type="success" v-on:click="onSubmit" round >Create Event</el-button>	
+			<el-button v-if="editEvent" type="success" v-on:click="onSubmit" round >Update Event</el-button>
+			<el-button v-else type="success" v-on:click="onSubmit" round >Create Event</el-button>
 			<el-button type="danger" @click="onCancel" round>Cancel</el-button>
 	
 		</div>	
@@ -155,9 +150,6 @@ export default {
 				endTime: '',
 				capacityType: 'FFA',
 				capacityNum: 1,
-				countryInput: '',
-				cityInput: '',
-				postalInput: '',
 				addressInput: '',
 				urlInput: '',
 				descriptionInput: '',
@@ -211,6 +203,7 @@ export default {
 					
 					var eventInfo = this.$store.state.event
 
+					// displays current event info
 					this.eventName = eventInfo.name
 					this.descriptionInput = eventInfo.description
 					this.startDate = moment(parseInt(eventInfo.start_time_utc,10)).format("YYYY-MM-DD")
@@ -219,6 +212,8 @@ export default {
 					this.endTime = moment(parseInt(eventInfo.end_time_utc,10)).format("HH:mm")
 					this.capacityType = eventInfo.capacity_type
 					this.capacityNum = eventInfo.max_capacity
+					this.addressInput = eventInfo.location
+					this.urlInput = eventInfo.website
 
 					for (var i = 0; i < eventInfo.organizers.length; i++) {
 						this.selectedOrganizers.push(eventInfo.organizers[i].id)
@@ -233,6 +228,8 @@ export default {
 					console.log("capacity type: " + this.capacityType);
 					console.log("max capacity: " + this.capacityNum);	
 					console.log("organizers: " + this.selectedOrganizers);	
+					console.log("location: "+ this.addressInput);
+					console.log("website: " + this.urlInput);
 				}
 			
 		},
@@ -297,7 +294,9 @@ export default {
 							name: this.eventName,
 							capacity_type: this.capacityType,
 							organizer_ids: this.selectedOrganizers,
-							location_link: this.locationLink
+							location_link: this.locationLink,
+							location: this.addressInput,
+							website: this.urlInput
 						}
 					}			
 				}).then(res => {
@@ -334,9 +333,10 @@ export default {
 							end_time: this.endDate + " " + this.endTime,
 							capacity_type: this.capacityType,
 							max_capacity: this.capacityNum,
-							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput,
 							organizer_ids: this.selectedOrganizers,
-							location_link: this.locationLink
+							location_link: this.locationLink,
+							location: this.addressInput,
+							website: this.urlInput
 						}
 					}			
 				}).then(res => {

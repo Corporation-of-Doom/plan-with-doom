@@ -15,6 +15,7 @@ export function loadEvents(id) {
           end_time
           location
           location_link
+          website
           capacity_type
           max_capacity
 		  current_capacity
@@ -134,6 +135,7 @@ export function loadSeminars(id) {
             start_time
             end_time
             location
+            website
             capacity_type
 						max_capacity
             current_capacity

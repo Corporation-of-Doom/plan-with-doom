@@ -112,15 +112,10 @@
 						<template slot="prepend">Google Map Link</template>
 					</el-input>
 				</div>
-				<p>Country</p>
-				<el-input v-model="countryInput" placeholder="Canada" ></el-input>
-				<p>City</p>
-				<el-input v-model="cityInput" placeholder="Guelph"></el-input>
-				<p>Postal Code</p>	
-				<el-input v-model="postalInput" placeholder="N1G 2W1"></el-input>
-				<p>Address</p>	
-				<el-input v-model="addressInput" placeholder="50 Stone Rd E"></el-input>
+				<p>Address</p>
+				<el-input v-model="addressInput" placeholder="50 Stone Rd E, Guelph, ON N1G 2W1" ></el-input>
 				
+
 				<p>Website</p>
 				<el-input v-model="urlInput" placeholder="www.planwithdoom.com"></el-input>
 
@@ -145,7 +140,8 @@
 
 			<!-- buttons -->
 			<br>
-			<el-button type="success" v-on:click="onSubmit" round >Create Seminar</el-button>	
+			<el-button v-if="editEvent" type="success" v-on:click="onSubmit" round >Update Seminar</el-button>	
+			<el-button v-else type="success" v-on:click="onSubmit" round >Create Seminar</el-button>	
 			<el-button type="danger" @click="onCancel" round>Cancel</el-button>
 	
 	</div>	
@@ -170,9 +166,6 @@ export default {
 				endTime: '',
 				capacityType: 'FFA',
 				capacityNum: 1,
-				countryInput: '',
-				cityInput: '',
-				postalInput: '',
 				addressInput: '',
 				urlInput: '',
 				descriptionInput: '',
@@ -258,6 +251,8 @@ export default {
 				this.endTime = moment(parseInt(seminarInfo.end_time_utc,10)).format("HH:mm")
 				this.capacityType = seminarInfo.capacity_type
 				this.capacityNum = seminarInfo.max_capacity
+				this.addressInput = seminarInfo.location
+				this.urlInput = seminarInfo.website
 
 				for (var i = 0; i < seminarInfo.organizers.length; i++) {
 					this.selectedOrganizers.push(seminarInfo.organizers[i].id)
@@ -272,6 +267,7 @@ export default {
 				console.log("capacity type: " + this.capacityType);
 				console.log("max capacity: " + this.capacityNum);	
 				console.log("organizers: " + this.selectedOrganizers);	
+				console.log("address: " + this.addressInput);
 			}
 		},
 
@@ -312,12 +308,14 @@ export default {
 					console.log("name: " + this.seminarName);
 					console.log("capacity_type: " + this.capacityType);
 					console.log("organizer_ids: " + this.selectedOrganizers);
+					console.log("ASASaddress: " + this.addressInput);
 
 					fetch({
 					query: `mutation editSeminar($myid:Int!, $mySeminar:SeminarUpdateInput!) {
   						editSeminar(seminarID:$myid ,seminar: $mySeminar) {
 						name
 						id
+						location
 						}
 					}`,
 					variables: {
@@ -330,7 +328,9 @@ export default {
 							name: this.seminarName,
 							capacity_type: this.capacityType,
 							organizer_ids: this.selectedOrganizers,
-							location_link: this.locationLink
+							location_link: this.locationLink,
+							location: this.addressInput,
+							website: this.urlInput
 						}
 					}			
 				}).then(res => {
@@ -369,9 +369,10 @@ export default {
 							end_time: this.endDate + " " + endT,
 							capacity_type: this.capacityType,
 							max_capacity: this.capacityNum,
-							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput,
 							organizer_ids: this.selectedOrganizers,
-							location_link: this.locationLink
+							location_link: this.locationLink,
+							location: this.addressInput,
+							website: this.urlInput
 						}
 					}	
 				
