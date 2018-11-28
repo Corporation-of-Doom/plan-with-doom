@@ -65,11 +65,7 @@ export default {
       type: Boolean,
       default: false,
     },
-  },
-  mounted(){
-    console.log(this.item)
-  }
-	
+  },	
 }
 </script>
 
