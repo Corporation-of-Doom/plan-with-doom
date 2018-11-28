@@ -6,7 +6,7 @@
 
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
-        <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Seminar </el-button>
+        <el-button v-if="manageInfo.status" title="Edit" type="primary" @click="onEdit"> {{manageInfo.edit}} Seminar </el-button>
         <el-button v-else-if="followInfo.status" @click="unfollow" type="primary" plain title="Unfollow">{{followInfo.following}}</el-button>
         <el-button v-else @click="follow" type="primary" title="Follow">{{followInfo.follow}}</el-button>
       </el-col>
@@ -141,6 +141,10 @@ export default {
     };
   },
   methods: {
+    onEdit() {
+      this.$store.commit("setEdit", {editMode: true})    
+      this.$router.push('CreateSeminar')
+    },
     onCancel() {
       this.dialogVisible = false
       this.postMessage = ''

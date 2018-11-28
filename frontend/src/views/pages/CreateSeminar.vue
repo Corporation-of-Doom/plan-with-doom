@@ -4,8 +4,8 @@
 			<div class="seminarForm">
 
 
-				<h1 v-if=editEvent>Edit</h1>
-				<h1>Creating an seminar</h1>
+				<h1 v-if="editEvent"> Editing an event </h1>
+				<h1 v-else>Creating an seminar</h1>
 
 				<div class="image-cropper" id="seminarImg">
 					<img src="@/assets/images/doggo.jpeg" class="rounded" />
@@ -16,7 +16,14 @@
 
                 <p>Related Event</p>
 
-				<el-select v-model="eventSelected" placeholder="Select event">
+				<el-select v-if="editEvent" v-model="eventSelected" placeholder="Select event" :disabled="true">
+					<el-option
+					v-for="(i) in managingEvents" :key="i.id" :value="i.id" :label="i.name">
+					{{ i.name }}
+					</el-option>
+				</el-select>
+
+				<el-select v-else v-model="eventSelected" placeholder="Select event">
 					<el-option
 					v-for="(i) in managingEvents" :key="i.id" :value="i.id" :label="i.name">
 					{{ i.name }}
@@ -142,6 +149,7 @@
 
 <script>
 import { createApolloFetch } from "apollo-fetch"
+import * as moment from 'moment'
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 console.clear();
 export default {
@@ -171,6 +179,10 @@ export default {
 			};
 		},
 		mounted() {
+			if (this.editEvent == false)
+				console.log("EDIT MODE FALSE");
+			else 
+				console.log("EDIT MODE TRUE");
 
 				// fetches a list of organizers to be displayed in the transfer component
 				fetch({
@@ -222,7 +234,39 @@ export default {
                 }		
             }).catch(err => {
                 console.log(err);
-            });
+			});
+			
+			if (this.editEvent === true) {
+					
+				var seminarInfo = this.$store.state.seminar
+
+				console.clear()
+				console.log("seminarInfo: " + JSON.stringify(seminarInfo));
+
+				this.seminarName = seminarInfo.name
+				this.eventSelected = seminarInfo.event_id
+				this.descriptionInput = seminarInfo.description
+				this.startDate = moment(parseInt(seminarInfo.start_time_utc,10)).format("YYYY-MM-DD")
+				this.endDate = moment(parseInt(seminarInfo.end_time_utc,10)).format("YYYY-MM-DD")
+				this.startTime = moment(parseInt(seminarInfo.start_time_utc,10)).format("HH:mm")
+				this.endTime = moment(parseInt(seminarInfo.end_time_utc,10)).format("HH:mm")
+				this.capacityType = seminarInfo.capacity_type
+				this.capacityNum = seminarInfo.max_capacity
+
+				for (var i = 0; i < seminarInfo.organizers.length; i++) {
+					this.selectedOrganizers.push(seminarInfo.organizers[i].id)
+				}
+
+				console.log("Name: " + this.seminarName);
+				console.log("Description: " + this.descriptionInput);
+				console.log("start date: " + this.startDate);
+				console.log("start time: " + this.startTime);
+				console.log("end date: " + this.endDate);
+				console.log("end time: " + this.endTime);
+				console.log("capacity type: " + this.capacityType);
+				console.log("max capacity: " + this.capacityNum);	
+				console.log("organizers: " + this.selectedOrganizers);	
+			}
 		},
 
     methods: {
@@ -235,16 +279,6 @@ export default {
 			{				
 				var temp = ''
 
-				// parse the start time
-				temp = this.startTime.toString().split(" ")
-				temp = temp[4].toString().split(":")
-				var startT = temp[0] + ":" + temp[1]
-				
-				// parse the end time
-				temp = this.endTime.toString().split(" ")
-				temp = temp[4].toString().split(":")
-				var endT = temp[0] + ":" + temp[1]
-
 				// set the number of capacity to null if it is FFA
 				if (this.capacityType == "FFA") {
 					this.capacityNum = null
@@ -252,14 +286,66 @@ export default {
 
 				// Add yourself as the organizer
 				this.selectedOrganizers.push(this.user.id)
-
+				console.log("seminar ID: " +this.$store.state.seminar.id,);
 				console.log("event_id: " + this.eventSelected)
 				console.log("name: " + this.seminarName)
-				console.log("start_time: " + this.startDate + " " + startT)
-				console.log("end_time: " + this.endDate + " " + endT)
+				console.log("start_time: " + this.startDate + " " + this.startTime)
+				console.log("end_time: " + this.endDate + " " + this.endTime)
 				console.log("capacity_type: " + this.capacityType)
 				console.log("max_capacity: " + this.capacityNum)
 				console.log("organizer_ids: " + this.selectedOrganizers)
+
+				if (this.editEvent === true) {
+					console.log("---------");
+					console.log('EVENT ID:  ' + this.$store.state.event.id);
+					console.log("******");
+					console.log("description: " + this.descriptionInput);
+					console.log("max_capacity: " + this.capacityNum);
+					console.log("start_time: " + this.startDate + " " + this.startTime);
+					console.log("end_time: " + this.endDate + " " + this.endTime);
+					console.log("name: " + this.seminarName);
+					console.log("capacity_type: " + this.capacityType);
+					console.log("organizer_ids: " + this.selectedOrganizers);
+
+					fetch({
+					query: `mutation editSeminar($myid:Int!, $mySeminar:SeminarUpdateInput!) {
+  						editSeminar(seminarID:$myid ,seminar: $mySeminar) {
+						name
+						id
+						}
+					}`,
+					variables: {
+						myid: this.$store.state.seminar.id,
+						mySeminar: {
+							description: this.descriptionInput,
+							max_capacity: this.capacityNum,
+							start_time: this.startDate + " " + this.startTime,
+							end_time: this.endDate + " " + this.endTime,
+							name: this.seminarName,
+							capacity_type: this.capacityType,
+							organizer_ids: this.selectedOrganizers
+						}
+					}			
+				}).then(res => {
+					console.log(res.data)
+					if (res.data) {
+						console.log("res.data.id: "+ res.data.editSeminar.id);
+						alert("Seminar updated successfully!")
+						var payload = {
+							__typename: "Seminar",
+							id: res.data.editSeminar.id
+						}
+						this.$store.commit("addToManage",payload)
+						this.$router.push('ManageEvents')
+					} else {
+						console.log(res.errors)
+					}
+				}).catch(err => {
+					console.log(err);
+				})
+
+				} else {
+
 
 				fetch({
 					query: `mutation createSeminar($seminar: SeminarInput!){
@@ -297,7 +383,9 @@ export default {
 				}).catch(err => {
 					console.log(err);
 				});
+				}
 			}
+
 
 			// Make sure the user enter information in the required fields
 			var errorMsg = 'The following fields are missing: \n'

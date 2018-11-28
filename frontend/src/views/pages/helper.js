@@ -132,7 +132,8 @@ export function loadSeminars(id) {
             description
             start_time
             end_time
-						location
+            location
+            capacity_type
 						max_capacity
 						current_capacity
             organizers{

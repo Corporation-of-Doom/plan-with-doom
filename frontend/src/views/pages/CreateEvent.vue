@@ -205,8 +205,6 @@ export default {
 					
 					var eventInfo = this.$store.state.event
 
-
-
 					this.eventName = eventInfo.name
 					this.descriptionInput = eventInfo.description
 					this.startDate = moment(parseInt(eventInfo.start_time_utc,10)).format("YYYY-MM-DD")
@@ -280,6 +278,7 @@ export default {
 					query: `mutation editEvent($myid: Int!, $myEvent: EventUpdateInput!){
 						editEvent(eventID:$myid, event: $myEvent){
 						name
+						id
 						}
 					}`,
 					variables: {
