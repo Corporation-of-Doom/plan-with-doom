@@ -30,6 +30,7 @@
 					<el-form-item label="Email">
 						<el-input :disabled="!edit" v-model="form.email" type="email"/>
 					</el-form-item>
+					<p v-if="error.show" style="color:red"> {{error.message}}</p>
 				</el-col>
 				<el-col :span="12" :md="12" :sm="24" :xs="24" class="col-p">
 					<el-form-item label="Phone">
@@ -105,50 +106,58 @@ export default {
 				about_me: this.$store.state.user.about_me,
 				organization: this.$store.state.user.organization,
 			},
-			labelPosition: 'right'
+			labelPosition: 'right',
+			error: {
+				show: false,
+				message: "Email can't be empty"
+			}
 		}
 	},
 	methods: {
 		onSubmit() {
-			this.edit = false
 			var property = "\n"
 			var info = ''
-			for (var key in this.form) {
-				property += key+'\n'
-				if (this.form[key]) {
-					info += key+': "'+this.form[key]+'", '
+			if(this.form.email){
+				for (var key in this.form) {
+					property += key+'\n'
+					if (this.form[key]) {
+						info += key+': "'+this.form[key]+'", '
+					}
 				}
+				fetch({query: `mutation {
+					editProfile(userID: ${this.user.id}, user: {
+						${info}
+					}) {
+						first_name
+						middle_name
+						last_name
+						email
+						phone_number
+						linked_in
+						twitter
+						facebook
+						instagram
+						about_me
+					}
+				}`})
+				.then(res => {
+					if (res.data.editProfile) {
+						this.$store.commit("setUser",this.form)
+						this.$message({
+							message: 'Your profile has been updated! :)',
+							type: 'success'
+						});
+						this.edit = false
+					} else {
+						this.$message({
+							message: 'Something went wrong with updating your profile! :(',
+							type: 'error'
+						});
+					}
+				})
+			} else {
+				this.error.show = true
 			}
-			fetch({query: `mutation {
-				editProfile(userID: ${this.user.id}, user: {
-					${info}
-				}) {
-					first_name
-					middle_name
-					last_name
-					email
-					phone_number
-					linked_in
-					twitter
-					facebook
-					instagram
-					about_me
-				}
-			}`})
-			.then(res => {
-				if (res.data.editProfile) {
-					this.$store.commit("setUser",this.form)
-					this.$message({
-						message: 'Your profile has been updated! :)',
-						type: 'success'
-					});
-				} else {
-					this.$message({
-						message: 'Something went wrong with updating your profile! :(',
-						type: 'error'
-					});
-				}
-			})
 		},
 		resizeLabelPosition() {
 			if(window.innerWidth <= 768) {
