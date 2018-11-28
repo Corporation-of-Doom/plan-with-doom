@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS Doom_User(
   website	  		        TEXT,
   landing_page          TEXT                DEFAULT 'myevents',
   menu_orientation      Menu_Orientation    DEFAULT 'LEFT',
+  gcal_token            JSON,
   PRIMARY KEY (ID)
 );
 

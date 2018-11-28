@@ -67,7 +67,7 @@ async function registerUser(user) {
 
   const res = await db.raw(`${queryString}`, vals);
 
-  const { id, landing_page, menu_orientation } = res.rows[0];
+  const { id, landing_page, menu_orientation, gcal_token } = res.rows[0];
   // TODO: send email verification
   return {
     id,
@@ -85,7 +85,8 @@ async function registerUser(user) {
     about_me,
     picture_path,
     landing_page,
-    menu_orientation
+    menu_orientation,
+    gcal_token
   };
 }
 
@@ -123,7 +124,8 @@ async function editUserProfile(userID, user) {
     picture_path: res.rows[0].picture_path,
     about_me: res.rows[0].about_me,
     landing_page: res.rows[0].landing_page,
-    menu_orientation: res.rows[0].menu_orientation
+    menu_orientation: res.rows[0].menu_orientation,
+    gcal_token: res.rows[0].gcal_token
   };
 }
 

@@ -28,7 +28,8 @@ async function signIn(emailToFind, password) {
     about_me,
     picture_path,
     landing_page,
-    menu_orientation
+    menu_orientation,
+    gcal_token
   } = res.rows[0];
 
   // check if password is correct
@@ -49,7 +50,8 @@ async function signIn(emailToFind, password) {
       about_me,
       picture_path,
       landing_page,
-      menu_orientation
+      menu_orientation,
+      gcal_token
     };
   }
 
@@ -95,8 +97,9 @@ async function searchUsers(searchString) {
       privacy_settings: user.privacy_settings,
       about_me: user.about_me,
       picture_path: user.picture_path,
-      landing_page: landing_page,
-      menu_orientation: menu_orientation
+      landing_page: user.landing_page,
+      menu_orientation: user.menu_orientation,
+      gcal_token: user.gcal_token
     });
   });
 
@@ -218,7 +221,8 @@ async function getUser(userID) {
     picture_path: res.rows[0].picture_path,
     about_me: res.rows[0].about_me,
     landing_page: res.rows[0].landing_page,
-    menu_orientation: res.rows[0].menu_orientation
+    menu_orientation: res.rows[0].menu_orientation,
+    gcal_token: res.rows[0].gcal_token
   };
 }
 

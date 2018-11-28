@@ -21,6 +21,7 @@
     "es6": "0.0.7",
     "express": "^4.16.4",
     "express-graphql": "^0.6.12",
+    "googleapis": "^27.0.0",
     "graphql": "^14.0.2",
     "graphql-tools": "^4.0.3",
     "knex": "^0.15.2",

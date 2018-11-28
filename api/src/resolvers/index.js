@@ -14,6 +14,8 @@ const {
   getMyWaitlist
 } = require("./searchResults");
 
+const { getAuthUrl, listEvents } = require("../utils");
+
 const rootResolvers = {
   SearchResult: {
     __resolveType(obj) {
@@ -24,6 +26,26 @@ const rootResolvers = {
     }
   },
   Query: {
+    async getAuthLink(_, args) {
+      const { userID } = args;
+      try {
+        return await getAuthUrl(userID);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to get Authorization URL");
+      }
+    },
+    async test(_, args) {
+      const { userID } = args;
+      try {
+        await listEvents(userID);
+      } catch (err) {
+        console.log(err);
+        return new Error(
+          `Unable to run test function for user with ID ${userID}`
+        );
+      }
+    },
     async login(_, args) {
       const { email, password } = args;
       try {
@@ -264,6 +286,13 @@ const rootResolvers = {
     date_created: ({ date_created }) => date_created,
     date_modified: ({ date_modified }) => date_modified,
     type: ({ type }) => type
+  },
+  Token: {
+    access_token: ({ access_token }) => access_token,
+    refresh_token: ({ refresh_token }) => refresh_token,
+    scope: ({ scope }) => scope,
+    token_type: ({ token_type }) => token_type,
+    expiry_date: ({ expiry_date }) => expiry_date
   }
 };
 

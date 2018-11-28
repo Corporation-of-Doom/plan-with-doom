@@ -10,6 +10,7 @@ const {
 } = require("./seminar");
 const { registerUser, editUserProfile } = require("./user");
 const { insertNewAnnouncement } = require("./announcement");
+const { setAccessToken } = require("../utils");
 
 const mutations = {
   Mutation: {
@@ -145,6 +146,18 @@ const mutations = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to update user profile");
+      }
+    },
+    async setAccessToken(_, args) {
+      const { userID, code } = args;
+      try {
+        await setAccessToken(userID, code);
+        return true;
+      } catch (err) {
+        console.log(err);
+        return new Error(
+          `Uable to set access token for user with ID ${userID}`
+        );
       }
     }
   }

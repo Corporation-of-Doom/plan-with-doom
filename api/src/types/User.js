@@ -1,4 +1,12 @@
 const User = `
+  type Token {
+    access_token: String!
+    refresh_token: String!
+    scope: String!
+    token_type: String!
+    expiry_date: String!
+  }
+
   type User {
     id: Int!
     email: String!
@@ -17,6 +25,8 @@ const User = `
 
     landing_page: String
     menu_orientation: menu_orientation!
+
+    gcal_token: Token
   }
 
   input UserInput {
@@ -34,13 +44,13 @@ const User = `
     privacy_settings: String!
     about_me: String
     picture_path: String
-    
+
     landing_page: String
     menu_orientation: menu_orientation
-    
-    
+
+
   }
-  
+
   input UserUpdateInput {
     email: String
     password: String
@@ -55,10 +65,10 @@ const User = `
     phone_number: String
     privacy_settings: String
     about_me: String
-    
+
     # still need to add photo
     picture_path: String
-    
+
     landing_page: String
     menu_orientation: menu_orientation
   }

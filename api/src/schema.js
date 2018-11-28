@@ -17,6 +17,9 @@ const SchemaDefinition = `
 
   # the schema allows the following queries:
   type Query {
+    getAuthLink(userID: Int!): String!
+    test(userID: Int!): Boolean
+
     login(email: String!, password: String!): User!
     getUserById(userID: Int!): User
 
@@ -42,6 +45,8 @@ const SchemaDefinition = `
 
   # The schema allows the following mutations:
   type Mutation {
+    setAccessToken(userID: Int!, code: String!): Boolean
+
     signUp(user: UserInput!): User!
     # Creates a new event
     createEvent(event: EventInput!): Event!
