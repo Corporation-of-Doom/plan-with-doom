@@ -6,7 +6,7 @@
 
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
-        <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Seminar </el-button>
+        <el-button v-if="manageInfo.status" title="Edit" type="primary" @click="onEdit"> {{manageInfo.edit}} Seminar </el-button>
         <el-button v-else-if="followInfo.status" @click="unfollow" type="primary" plain title="Unfollow">{{followInfo.following}}</el-button>
         <el-button v-else @click="follow" type="primary" title="Follow">{{followInfo.follow}}</el-button>
       </el-col>
@@ -49,6 +49,11 @@
       </el-col>
     </el-row>
     <el-row type="flex" class="row-bg">
+    <div class="tooltip">
+     <big> <i v-if="locationLink" @click='onLocation' class="mdi md-48 mdi-google-maps"></i> </big>
+      <span class="tooltiptext">Click for Google maps location</span>
+      </div>
+
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin:10px">
       Location: {{info.location}}
       </el-col>
@@ -139,9 +144,22 @@ export default {
       conflictDialog: false,
       waitlist: this.$store.state.seminar.waitlist,
       fullDialog: false,
+      locationLink: this.$store.state.event.location_link
+
     };
   },
+  mounted() {
+    console.log("LOCATION LINK: " + this.locationLink);
+  },
   methods: {
+    onLocation() {
+      if(this.locationLink != null)
+        window.open(this.locationLink, '_blank');
+    },
+    onEdit() {
+      this.$store.commit("setEdit", {editMode: true})    
+      this.$router.push('CreateSeminar')
+    },
     onCancel() {
       this.dialogVisible = false
       this.postMessage = ''
@@ -302,6 +320,24 @@ export default {
 }
 .el-icon-arrow-down {
   font-size: 12px;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
 }
 </style>
 

@@ -20,13 +20,14 @@
 					v-model="startDate"
 					value-format="yyyy-MM-dd"
 					type="date"
-					placeholder="Start Date">
 					clearable
+					placeholder="Start Date">
 				</el-date-picker>
 
 				<el-time-picker
 					v-model="startTime"
 					format="hh:mm A"
+					value-format="hh:mm"
 					clearable
 					placeholder="Start Time">
 				</el-time-picker>
@@ -36,48 +37,52 @@
 					v-model="endDate"
 					value-format="yyyy-MM-dd"
 					type="date"
-					placeholder="End Date">
 					clearable
+					placeholder="End Date">
 				</el-date-picker>
 
 				<el-time-picker
 					v-model="endTime"
 					format="hh:mm A"
+					value-format="hh:mm"
 					clearable
 					placeholder="End Time">
 				</el-time-picker>
 		
 				<p>Capacity Type</p>
+				
 				<el-radio v-model="capacityType" label="FFA">Free for all</el-radio>
-				<el-radio v-model="capacityType" label="FCFS_P">First come first serve (physically)</el-radio>
-				<el-radio v-model="capacityType" label="FCFS_E">First come first serve (electronically)</el-radio>
-
-				<el-input-number
-					v-if="capacityType=='FFA'"
-					disabled
-					v-model="capacityNum" 
-					:precision="0"
-					:min="1" 
-					:max="9999">
-				</el-input-number>
-
-				<el-input-number
-					v-if="capacityType!='FFA'"
-					v-model="capacityNum" 
-					:precision="0"
-					:min="1" 
-					:max="9999">
-				</el-input-number>
+				<br>
+					<el-radio v-model="capacityType" @click="capacityVisibleFCFSP=true" label="FCFS_P">First come first serve (physically)</el-radio>
+					<el-input-number
+						:visible.sync="capacityVisibleFCFSP"
+						v-if="capacityType=='FCFS_P'"
+						v-model="capacityNum" 
+						:precision="0"
+						:min="1" 
+						:max="9999">
+					</el-input-number>
+				<br>
+				<div class="capacity-box-fcfse">
+					<el-radio v-model="capacityType" @click="capacityVisibleFCFSE=true" label="FCFS_E">First come first serve (electronically)</el-radio>
+					<el-input-number
+						:visible.sync="capacityVisibleFCFSP"
+						v-if="capacityType=='FCFS_E'"
+						v-model="capacityNum" 
+						:precision="0"
+						:min="1" 
+						:max="9999">
+					</el-input-number>
+				</div>
 
 				<p>Location</p>
-				<p>Country</p>
-				<el-input v-model="countryInput" placeholder="Canada" ></el-input>
-				<p>City</p>
-				<el-input v-model="cityInput" placeholder="Guelph"></el-input>
-				<p>Postal Code</p>	
-				<el-input v-model="postalInput" placeholder="N1G 2W1"></el-input>
-				<p>Address</p>	
-				<el-input v-model="addressInput" placeholder="50 Stone Rd E"></el-input>
+				<div>
+					<el-input placeholder="Please input" v-model="locationLink">
+						<template slot="prepend">Google Map Link</template>
+					</el-input>
+				</div>
+				<p>Address</p>
+				<el-input v-model="addressInput" placeholder="50 Stone Rd E, Guelph, ON N1G 2W1" ></el-input>
 				
 				<p>Website</p>
 				<el-input v-model="urlInput" placeholder="www.planwithdoom.com"></el-input>
@@ -103,8 +108,10 @@
 
 			<!-- buttons -->
 			<br>
-			<el-button type="success" v-on:click="onSubmit" round >Create Event</el-button>	
-			<el-button type="danger" @click="onCancel" round>Cancel</el-button>
+			<el-button v-if="editEvent" type="success" v-on:click="onSubmit" round >Update Event</el-button>
+			<el-button v-else type="success" v-on:click="onSubmit" round >Create Event</el-button>
+			<el-button v-if="editEvent" type="danger" @click="onCancell" round>Cancel</el-button>
+			<el-button v-else type="danger" @click="onCancel" round>Cancel</el-button>
 	
 		</div>	
 	</vue-scroll>
@@ -128,20 +135,25 @@ export default {
 				endTime: '',
 				capacityType: 'FFA',
 				capacityNum: 1,
-				countryInput: '',
-				cityInput: '',
-				postalInput: '',
 				addressInput: '',
 				urlInput: '',
 				descriptionInput: '',
 				transferData: [],
 				selectedOrganizers: [],
-				editEvent: this.$store.state.event.manage,
+				editEvent: this.$store.state.editMode,
+				locationLink:'',
+				capacityVisibleFCFSP: false,
+				capacityVisibleFCFSE: false
 			};
 		},
 
 		mounted() {
-		
+
+			if (this.editEvent == false)
+				console.log("EDIT MODE FALSE");
+			else 
+				console.log("EDIT MODE TRUE");
+
 			// fetches a list of organizers to be displayed in the transfer component
 				fetch({
 					query: `{
@@ -154,7 +166,7 @@ export default {
 						}`
 					}).then(res => {
 					if (res.data) {
-
+						console.log(res.data);
 						// store all the organizers name into a variable
 						// you shouldn't be allowed to choose yourself as a user
 						res.data.searchUsersByName.forEach(element => {
@@ -178,30 +190,34 @@ export default {
 					
 					var eventInfo = this.$store.state.event
 
-					console.log("Name: " + eventInfo.name);
-					console.log("Description: " + eventInfo.description);
-					console.log("start date: " + moment(parseInt(eventInfo.start_time,10)).format("YYYY-MM-DD"));
-					console.log("end date: " + moment(parseInt(eventInfo.end_time,10)).format("YYYY-MM-DD"));
-					console.log("capacity type: " + eventInfo.capacity_type);
-					console.log("max capacity: " + eventInfo.max_capacity);
+					// displays current event info
+					this.eventName = eventInfo.name
+					this.descriptionInput = eventInfo.description
+					this.startDate = moment(parseInt(eventInfo.start_time_utc,10)).format("YYYY-MM-DD")
+					this.endDate = moment(parseInt(eventInfo.end_time_utc,10)).format("YYYY-MM-DD")
+					this.startTime = moment(parseInt(eventInfo.start_time_utc,10)).format("HH:mm")
+					this.endTime = moment(parseInt(eventInfo.end_time_utc,10)).format("HH:mm")
+					this.capacityType = eventInfo.capacity_type
+					this.capacityNum = eventInfo.max_capacity
+					this.addressInput = eventInfo.location
+					this.locationLink = eventInfo.location_link
+					this.urlInput = eventInfo.website
 
-					// this.eventName = eventInfo.name
-					// this.descriptionInput = eventInfo.description
-					// this.start_date = toString(moment(parseInt(eventInfo.start_time,10)).format("YYYY-MM-DD"))
-					// this.end_date = moment(parseInt(eventInfo.end_time,10)).format("YYYY-MM-DD")
-					// this.start_time = moment(parseInt(eventInfo.start_time,10)).format("HH:mm")
-					// this.end_time = moment(parseInt(eventInfo.end_time,10)).format("HH:mm")
-					// this.capacityType = eventInfo.capacity_type
-					// this.capacityNum = eventInfo.max_capacity
+					for (var i = 0; i < eventInfo.organizers.length; i++) {
+						this.selectedOrganizers.push(eventInfo.organizers[i].id)
+					}
 
-					this.eventName = "Vivian's Nap Time"
-					this.descriptionInput = " Do not disturb Vivian's nap time"
-					this.startDate = "2014-10-10"
-					this.endDate =  "2018-11-17"
-					this.startTime = "08:30"
-					this.endTime = "10:30"
-					this.capacityType = "FCFS_E"
-					this.capacityNum = 100			
+					console.log("Name: " + this.eventName);
+					console.log("Description: " + this.descriptionInput);
+					console.log("start date: " + this.startDate);
+					console.log("start time: " + this.startTime);
+					console.log("end date: " + this.endDate);
+					console.log("end time: " + this.endTime);
+					console.log("capacity type: " + this.capacityType);
+					console.log("max capacity: " + this.capacityNum);	
+					console.log("organizers: " + this.selectedOrganizers);	
+					console.log("location: "+ this.addressInput);
+					console.log("website: " + this.urlInput);
 				}
 			
 		},
@@ -213,17 +229,10 @@ export default {
 			this.startTime && this.endTime &&
 			this.capacityType)
 			{					
-				var temp = ''
+				console.log("STARTTIME: " + this.startTime);
+				console.log("ENDTIME: " + this.endTime);
 
-				// parse the start time
-				temp = this.startTime.toString().split(" ")
-				temp = temp[4].toString().split(":")
-				var startT = temp[0] + ":" + temp[1]
-				
-				// parse the end time
-				temp = this.endTime.toString().split(" ")
-				temp = temp[4].toString().split(":")
-				var endT = temp[0] + ":" + temp[1]
+				var temp = ''
 
 				// set the number of capacity to null if it is FFA
 				if (this.capacityType == "FFA") {
@@ -233,12 +242,70 @@ export default {
 				// Add yourself as the organizer
 				// this.selectedOrganizers.push(this.user.id)
 
+				console.log("startTime: "+ this.startTime);
+				console.log("endTime: "+ this.endTime);
+
+
 				console.log("name: " + this.eventName)
-				console.log("start_time: " + this.startDate + " " + startT)
-				console.log("end_time: " + this.endDate + " " + endT)
+				console.log("start_time: " + this.startDate + " " + this.startTime)
+				console.log("end_time: " + this.endDate + " " + this.endTime)
 				console.log("capacity_type: " + this.capacityType)
 				console.log("max_capacity: " + this.capacityNum)
 				console.log("organizer_ids: " + this.selectedOrganizers)
+
+				if (this.editEvent === true) {
+					console.log("---------");
+					console.log('EVENT ID:  ' + this.$store.state.event.id);
+					console.log("******");
+					console.log("description: " + this.descriptionInput);
+					console.log("max_capacity: " + this.capacityNum);
+					console.log("start_time: " + this.startDate + " " + this.startTime);
+					console.log("end_time: " + this.endDate + " " + this.endTime);
+					console.log("name: " + this.eventName);
+					console.log("capacity_type: " + this.capacityType);
+					console.log("organizer_ids: " + this.selectedOrganizers);
+
+					fetch({
+					query: `mutation editEvent($myid: Int!, $myEvent: EventUpdateInput!){
+						editEvent(eventID:$myid, event: $myEvent){
+						name
+						id
+						}
+					}`,
+					variables: {
+						myid: this.$store.state.event.id,
+						myEvent: {
+							description: this.descriptionInput,
+							max_capacity: this.capacityNum,
+							start_time: this.startDate + " " + this.startTime,
+							end_time: this.endDate + " " + this.endTime,
+							name: this.eventName,
+							capacity_type: this.capacityType,
+							organizer_ids: this.selectedOrganizers,
+							location_link: this.locationLink,
+							location: this.addressInput,
+							website: this.urlInput
+						}
+					}			
+				}).then(res => {
+					console.log(res.data)
+					if (res.data) {
+						alert("Event updated successfully!")
+						var payload = {
+							__typename: "Event",
+							id: res.data.editEvent.id
+						}
+						this.$store.commit("addToManage",payload)
+						this.$router.push('ManageEvents')
+					} else {
+						console.log(res.errors)
+						alert(res.errors[0].message)
+					}
+				}).catch(err => {
+					console.log(err);
+				})
+
+				} else {
 
 				fetch({
 					query: `mutation createEvent($event: EventInput!){
@@ -251,12 +318,14 @@ export default {
 							creator_id: this.user.id,
 							name: this.eventName,
 							description: this.descriptionInput,
-							start_time: this.startDate + " " + startT,
-							end_time: this.endDate + " " + endT,
+							start_time: this.startDate + " " + this.startTime,
+							end_time: this.endDate + " " + this.endTime,
 							capacity_type: this.capacityType,
 							max_capacity: this.capacityNum,
-							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput,
-							organizer_ids: this.selectedOrganizers
+							organizer_ids: this.selectedOrganizers,
+							location_link: this.locationLink,
+							location: this.addressInput,
+							website: this.urlInput
 						}
 					}			
 				}).then(res => {
@@ -271,10 +340,13 @@ export default {
 						this.$router.push('ManageEvents')
 					} else {
 						console.log(res.errors)
+						alert(res.errors[0].message)
 					}
 				}).catch(err => {
 					console.log(err);
 				});
+
+				}
 			}
 
 			// Make sure the user enter information in the required fields
@@ -334,6 +406,25 @@ export default {
 					message: 'Delete canceled'
 				});
 			});
+		},
+		onCancell() {
+			this.$confirm('The event information will be discarded. Continue?', 'Warning', {
+				confirmButtonText: 'OK',
+				cancelButtonText: 'Cancel',
+				type: 'warning',
+				center: true
+			}).then(() => {
+				this.$message({
+					type: 'success',
+					message: 'No changes were made'
+				});
+				this.$router.push('ManageEvents')
+			}).catch(() => {
+				this.$message({
+					type: 'info',
+					message: 'Delete canceled'
+				});
+			});
 		}
 	} //METHODS
   };
@@ -360,6 +451,7 @@ img {
 .event-name {
 	position: relative;
 }
+
 
 </style>
 
