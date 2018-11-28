@@ -33,6 +33,12 @@
                         <p placeholder="+1 xxx xxx xxxx">Phone: {{user.phone_number}}</p>
                     </el-col>	
                 </el-row>
+				<el-row v-else-if ="user.email">
+					<p placeholder="email@email.com">Email: {{user.email}}</p>
+				</el-row>
+				<el-row v-else-if="user.phone_number">
+					<p placeholder="+1 xxx xxx xxxx">Phone: {{user.phone_number}}</p>
+				</el-row>
             </el-col>
             <el-col v-else>
                 <i> This person is private</i>
