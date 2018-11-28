@@ -21,7 +21,7 @@ export default new Vuex.Store({
     user: {},
     event: {},
     seminar: {},
-    editMode: false
+    editMode: false,
     otherUser: {},
   },
   mutations: {
