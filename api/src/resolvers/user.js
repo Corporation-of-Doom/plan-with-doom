@@ -95,8 +95,8 @@ async function searchUsers(searchString) {
       privacy_settings: user.privacy_settings,
       about_me: user.about_me,
       picture_path: user.picture_path,
-      landing_page: landing_page,
-      menu_orientation: menu_orientation
+      landing_page: user.landing_page,
+      menu_orientation: user.menu_orientation
     });
   });
 

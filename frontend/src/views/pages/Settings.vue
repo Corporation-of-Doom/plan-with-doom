@@ -1,29 +1,29 @@
 <template>
-<vue-scroll class="page-dashboard">
-  <div class="timeline-box card-base card-shadow--medium" style="height: 65%; padding: 20px">
-    <!-- Privacy Settings:<br>
-    <el-select placeholder="TBD">
-        <el-option :key="TBD" :label="TBD" :value="TBD">
-       TBD
-        </el-option>
-    </el-select> <br> -->
-    
-    <font size="+1" style="padding:10px">Autosave </font> <br>
-    <hr>
-    <div style="padding:20px; content-align:center">
-        Sidebar Orientations <br>
-        <el-select  v-model="sidebarValue" @change="onChangeSidebar">
-          <el-option v-for="item in sidebar" :key="item.text" :label="item.text" :value="item.value" />
-        </el-select>
+  <vue-scroll class="page-dashboard">
+    <div class="timeline-box card-base card-shadow--medium" style="height: 65%; padding: 20px">
+      <!-- Privacy Settings:<br>
+      <el-select placeholder="TBD">
+          <el-option :key="TBD" :label="TBD" :value="TBD">
+        TBD
+          </el-option>
+      </el-select> <br> -->
+      
+      <font size="+1" style="padding:10px">Autosave </font> <br>
+      <hr>
+      <div style="padding:20px; content-align:center">
+          Sidebar Orientations <br>
+          <el-select  v-model="sidebarValue" @change="onChangeSidebar">
+            <el-option v-for="item in sidebar" :key="item.text" :label="item.text" :value="item.value" />
+          </el-select>
+      </div>
+      <div style="padding:20px; content-align:center">
+          Landing Page: <br>
+          <el-select v-model="landingPageValue" @change="onChangeLandingPage">
+            <el-option v-for="item in home" :key="item.text" :label="item.text" :value="item.value" />
+          </el-select><br>
+      </div>
     </div>
-    <div style="padding:20px; content-align:center">
-        Landing Page: <br>
-        <el-select v-model="landingPageValue" @change="onChangeLandingPage">
-          <el-option v-for="item in home" :key="item.text" :label="item.text" :value="item.value" />
-        </el-select><br>
-    </div>
-  </div>
-</vue-scroll>
+  </vue-scroll>
 </template>
 
 <script>

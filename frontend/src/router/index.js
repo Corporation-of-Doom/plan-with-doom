@@ -21,6 +21,8 @@ import MangeEventsPage from '../views/pages/ManageEvents.vue'
 import CreateEvent from '../views/pages/CreateEvent.vue'
 import CreateSeminar from "../views/pages/CreateSeminar.vue";
 import Settings from "../views/pages/Settings.vue"
+import UserSearch from "../views/pages/UserSearch.vue"
+import OtherUserProfile from "../views/pages/OtherUserProfile.vue"
 
 
 //ui
@@ -63,6 +65,18 @@ const router = new Router({
       meta: {
         auth: true,
         searchable: true,
+        
+        tags: ["app"]
+      }
+    },
+    {
+      path: "/userSearch",
+      name: "userSearch",
+      component: UserSearch,
+      meta: {
+        auth: true,
+        searchable: true,
+        otherUserShow: false,
         tags: ["app"]
       }
     },
@@ -228,12 +242,23 @@ const router = new Router({
     tables,
     element,
     {
+      path: "/userprofile",
+      name: "userprofile",
+      component: OtherUserProfile,
+      meta: {
+        auth: true,
+        searchable: true,
+        
+        tags: ["pages"]
+      }
+    },{
       path: "/profile",
       name: "profile",
       component: Profile,
       meta: {
         auth: true,
         searchable: true,
+        
         tags: ["pages"]
       }
     },
@@ -242,6 +267,7 @@ const router = new Router({
       name: "login",
       component: Login,
       meta: {
+        
         layout: layouts.contenOnly
       }
     },
@@ -250,6 +276,7 @@ const router = new Router({
       name: "register",
       component: Register,
       meta: {
+        
         layout: layouts.contenOnly
       }
     },
@@ -274,6 +301,7 @@ const router = new Router({
       component: NotFound,
       meta: {
         auth: true,
+        
         tags: ["pages"]
       }
     },
