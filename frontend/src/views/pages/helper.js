@@ -18,7 +18,7 @@ export function loadEvents(id) {
           website
           capacity_type
           max_capacity
-		  current_capacity
+		      current_capacity
           announcements{
             date_modified
             message
@@ -389,7 +389,11 @@ export function getLandingPage(value){
     settings: {
       text:'Settings',
       value: 'settings'
-    }
+    },
+    users: {
+      text:'Users',
+      value: 'usersearch'
+    },   
   }
   for (var property in home){
     if(value === home[property].value) return home[property].text

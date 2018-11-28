@@ -42,7 +42,7 @@
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
         <el-button v-else-if="waitlist" title="Unwaitlist" @click="unlist" plain type="primary"> Waitlisted </el-button>
         <el-button v-else-if="info.current_capacity === info.max_capacity" @click="list" title="Waitlist" type="primary"> Add to Waitlist </el-button>
-        <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
+        <el-button v-else @click="conflict" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
     </el-row>
     <el-row type="flex" class="row-bg">
@@ -60,6 +60,7 @@
     </el-row>
     <hr>
     <p>Description<p>
+      <div v-if="info.website"> Website: {{info.website}} <br> </div>
     <p> {{info.description}} </p>
     <el-tabs v-model="activeName">
       <el-tab-pane label="News" name="news">
@@ -237,6 +238,7 @@ export default {
       }`
       })
       .then(res => {
+        console.log(res.data)
         if (res.data.checkCalendarConflicts) {
           this.conflictDialog = true
         } else {
@@ -248,6 +250,7 @@ export default {
       console.log(this.info.current_capacity !== this.info.max_capacity)
       console.log(this.info.current_capacity, this.info.max_capacity)
       console.log(this.info)
+      this.conflictDialog = false
       if (this.info.current_capacity !== this.info.max_capacity) {
         followAndAttend('Event', 'ATTENDING').then(function(result) {
           if (result){

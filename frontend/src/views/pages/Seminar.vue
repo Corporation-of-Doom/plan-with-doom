@@ -45,7 +45,7 @@
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
         <el-button v-else-if="waitlist" title="Unwaitlist" @click="unlist" plain type="primary"> Waitlisted </el-button>
         <el-button v-else-if="info.current_capacity === info.max_capacity" @click="list" title="Waitlist" type="primary"> Add to Waitlist </el-button>
-        <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
+        <el-button v-else @click="conflict" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
     </el-row>
     <el-row type="flex" class="row-bg">
@@ -64,7 +64,8 @@
     </el-row>
     <hr>
     <p>Description<p>
-    <p> {{info.discription}} </p>
+    <div v-if="info.website"> Website: {{info.website}} <br> </div>
+    <p> {{info.description}} </p>
     <el-tabs v-model="activeName" @tab-click="changeTab">
       <el-tab-pane label="News" name="news">
         <el-card v-for="(announcement,key) in info.announcements" :key="key" class="box-card" style="margin:10px" shadow="never">
