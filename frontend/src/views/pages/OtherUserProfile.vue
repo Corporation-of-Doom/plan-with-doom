@@ -1,49 +1,49 @@
 <template>
 	<vue-scroll class="page-profile" id="affix-container">
 		<el-card shadow="always" style="padding:20px;margin-bottom:10px">
-        <el-col>
-            <font size="+2">{{user.first_name}} {{user.middle_name}} {{user.last_name}}</font>
-            <p v-if="user.organization"> {{user.organization}} </p>
             <el-row>
-				<a target="_blank" rel="noopener noreferrer" :href="user.linked_in">
-					<font size="+2" v-if="user.linked_in" class="mdi mdi-linkedin-box" />
-				</a>
-				<a target="_blank" rel="noopener noreferrer" :href="user.twitter">
-					<font size="+2" v-if="user.twitter" class="mdi mdi-twitter-box" />
-				</a>
-				<a target="_blank" rel="noopener noreferrer" :href="user.facebook">
-					<font size="+2" v-if="user.facebook" class="mdi mdi-facebook-box" />
-				</a>
-				<a target="_blank" rel="noopener noreferrer" :href="user.instagram">
-					<font size="+2" v-if="user.instagram" class="mdi mdi-instagram" />
-				</a>
-			</el-row>
-            <el-row v-if="user.phone_number && user.email">
-                <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" style="text-align:left">
-                    <p placeholder="email@email.com">Email: {{user.email}}</p>
+                <el-col :xs="24" :sm="12" :md="18" :lg="18" :xl="23">
+                    <font size="+2">{{user.first_name}} {{user.middle_name}} {{user.last_name}}</font>
                 </el-col>
-                <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" style="text-align:right">
-                    <p placeholder="+1 xxx xxx xxxx">Phone: {{user.phone_number}}</p>
-                </el-col>	
+                <el-col v-if="user.privacy_settings !== 'Private'" :xs="24" :sm="12" :md="6" :lg="6" :xl="1" style="text-align:right">
+                    <el-button type="primary" title="Follow">Follow</el-button>                    
+                </el-col>
             </el-row>
-			<el-row v-else-if ="user.email">
-				<p placeholder="email@email.com">Email: {{user.email}}</p>
-            </el-row>
-			<el-row v-else-if="user.phone_number">
-				<p placeholder="+1 xxx xxx xxxx">Phone: {{user.phone_number}}</p>
-            </el-row>
-        </el-col>
-    </el-card>
-		
-		<div class="card-base card-shadow--medium info bg-white black-text">
+            <el-col v-if="user.privacy_settings !== 'Private'">
+                <p v-if="user.organization"> {{user.organization}} </p>
+                <el-row>
+                    <a target="_blank" rel="noopener noreferrer" :href="user.linked_in">
+                        <font size="+2" v-if="user.linked_in" class="mdi mdi-linkedin-box" />
+                    </a>
+                    <a target="_blank" rel="noopener noreferrer" :href="user.twitter">
+                        <font size="+2" v-if="user.twitter" class="mdi mdi-twitter-box" />
+                    </a>
+                    <a target="_blank" rel="noopener noreferrer" :href="user.facebook">
+                        <font size="+2" v-if="user.facebook" class="mdi mdi-facebook-box" />
+                    </a>
+                    <a target="_blank" rel="noopener noreferrer" :href="user.instagram">
+                        <font size="+2" v-if="user.instagram" class="mdi mdi-instagram" />
+                    </a>
+                </el-row>
+                <el-row v-if="user.phone_number && user.email">
+                    <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" style="text-align:left">
+                        <p placeholder="email@email.com">Email: {{user.email}}</p>
+                    </el-col>
+                    <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" style="text-align:right">
+                        <p placeholder="+1 xxx xxx xxxx">Phone: {{user.phone_number}}</p>
+                    </el-col>	
+                </el-row>
+            </el-col>
+            <el-col v-else>
+                <i> This person is private</i>
+            </el-col>
+        </el-card>		
+		<div v-if="user.privacy_settings !== 'Private'" class="card-base card-shadow--medium info bg-white black-text">
 			<el-tabs v-model="activeTab">
-				<el-tab-pane label="Public Profile" name="profile">
-					About Me 
+				<el-tab-pane label="Profile" name="profile">
+                    About Me 
 					<hr>
 					{{user.about_me}}
-				</el-tab-pane>
-				<el-tab-pane label="Personal Infomation" name="info">
-					<profile-edit></profile-edit>
 				</el-tab-pane>
 			</el-tabs>
 		</div>
@@ -58,18 +58,18 @@ import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 
 export default {
-	name: 'Profile',
+	name: 'OtherUserProfile',
 	data() {
 		return {
-			user:this.$store.state.user,
+			user:this.$store.state.otherUser,
 			colorActive: false,
 			color: 'white',
-			activeTab: 'info',
+			activeTab: 'profile',
 			affixEnabled: true,
 		}
-	},
-	mounted(){
-        console.log(this.$store.state.user)
+    },
+    mounted(){
+        console.log(this.$store.state.otherUser)
     },
 	methods: {
 		onClick(id){

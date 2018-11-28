@@ -22,6 +22,7 @@ export default new Vuex.Store({
     event: {},
     seminar: {},
     editMode: false
+    otherUser: {},
   },
   mutations: {
     setLayout(state, payload) {
@@ -164,6 +165,9 @@ export default new Vuex.Store({
       for(var prop in payload){
         state.user[prop] = payload[prop]
       }
+    },
+    loadUser(state, payload){
+      state.otherUser = payload
     }
   },
   getters: {
