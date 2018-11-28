@@ -10,7 +10,11 @@ const {
   updateSeminarWaitlist,
   updateSeminar
 } = require("./seminar");
-const { registerUser, editUserProfile } = require("./user");
+const {
+  registerUser,
+  editUserProfile,
+  updateUserFollowing
+} = require("./user");
 const { insertNewAnnouncement } = require("./announcement");
 const { getEventByID } = require("../resolvers/event");
 const { getSeminarByID } = require("../resolvers/seminar");
@@ -171,6 +175,24 @@ const mutations = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to update seminar");
+      }
+    },
+    async followUser(_, args) {
+      try {
+        const { userID, followingID } = args;
+        return await updateUserFollowing(userID, followingID);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to follow user");
+      }
+    },
+    async unfollowUser(_, args) {
+      try {
+        const { userID, followingID } = args;
+        return await updateUserFollowing(userID, followingID, false);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to unfollow user");
       }
     }
   }

@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const { db } = require("../db");
-const { getUser } = require("../resolvers/user");
+const { getUser, getFollowers, getFollowing } = require("../resolvers/user");
 
 function createSalt(len = 12) {
   return bcrypt.genSaltSync(len);
@@ -46,7 +46,7 @@ async function registerUser(user) {
       (first_name, last_name, email, privacy_settings, password_hash,
        middle_name, organization, linked_in, twitter, facebook,
        instagram, phone_number, about_me, picture_path)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, landing_page, menu_orientation;`;
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`;
 
   const vals = [
     first_name,
@@ -67,26 +67,14 @@ async function registerUser(user) {
 
   const res = await db.raw(`${queryString}`, vals);
 
-  const { id, landing_page, menu_orientation } = res.rows[0];
+  const { id } = res.rows[0];
+
+  new_user = await getUser(id);
+  new_user.followers = await getFollowers(id);
+  new_user.following = await getFollowing(id);
+
   // TODO: send email verification
-  return {
-    id,
-    email,
-    first_name,
-    middle_name,
-    last_name,
-    organization,
-    linked_in,
-    twitter,
-    facebook,
-    instagram,
-    phone_number,
-    privacy_settings,
-    about_me,
-    picture_path,
-    landing_page,
-    menu_orientation
-  };
+  return new_user;
 }
 
 async function editUserProfile(userID, user) {
@@ -108,26 +96,39 @@ async function editUserProfile(userID, user) {
 
   queryString = `${queryString} WHERE id = ? RETURNING *;`;
 
-  const res = await db.raw(queryString, vals);
-
-  return {
-    id: res.rows[0].id,
-    first_name: res.rows[0].first_name,
-    middle_name: res.rows[0].middle_name,
-    last_name: res.rows[0].last_name,
-    email: res.rows[0].email,
-    organization: res.rows[0].organization,
-    linked_in: res.rows[0].linked_in,
-    facebook: res.rows[0].facebook,
-    instagram: res.rows[0].instagram,
-    twitter: res.rows[0].twitter,
-    phone_number: res.rows[0].phone_number,
-    privacy_settings: res.rows[0].privacy_settings,
-    picture_path: res.rows[0].picture_path,
-    about_me: res.rows[0].about_me,
-    landing_page: res.rows[0].landing_page,
-    menu_orientation: res.rows[0].menu_orientation
-  };
+  await db.raw(queryString, vals);
+  new_user = await getUser(userID);
+  new_user.followers = await getFollowers(userID);
+  new_user.following = await getFollowing(userID);
+  return new_user;
 }
 
-module.exports = { registerUser, editUserProfile };
+async function updateUserFollowing(userID, followingID, follow = true) {
+  // check valid userid
+  // validfollowingID
+  user = await getUser(userID);
+  followee = await getUser(followingID);
+  const vals = [userID, followingID];
+  var queryString = null;
+
+  // check if already following
+  // can't unfollow somone you're not following
+  // can't refollow someone
+
+  // check if following/unfollowing
+  if (follow) {
+    queryString = ` INSERT INTO user_following (user_id, following_user_id) VALUES (?,?)`;
+  } else {
+    queryString = ` delete from user_following where (user_id = ? and following_user_id = ?)`;
+  }
+
+  await db.raw(queryString, vals);
+
+  user = await getUser(userID);
+  user.followers = await getFollowers(userID);
+  user.following = await getFollowing(userID);
+
+  return user;
+}
+
+module.exports = { registerUser, editUserProfile, updateUserFollowing };
