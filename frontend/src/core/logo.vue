@@ -1,7 +1,7 @@
 <template>
 	<div class="box-logo flex align-center" :class="{'nav-collapsed':collapseNav, [mode]:true}">
 		<img class="image-logo" src="@/assets/images/logoMini.svg" alt="logoMini" @click="goto('/')"/>
-		<div class="app-name" @click="goto('/')">Doom</div>
+		<div class="app-name" @click="goto()">Doom</div>
 		<!-- <button class="collapse-nav" @click="collapseNavToggle"> -->
 			<!-- <i class="mdi mdi-menu"></i> -->
 		<!-- </button> -->
@@ -20,8 +20,8 @@ export default {
 		collapseNavToggle() {
 			this.$emit('collapse-nav-toggle')
 		},
-		goto(index, indexPath) {
-			this.$router.push(index)
+		goto() {
+			this.$router.push(this.$store.state.user.landing_page)
 		}
 	}
 }

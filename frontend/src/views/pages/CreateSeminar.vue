@@ -3,6 +3,8 @@
 	<div class="create-seminar">
 			<div class="seminarForm">
 
+
+				<h1 v-if=editEvent>Edit</h1>
 				<h1>Creating an seminar</h1>
 
 				<div class="image-cropper" id="seminarImg">

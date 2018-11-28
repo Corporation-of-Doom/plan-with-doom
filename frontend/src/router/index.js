@@ -20,6 +20,7 @@ import MyEventsPage from '../views/pages/MyEvents.vue'
 import MangeEventsPage from '../views/pages/ManageEvents.vue'
 import CreateEvent from '../views/pages/CreateEvent.vue'
 import CreateSeminar from "../views/pages/CreateSeminar.vue";
+import Settings from "../views/pages/Settings.vue"
 
 
 //ui
@@ -42,7 +43,6 @@ import store from '../store'
 
 Vue.use(Router)
 
-
 const router = new Router({
   mode: "history",
   routes: [
@@ -52,7 +52,6 @@ const router = new Router({
       component: Calendar,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["app"]
       }
@@ -63,7 +62,6 @@ const router = new Router({
       component: SearchPage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["app"]
       }
@@ -74,7 +72,6 @@ const router = new Router({
       component: EventPage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: false,
         tags: ["app"]
       }
@@ -85,7 +82,6 @@ const router = new Router({
       component: SeminarPage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: false,
         tags: ["app"]
       }
@@ -96,7 +92,16 @@ const router = new Router({
       component: MangeEventsPage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
+        searchable: false,
+        tags: ["app"]
+      }
+    },
+    {
+      path: "/settings",
+      name: "settings",
+      component: Settings,
+      meta: {
+        auth: true,
         searchable: false,
         tags: ["app"]
       }
@@ -108,7 +113,6 @@ const router = new Router({
       component: MyEventsPage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: false,
         tags: ["app"]
       }
@@ -119,7 +123,6 @@ const router = new Router({
       component: Contacts,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["users", "address", "book", "app"]
       }
@@ -130,7 +133,6 @@ const router = new Router({
       component: Gallery,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["photo", "app"]
       }
@@ -141,7 +143,6 @@ const router = new Router({
       component: Timeline,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["app"]
       }
@@ -152,7 +153,6 @@ const router = new Router({
       component: Themes,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["ui"]
       }
@@ -163,7 +163,6 @@ const router = new Router({
       component: Icons,
       meta: {
         auth: true,
-        layout: layouts.navLeft
       },
       children: [
         {
@@ -172,7 +171,6 @@ const router = new Router({
           component: MdIcons,
           meta: {
             auth: true,
-            layout: layouts.navLeft,
             searchable: true,
             title: "Material Design Icons",
             tags: ["material design"]
@@ -184,7 +182,6 @@ const router = new Router({
           component: FlagIcons,
           meta: {
             auth: true,
-            layout: layouts.navLeft,
             searchable: true,
             title: "Flag Icons",
             tags: ["list", "ui"]
@@ -198,7 +195,6 @@ const router = new Router({
       component: MultiLanguage,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["ui", "translate"]
       }
@@ -209,7 +205,6 @@ const router = new Router({
       component: HelperClasses,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         title: "Helper Classes",
         tags: ["ui"]
@@ -221,7 +216,6 @@ const router = new Router({
       component: Typography,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         title: "Typography",
         tags: ["ui"]
@@ -239,7 +233,6 @@ const router = new Router({
       component: Profile,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         searchable: true,
         tags: ["pages"]
       }
@@ -281,7 +274,6 @@ const router = new Router({
       component: NotFound,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         tags: ["pages"]
       }
     },
@@ -291,7 +283,6 @@ const router = new Router({
       component: CreateEvent,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         tags: ["pages"]
       }
     },
@@ -301,13 +292,11 @@ const router = new Router({
       component: CreateSeminar,
       meta: {
         auth: true,
-        layout: layouts.navLeft,
         tags: ["pages"]
       }
     }
   ]
 });
-
 
 const l = {
 	contenOnly(){

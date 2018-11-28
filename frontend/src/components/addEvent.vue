@@ -17,9 +17,9 @@ export default {
 	},
 	methods: {
 		createEvent() {
-			this.$store.commit("setEdit", {editMode: false})
+			this.$store.commit("setEdit",{editMode: false})
 			this.$router.push('CreateEvent')
-		},
-	},
+		}
+	}
 }
 </script>

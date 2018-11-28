@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import layouts from '../../../layout'
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 export default {
@@ -92,6 +93,8 @@ export default {
               privacy_settings
               linked_in
               organization
+              landing_page
+              menu_orientation
             }
           }`,
           variables: {
@@ -119,8 +122,11 @@ export default {
             userInfo.manage = []
             userInfo.waitlist = []
             userInfo.associate = []
-            this.$store.commit("setLogin", userInfo);
-            this.$router.push("myevents");
+            var layout = layouts.navRight
+            layout.navPos = userInfo.menu_orientation.toLowerCase()
+            this.$store.commit("setLayout", layout)
+            this.$store.commit("setLogin", userInfo)
+            this.$router.push("myevents")
           } else {
             form.error.email = res.errors[0].message;
           }

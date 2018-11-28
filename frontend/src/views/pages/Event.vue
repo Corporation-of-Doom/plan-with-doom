@@ -31,7 +31,7 @@
             </el-input>
 
             <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">Cancel</el-button>
+              <el-button @click="onCancel">Cancel</el-button>
               <el-button type="primary" @click="onPost">Post</el-button>
             </span>
 
@@ -110,6 +110,18 @@
         <el-button type="primary" @click="attend">Confirm</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="Already Full!"
+      :visible.sync="fullDialog"
+      width="50%">
+      <span>Oh no! This event is full. <br>
+        Would you like to be added to the waitlist?
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancelConflictDialog">Cancel</el-button>
+        <el-button type="primary" @click="list">Confirm</el-button>
+      </span>
+    </el-dialog>
   </div>
     </vue-scroll>
 </template>
@@ -147,6 +159,7 @@ export default {
       dialogVisible: false,
       postMessage: '',
       conflictDialog: false,
+      fullDialog: false
     };
   },
   methods: {
@@ -156,6 +169,10 @@ export default {
     },
     cancelConflictDialog(){
       this.conflictDialog = false
+    },
+    onCancel() {
+      this.dialogVisible = false
+      this.postMessage = ''
     },
     onPost() {
       console.clear()
@@ -224,7 +241,7 @@ export default {
           if (result){
             this.attendInfo.status = true
           } else{
-            this.waitlisted()
+            this.fullDialog = true
           }
         }.bind(this))        
       }
@@ -241,9 +258,14 @@ export default {
         }
       })
       .then(res => {
-        console.log(res)
         if(res.data){
           this.$store.commit("addToWaitlist",{__typename: 'Event', id: this.info.id})
+          this.fullDialog = false
+        } else {
+          this.$message({
+            message: 'Someething went wrong with adding to the waitlist',
+            type: 'error'
+          });
         }
       })
     },

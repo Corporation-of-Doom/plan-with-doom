@@ -119,14 +119,14 @@ export default {
 		}
 	},
 	computed: {
-		navPos: {
-			get() {
-				return this.$store.getters.navPos
-			},
-			set(val) {
-				this.$store.commit('setLayout', {navPos:val})
-			}
-		},
+		// navPos: {
+		// 	get() {
+		// 		return this.$store.getters.navPos
+		// 	},
+		// 	set(val) {
+		// 		this.$store.commit('setLayout', {navPos:val})
+		// 	}
+		// },
 		toolbar: {
 			get() {
 				return this.$store.getters.toolbar

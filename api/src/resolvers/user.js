@@ -26,7 +26,9 @@ async function signIn(emailToFind, password) {
     phone_number,
     privacy_settings,
     about_me,
-    picture_path
+    picture_path,
+    landing_page,
+    menu_orientation
   } = res.rows[0];
 
   // check if password is correct
@@ -45,7 +47,9 @@ async function signIn(emailToFind, password) {
       phone_number,
       privacy_settings,
       about_me,
-      picture_path
+      picture_path,
+      landing_page,
+      menu_orientation
     };
   }
 
@@ -90,7 +94,9 @@ async function searchUsers(searchString) {
       phone_number: user.phone_number,
       privacy_settings: user.privacy_settings,
       about_me: user.about_me,
-      picture_path: user.picture_path
+      picture_path: user.picture_path,
+      landing_page: user.landing_page,
+      menu_orientation: user.menu_orientation
     });
   });
 
@@ -210,18 +216,19 @@ async function getUser(userID) {
     phone_number: res.rows[0].phone_number,
     privacy_settings: res.rows[0].privacy_settings,
     picture_path: res.rows[0].picture_path,
-    about_me: res.rows[0].about_me
+    about_me: res.rows[0].about_me,
+    landing_page: res.rows[0].landing_page,
+    menu_orientation: res.rows[0].menu_orientation
   };
 }
 
 module.exports = {
   signIn,
   searchUsers,
-  checkConflicts, 
+  checkConflicts,
   getUser,
   isAttendingEvent,
   alreadyAttendingEvent,
   isAttendingSeminar,
   alreadyAttendingSeminar
 };
-

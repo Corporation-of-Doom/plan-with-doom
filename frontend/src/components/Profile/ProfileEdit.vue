@@ -110,20 +110,15 @@ export default {
 	},
 	methods: {
 		onSubmit() {
-			console.log('submit!');
 			this.edit = false
 			var property = "\n"
 			var info = ''
 			for (var key in this.form) {
 				property += key+'\n'
-				console.log(key + " -> " + this.form[key]+": "+typeof(this.form[key]));
 				if (this.form[key]) {
 					info += key+': "'+this.form[key]+'", '
 				}
 			}
-			console.log(info)
-			console.log(this.form)
-			this.$store.commit("setUser",this.form)
 			fetch({query: `mutation {
 				editProfile(userID: ${this.user.id}, user: {
 					${info}
@@ -141,10 +136,17 @@ export default {
 				}
 			}`})
 			.then(res => {
-				console.log(res.data)
-				console.log(this.form)
 				if (res.data.editProfile) {
 					this.$store.commit("setUser",this.form)
+					this.$message({
+						message: 'Your profile has been updated! :)',
+						type: 'success'
+					});
+				} else {
+					this.$message({
+						message: 'Something went wrong with updating your profile! :(',
+						type: 'error'
+					});
 				}
 			})
 		},

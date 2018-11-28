@@ -1,9 +1,9 @@
-<template> 
+<template>
   <vue-scroll style="background:white;">
     <h1 style="margin-bottom:5px; margin-top:20px;text-align:center;">{{info.name}} </h1>
     <p style="margin:10px;margin-top:0px;text-align:center;">  {{info.event_name}} </p>
     <div v-if="info.max_capacity" style="text-align:center;margin:10px">Capacity: {{info.current_capacity}} / {{info.max_capacity}}  </div>
-    
+
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
         <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Seminar </el-button>
@@ -11,7 +11,37 @@
         <el-button v-else @click="follow" type="primary" title="Follow">{{followInfo.follow}}</el-button>
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin-left:10px">
-        <el-button v-if="hideAttend" @click="attend" type="primary" title="Must attend the event" disabled>{{attendInfo.attend}}</el-button>
+        <div v-if="manageInfo.status">
+
+        <el-button title="Announcement" type="primary" @click="dialogVisible = true"> {{manageInfo.announcement}} </el-button>
+
+          <el-dialog
+
+            title="Post an announcement"
+            :visible.sync="dialogVisible"
+            width="30%">
+
+            <el-input
+              id="post"
+              type="textarea"
+              :rows="2"
+              placeholder="Message here"
+              clearable
+              v-model="postMessage">
+            </el-input>
+
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="onCancel">Cancel</el-button>
+              <el-button type="primary" @click="onPost">Post</el-button>
+            </span>
+
+          </el-dialog>
+
+        </div>
+
+
+        <el-button v-else-if="hideAttend" @click="attend" type="primary" title="Must attend the event" disabled>{{attendInfo.attend}}</el-button>
+
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
         <el-button v-else-if="waitlist" title="Unwaitlist" @click="unlist" plain type="primary"> Waitlisted </el-button>
         <el-button v-else-if="info.current_capacity === info.max_capacity" @click="list" title="Waitlist" type="primary"> Add to Waitlist </el-button>
@@ -59,6 +89,18 @@
         <el-button type="primary" @click="attend">Confirm</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="Already Full!"
+      :visible.sync="fullDialog"
+      width="50%">
+      <span>Oh no! This semianr is full. <br>
+        Would you like to be added to the waitlist?
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancelConflictDialog">Cancel</el-button>
+        <el-button type="primary" @click="list">Confirm</el-button>
+      </span>
+    </el-dialog>
   </vue-scroll>
 </template>
 
@@ -82,7 +124,7 @@ export default {
         status: this.$store.state.seminar.attend,
         attend: "Attend",
         attending: "Attending"
-      }, 
+      },
       manageInfo: {
         status: this.$store.state.seminar.manage,
         edit: "Edit",
@@ -95,12 +137,16 @@ export default {
       dialogVisible: false,
       conflictDialog: false,
       waitlist: this.$store.state.seminar.waitlist,
+      fullDialog: false,
     };
   },
   methods: {
-    onPost() {
-      console.log(typeof(this.$store.state.event.id));
+    onCancel() {
+      this.dialogVisible = false
+      this.postMessage = ''
+    },
 
+    onPost() {
       if (this.postMessage) {
         fetch({
             query: ` mutation createSeminarAnnoucement($announcement: AnnouncementInput!) {
@@ -110,7 +156,7 @@ export default {
                 }
               }`,
             variables: {
-              announcement: {		
+              announcement: {
                 type_id: this.$store.state.seminar.id,
                 message: this.postMessage
               }
@@ -121,17 +167,17 @@ export default {
               var temp =  moment(parseInt(res.data.createSeminarAnnouncement.date_modified,10)).format("MMMM Do YYYY, h:mm a")
               this.$store.commit("addAnnouncement", {type: "Seminar", message: this.postMessage, date_modified: temp})
               this.dialogVisible = false
-              this.postMessage=''   
+              this.postMessage=''
             } else {
               console.log(res.errors)
-            }		
+            }
           }).catch(err => {
             console.log(err);
-          }); 
+          });
       } else {
         alert("There is nothing to post.")
       }
-      
+
     },
     cancelConflictDialog(){
       this.conflictDialog = false
@@ -166,7 +212,7 @@ export default {
         if (result){
           this.attendInfo.status = true
         } else{
-          this.attendInfo.status = false
+          this.fullDialog = true
         }
       }.bind(this))
     },
@@ -174,7 +220,7 @@ export default {
       this.waitlist = true
       fetch({
         query: `mutation addUserToSeminarWaitlist($user: Int!, $seminar: Int!) {
-          addUserToSeminarWaitlist(userID: $user, seminarID: $seminar) 
+          addUserToSeminarWaitlist(userID: $user, seminarID: $seminar)
         }`,
         variables: {
             "user": this.userid,
@@ -182,9 +228,14 @@ export default {
         }
       })
       .then(res => {
-        console.log(res)
         if(res.data){
           this.$store.commit("addToWaitlist",{__typename: 'Seminar', id: this.info.id})
+          this.fullDialog = false
+        } else {
+          this.$message({
+            message: 'Someething went wrong with adding to the waitlist',
+            type: 'error'
+          });
         }
       })
     },

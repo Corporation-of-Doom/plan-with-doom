@@ -283,7 +283,7 @@ async function updateSeminar(seminarid, seminar) {
 
 async function updateCurrentCapacity(seminarid) {
   // Will recalculate and update the table's current capacity
-  var queryString = `UPDATE "seminar" 
+  var queryString = `UPDATE "seminar"
                       SET current_capacity =subquery.count
                     FROM (SELECT count(*) FROM seminar_participation WHERE seminar_id = ? AND attending = true) AS subquery
                     WHERE seminar.id=?

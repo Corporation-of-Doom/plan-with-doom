@@ -181,7 +181,7 @@ export default {
 						}`
 					}).then(res => {
 					if (res.data) {
-
+						console.log(res.data);
 						// store all the organizers name into a variable
 						// you shouldn't be allowed to choose yourself as a user
 						res.data.searchUsersByName.forEach(element => {
@@ -211,7 +211,7 @@ export default {
 					this.descriptionInput = eventInfo.description
 					this.startDate = moment(parseInt(eventInfo.start_time_utc,10)).format("YYYY-MM-DD")
 					this.endDate = moment(parseInt(eventInfo.end_time_utc,10)).format("YYYY-MM-DD")
-					this.startTime = eventInfo.start_time_utc
+					this.startTime = moment(parseInt(eventInfo.start_time_utc,10)).format("HH:mm")
 					this.endTime = moment(parseInt(eventInfo.end_time_utc,10)).format("HH:mm")
 					this.capacityType = eventInfo.capacity_type
 					this.capacityNum = eventInfo.max_capacity
@@ -240,22 +240,10 @@ export default {
 			this.startTime && this.endTime &&
 			this.capacityType)
 			{					
-
 				console.log("STARTTIME: " + this.startTime);
 				console.log("ENDTIME: " + this.endTime);
 
-
 				var temp = ''
-
-				// parse the start time
-				temp = this.startTime.toString().split(" ")
-				temp = temp[4].toString().split(":")
-				var startT = temp[0] + ":" + temp[1]
-				
-				// parse the end time
-				temp = this.endTime.toString().split(" ")
-				temp = temp[4].toString().split(":")
-				var endT = temp[0] + ":" + temp[1]
 
 				// set the number of capacity to null if it is FFA
 				if (this.capacityType == "FFA") {
@@ -265,9 +253,13 @@ export default {
 				// Add yourself as the organizer
 				// this.selectedOrganizers.push(this.user.id)
 
+				console.log("startTime: "+ this.startTime);
+				console.log("endTime: "+ this.endTime);
+
+
 				console.log("name: " + this.eventName)
-				console.log("start_time: " + this.startDate + " " + startT)
-				console.log("end_time: " + this.endDate + " " + endT)
+				console.log("start_time: " + this.startDate + " " + this.startTime)
+				console.log("end_time: " + this.endDate + " " + this.endTime)
 				console.log("capacity_type: " + this.capacityType)
 				console.log("max_capacity: " + this.capacityNum)
 				console.log("organizer_ids: " + this.selectedOrganizers)
@@ -278,8 +270,8 @@ export default {
 					console.log("******");
 					console.log("description: " + this.descriptionInput);
 					console.log("max_capacity: " + this.capacityNum);
-					console.log("start_time: " + this.startDate + " " + startT);
-					console.log("end_time: " + this.endDate + " " + endT);
+					console.log("start_time: " + this.startDate + " " + this.startTime);
+					console.log("end_time: " + this.endDate + " " + this.endTime);
 					console.log("name: " + this.eventName);
 					console.log("capacity_type: " + this.capacityType);
 					console.log("organizer_ids: " + this.selectedOrganizers);
@@ -295,8 +287,8 @@ export default {
 						myEvent: {
 							description: this.descriptionInput,
 							max_capacity: this.capacityNum,
-							start_time: this.startDate + " " + startT,
-							end_time: this.endDate + " " + endT,
+							start_time: this.startDate + " " + this.startTime,
+							end_time: this.endDate + " " + this.endTime,
 							name: this.eventName,
 							capacity_type: this.capacityType,
 							organizer_ids: this.selectedOrganizers
@@ -332,8 +324,8 @@ export default {
 							creator_id: this.user.id,
 							name: this.eventName,
 							description: this.descriptionInput,
-							start_time: this.startDate + " " + startT,
-							end_time: this.endDate + " " + endT,
+							start_time: this.startDate + " " + this.startTime,
+							end_time: this.endDate + " " + this.endTime,
 							capacity_type: this.capacityType,
 							max_capacity: this.capacityNum,
 							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput,

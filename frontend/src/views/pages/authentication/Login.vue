@@ -44,6 +44,7 @@
 
 <script>
 // import gql from 'graphql-tag'
+import layouts from '../../../layout'
 import { createApolloFetch } from "apollo-fetch"
 const fetch = createApolloFetch({ uri: "http://localhost:4000/graphql" });
 export default {
@@ -74,6 +75,8 @@ export default {
             instagram
             organization
             about_me
+            landing_page
+            menu_orientation
           }
         }`
       })
@@ -94,10 +97,9 @@ export default {
             }`
             })
             .then(res => {
+              user.follow = []
               if (res.data){
                 user.follow = res.data.getMyEventsAndSeminars
-              } else {
-                user.follow = []
               }
               console.log(user.follow)
               fetch({
@@ -114,10 +116,9 @@ export default {
                 }`
               })
               .then(res => {
+                user.attend = []
                 if (res.data){
                   user.attend = res.data.getMyEventsAndSeminars
-                } else {
-                  user.attend = []
                 }
                 fetch({
                 query: `{
@@ -137,7 +138,6 @@ export default {
                   if (res.data){
                     user.manage = []
                     user.associate = []
-                      console.log(res.data.getMyManagingEventsAndSeminars)
                     if(res.data.getMyManagingEventsAndSeminars.length > 0){
                       user.associate = res.data.getMyManagingEventsAndSeminars
                       res.data.getMyManagingEventsAndSeminars.forEach(element => {
@@ -149,7 +149,6 @@ export default {
                       })
                     }
                   } else {
-                    user.manage = []
                     console.log("no manging")
                   }
                   fetch({
@@ -166,14 +165,15 @@ export default {
                     }`
                   })
                   .then(res => {
-                    console.log(res)
                     user.waitlist = []
                     if (res.data) {
                       user.waitlist = res.data.getMyWaitlistedEventsAndSeminars
                     }
-                    console.log(user)
-                    this.$store.commit("setLogin", user);
-                    this.$router.push("myevents");
+                    var layout = layouts.navRight
+                    layout.navPos = user.menu_orientation.toLowerCase()
+                    this.$store.commit("setLayout", layout)
+                    this.$store.commit("setLogin", user)
+                    this.$router.push(user.landing_page)
                   })
                 })
               })
