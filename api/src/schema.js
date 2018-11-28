@@ -65,7 +65,7 @@ const SchemaDefinition = `
     editProfile(userID: Int!, user: UserUpdateInput!): User!
     
     followUser(userID: Int!, followingID: Int!): User!
-    unFollowUser(userID: Int!, followingID: Int!): User!
+    unfollowUser(userID: Int!, followingID: Int!): User!
   }
 `;
 

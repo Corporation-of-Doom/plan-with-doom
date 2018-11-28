@@ -160,7 +160,7 @@ const mutations = {
         return new Error("Unable to follow user");
       }
     },
-    async unFollowUser(_, args) {
+    async unfollowUser(_, args) {
       try {
         const { userID, followingID } = args;
         return await updateUserFollowing(userID, followingID, false);

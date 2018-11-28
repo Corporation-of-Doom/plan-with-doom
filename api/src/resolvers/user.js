@@ -11,46 +11,14 @@ async function signIn(emailToFind, password) {
 
   // TODO: check if account registration email has been verified
 
-  const {
-    password_hash: hashedPassword,
-    id,
-    email,
-    first_name,
-    middle_name,
-    last_name,
-    organization,
-    linked_in,
-    twitter,
-    facebook,
-    instagram,
-    phone_number,
-    privacy_settings,
-    about_me,
-    picture_path,
-    landing_page,
-    menu_orientation
-  } = res.rows[0];
+  const { password_hash: hashedPassword, id } = res.rows[0];
 
   // check if password is correct
   if (bcrypt.compareSync(password, hashedPassword)) {
-    return {
-      id,
-      email,
-      first_name,
-      middle_name,
-      last_name,
-      organization,
-      linked_in,
-      twitter,
-      facebook,
-      instagram,
-      phone_number,
-      privacy_settings,
-      about_me,
-      picture_path,
-      landing_page,
-      menu_orientation
-    };
+    user = await getUser(id);
+    user.followers = await getFollowers(user.id);
+    user.following = await getFollowing(user.id);
+    return user;
   }
 
   throw new Error("Incorrect password");
@@ -79,26 +47,12 @@ async function searchUsers(searchString) {
   queryString = `${queryString};`;
   const res = await db.raw(queryString, vals);
 
-  res.rows.forEach(user => {
-    users.push({
-      id: user.id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      middle_name: user.middle_name,
-      email: user.email,
-      organization: user.organization,
-      linked_in: user.linked_in,
-      facebook: user.facebook,
-      instagram: user.instagram,
-      twitter: user.twitter,
-      phone_number: user.phone_number,
-      privacy_settings: user.privacy_settings,
-      about_me: user.about_me,
-      picture_path: user.picture_path,
-      landing_page: landing_page,
-      menu_orientation: menu_orientation
-    });
-  });
+  for (let i = 0; i < res.rows.length; i++) {
+    user_result = await getUser(res.rows[i].id);
+    user_result.followers = await getFollowers(res.rows[i].id);
+    user_result.following = await getFollowing(res.rows[i].id);
+    users.push(user_result);
+  }
 
   return users;
 }
@@ -222,6 +176,29 @@ async function getUser(userID) {
   };
 }
 
+// Get followers of a user, who is following ME
+async function getFollowers(userID) {
+  const queryString = `SELECT user_id from user_following WHERE following_user_id = ?;`;
+  const res = await db.raw(queryString, [userID]);
+  var user_list = [];
+
+  for (let i = 0; i < res.rows.length; i++) {
+    user_list.push(await getUser(res.rows[i].user_id));
+  }
+  return user_list;
+}
+
+// Get who a user is following, who am I following
+async function getFollowing(userID) {
+  const queryString = `SELECT following_user_id from user_following WHERE user_id = ?;`;
+  const res = await db.raw(queryString, [userID]);
+  var user_list = [];
+  for (let i = 0; i < res.rows.length; i++) {
+    user_list.push(await getUser(res.rows[i].following_user_id));
+  }
+  return user_list;
+}
+
 module.exports = {
   signIn,
   searchUsers,
@@ -230,5 +207,7 @@ module.exports = {
   isAttendingEvent,
   alreadyAttendingEvent,
   isAttendingSeminar,
-  alreadyAttendingSeminar
+  alreadyAttendingSeminar,
+  getFollowers,
+  getFollowing
 };

@@ -1,4 +1,11 @@
-const { signIn, searchUsers, checkConflicts, getUser } = require("./user");
+const {
+  signIn,
+  searchUsers,
+  checkConflicts,
+  getUser,
+  getFollowers,
+  getFollowing
+} = require("./user");
 const { queryEventByID } = require("./event");
 const { querySeminarByID, querySeminarsByEventID } = require("./seminar");
 const {
@@ -38,6 +45,8 @@ const rootResolvers = {
       const { userID } = args;
       try {
         const user = await getUser(userID);
+        user.followers = await getFollowers(userID);
+        user.following = await getFollowing(userID);
         return user;
       } catch (err) {
         console.log(err);
@@ -219,7 +228,9 @@ const rootResolvers = {
     about_me: ({ about_me }) => about_me,
     picture_path: ({ picture_path }) => picture_path,
     landing_page: ({ landing_page }) => landing_page,
-    menu_orientation: ({ menu_orientation }) => menu_orientation
+    menu_orientation: ({ menu_orientation }) => menu_orientation,
+    followers: ({ followers }) => followers,
+    following: ({ following }) => following
   },
   Event: {
     id: ({ id }) => id,
