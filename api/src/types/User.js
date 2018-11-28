@@ -17,6 +17,10 @@ const User = `
 
     landing_page: String
     menu_orientation: menu_orientation!
+    # My Stalkers
+    followers: [User!]
+    # Who I'm stalking
+    following: [User!]
   }
 
   input UserInput {
