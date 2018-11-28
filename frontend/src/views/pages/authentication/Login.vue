@@ -78,6 +78,12 @@ export default {
             landing_page
             menu_orientation
             phone_number
+            followers {
+              id
+            }
+            following {
+              id
+            }
           }
         }`
       })
