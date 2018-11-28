@@ -240,6 +240,7 @@ export default {
 				this.endTime = moment(parseInt(seminarInfo.end_time_utc,10)).format("HH:mm")
 				this.capacityType = seminarInfo.capacity_type
 				this.capacityNum = seminarInfo.max_capacity
+				this.locationLink = seminarInfo.location_link
 				this.addressInput = seminarInfo.location
 				this.urlInput = seminarInfo.website
 

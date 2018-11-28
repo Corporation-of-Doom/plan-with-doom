@@ -200,6 +200,7 @@ export default {
 					this.capacityType = eventInfo.capacity_type
 					this.capacityNum = eventInfo.max_capacity
 					this.addressInput = eventInfo.location
+					this.locationLink = eventInfo.location_link
 					this.urlInput = eventInfo.website
 
 					for (var i = 0; i < eventInfo.organizers.length; i++) {
