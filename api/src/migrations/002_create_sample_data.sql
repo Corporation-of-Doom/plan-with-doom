@@ -31,7 +31,15 @@
 INSERT INTO doom_user (
 password_hash, privacy_settings, first_name, middle_name, last_name, email, organization, linked_in, facebook, instagram, twitter, phone_number, about_me, website) 
 VALUES 
-('$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2','Private','Vivian','Victoria','Ng','vng05@uoguelph.ca','Corporation of Doom','https://www.linkedin.com/in/vivian-ng-3401b1151/','https://www.facebook.com/vivian.ng.330467','https://www.instagram.com/vivian.vng/',NULL,'9057852424','I enjoy naps and only green toothpaste','https://github.com/bhavanthy' );
+('$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2','Private','Vivian','Victoria','Ng','vng05@uoguelph.ca','Corporation of Doom','https://www.linkedin.com/in/vivian-ng-3401b1151/','https://www.facebook.com/vivian.ng.330467','https://www.instagram.com/vivian.vng/',NULL,'9057852424','I enjoy naps and only green toothpaste.','https://github.com/bhavanthy' );
+
+INSERT INTO doom_user
+    (
+    password_hash, privacy_settings, first_name, middle_name, last_name, email, organization, linked_in, facebook, instagram, twitter, phone_number, about_me, website)
+VALUES
+    ('$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2', 'Private', 'Bhavanthy', NUll, 'Mod', 'bmodchal@uoguelph.ca', 'Corporation of Doom', 'https://www.linkedin.com/in/bhavanthy-modchalingam-38538213b/', 'https://www.facebook.com/bhavanthy.mod', 'https://www.instagram.com/bhavanthy96/', NULL, '9057852424', 'I will be studying abroad next semester in Scotland.', 'https://github.com/VivianNg' );
+
+
 
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Bhavanthy','Mod','bmodchal@uoguelph.ca', 'Public','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Alliyya','Mo','alliyya@uoguelph.ca', 'Public','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
