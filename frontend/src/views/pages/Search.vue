@@ -18,11 +18,13 @@
                     :item="item"
                     :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
                     :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                    :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
                   />
                   <event-card v-else 
                   @click.native="loadEvent(item.id)"
                   :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
                   :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                  :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
                   :item="item" /> 
                 </div>
               </div>
@@ -45,6 +47,7 @@
                     @click.native="loadEvent(item.id)"
                     :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
                     :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                    :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
                     :item="item"
                   /> 
                 </div>
@@ -66,6 +69,7 @@
                     @click.native="loadSeminar(item.id)"
                     :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
                     :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                    :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
                     :item="item"
                   />
                 </div>

@@ -23,12 +23,14 @@
                   :item="item"
                   :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
                   :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                  :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
                 />
               <event-card v-else 
                 @click.native="loadEvent(item.id)"
                 :item="item"
                 :follow="user.follow.filter(element => element.id === item.id && element.__typename === 'Event').length>0"
                 :attend="user.attend.filter(element => element.id === item.id && element.__typename === 'Event').length>0"
+                :waitlist="user.waitlist.filter(element => element.id === item.id && element.__typename === 'Event').length>0"
                /> 
             </div>
           </div>
@@ -54,12 +56,14 @@
                 :item="item"
                 :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
                 :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
               />
               <event-card v-else 
                 @click.native="loadEvent(item.id)"
                 :item="item"
                 :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
                 :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
                /> 
             </div>
           </div>
@@ -85,12 +89,14 @@
                 :item="item"
                 :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
                 :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
+                :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Seminar').length>0"
               />
               <event-card v-else 
                 @click.native="loadEvent(item.id)"
                 :item="item" 
                 :follow="user.follow.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
                 :attend="user.attend.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
+                :waitlist="user.waitlist.filter(event => event.id === item.id && event.__typename === 'Event').length>0"
               /> 
             </div>
           </div>

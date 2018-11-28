@@ -13,6 +13,9 @@
               <div v-if="attend">
 			        	<i class="mdi mdi-checkbox-marked-circle">Attending</i> <br>
               </div>
+              <div v-if="waitlist">
+              <i class="mdi mdi-checkbox-marked-circle">On Wait List</i> <br>
+            </div>
             </el-col>
         </el-row>
         <p>{{item.creator_id}}</p>
@@ -62,6 +65,10 @@ export default {
       default: false,
     },
     attend: {
+      type: Boolean,
+      default: false,
+    },
+    waitlist: {
       type: Boolean,
       default: false,
     },
