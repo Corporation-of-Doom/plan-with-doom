@@ -77,6 +77,7 @@ export default {
             about_me
             landing_page
             menu_orientation
+            phone_number
           }
         }`
       })
