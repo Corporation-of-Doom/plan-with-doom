@@ -162,12 +162,12 @@ export default {
         if (res.data){ 
           this.$store.commit("setUser", {privacy_settings: event})
           this.$message({
-            message: 'Your landing page has been changed! :)',
+            message: 'Your privacy settings has been changed! :)',
             type: 'success'
           });
         } else {
           this.$message({
-            message: 'Something went wrong when updating your landing page. :(',
+            message: 'Something went wrong when updating your privacy settings. :(',
             type: 'error'
           });
         }

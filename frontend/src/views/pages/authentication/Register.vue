@@ -95,6 +95,12 @@ export default {
               organization
               landing_page
               menu_orientation
+              following{
+                id
+              }
+              followers{
+                id
+              }
             }
           }`,
           variables: {
