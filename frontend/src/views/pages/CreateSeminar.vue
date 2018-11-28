@@ -346,6 +346,7 @@ export default {
 						this.$router.push('ManageEvents')
 					} else {
 						console.log(res.errors)
+						alert(res.errors[0].message)
 					}
 				}).catch(err => {
 					console.log(err);
@@ -388,6 +389,7 @@ export default {
 						this.$router.push('ManageEvents')
 					} else {
 						console.log(res.errors)
+						alert(res.errors[0].message)
 					}
 				}).catch(err => {
 					console.log(err);
