@@ -17,7 +17,7 @@
 				</span>
 				<el-dropdown-menu slot="dropdown">
 					<el-dropdown-item command="/profile"><i class="mdi mdi-account mr-10"></i> Profile</el-dropdown-item>
-					<el-dropdown-item command="/calendar"><i class="mdi mdi-calendar mr-10"></i> Calendar</el-dropdown-item>
+					<el-dropdown-item command="/settings"><i class="mdi mdi-calendar mr-10"></i> Setting</el-dropdown-item>
 					<el-dropdown-item command="/logout" divided><i class="mdi mdi-logout mr-10"></i> Logout</el-dropdown-item>
 				</el-dropdown-menu>
 			</el-dropdown>
