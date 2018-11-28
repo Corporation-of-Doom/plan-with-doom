@@ -168,7 +168,7 @@ export default new Vuex.Store({
     },
     loadUser(state, payload){
       state.otherUser = payload
-    }
+    },
   },
   getters: {
     layout(state, getters) {
