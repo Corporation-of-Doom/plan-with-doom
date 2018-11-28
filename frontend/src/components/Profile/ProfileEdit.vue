@@ -68,9 +68,9 @@
 				</el-col>
 			</el-col>
 			<el-col class="col-p">
-				<!-- <el-form-item label="About me">
+				<el-form-item label="About me">
 					<el-input placeholder="Tell me about yourself" :disabled="!edit" type="textarea" v-model="form.about_me" autosize></el-input>
-				</el-form-item> -->
+				</el-form-item>
 			</el-col>
 			<el-col v-if="edit" class="col-p">
 				<el-form-item>
