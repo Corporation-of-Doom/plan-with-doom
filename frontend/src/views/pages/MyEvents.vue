@@ -222,8 +222,8 @@ export default {
         .then(res =>{
           if(res.data){
             var info = res.data.getSeminarByID;
-            info.start_time =  moment(parseInt(info.start_time,10)).format("MMMM Do YYYY, h:mm a")
-            info.end_time =  moment(parseInt(info.end_time,10)).format("MMMM Do YYYY, h:mm a")
+            info.start_time =  moment(parseInt(info.start_time,10)).format("MMM Do YYYY, h:mm a")
+            info.end_time =  moment(parseInt(info.end_time,10)).format("MMM Do YYYY, h:mm a")
             fetch({
                 query: `{
                  getEventByID(id:${info.event_id}){
@@ -261,8 +261,8 @@ export default {
         .then(res =>{
           if(res.data){
             var info = res.data.getEventByID;
-            info.start_time =  moment(parseInt(info.start_time,10)).format("MMMM Do YYYY, h:mm a")
-            info.end_time =  moment(parseInt(info.end_time,10)).format("MMMM Do YYYY, h:mm a")
+            info.start_time =  moment(parseInt(info.start_time,10)).format("MMM Do YYYY, h:mm a")
+            info.end_time =  moment(parseInt(info.end_time,10)).format("MMM Do YYYY, h:mm a")
             fetch({
               query: `{
                 getEventByID(id:${info.id}){
