@@ -49,7 +49,7 @@
       </el-col>
     </el-row>
     <el-row type="flex" class="row-bg">
-      <el-button @click='onLocation' type="primary" icon="el-icon-location"></el-button>
+     <big> <i v-if="locationLink" @click='onLocation' class="mdi md-48 mdi-google-maps"></i> </big>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin:10px">
       Location: {{info.location}}
       </el-col>
@@ -150,8 +150,6 @@ export default {
     onLocation() {
       if(this.locationLink != null)
         window.open(this.locationLink, '_blank');
-      else
-        alert("No location link available")
     },
     onEdit() {
       this.$store.commit("setEdit", {editMode: true})    
