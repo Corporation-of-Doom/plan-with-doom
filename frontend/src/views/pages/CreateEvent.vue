@@ -92,6 +92,11 @@
 				</div>
 
 				<p>Location</p>
+				<div>
+					<el-input placeholder="Please input" v-model="locationLink">
+						<template slot="prepend">Google Map Link</template>
+					</el-input>
+				</div>
 				<p>Country</p>
 				<el-input v-model="countryInput" placeholder="Canada" ></el-input>
 				<p>City</p>
@@ -159,6 +164,7 @@ export default {
 				transferData: [],
 				selectedOrganizers: [],
 				editEvent: this.$store.state.editMode,
+				locationLink:''
 			};
 		},
 
@@ -290,7 +296,8 @@ export default {
 							end_time: this.endDate + " " + this.endTime,
 							name: this.eventName,
 							capacity_type: this.capacityType,
-							organizer_ids: this.selectedOrganizers
+							organizer_ids: this.selectedOrganizers,
+							location_link: this.locationLink
 						}
 					}			
 				}).then(res => {
@@ -328,7 +335,8 @@ export default {
 							capacity_type: this.capacityType,
 							max_capacity: this.capacityNum,
 							location: this.addressInput + ", " + this.cityInput + ", " + this.countryInput + ", " + this.postalInput,
-							organizer_ids: this.selectedOrganizers
+							organizer_ids: this.selectedOrganizers,
+							location_link: this.locationLink
 						}
 					}			
 				}).then(res => {
