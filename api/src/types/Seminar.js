@@ -9,13 +9,12 @@ const Seminar = `
     capacity_type: capacity_type!
     max_capacity: Int
     current_capacity: Int
-    location: Int
+    location: String
     location_link: String
     picture_path: Int
     website: String
     announcements: [Announcement!]
     organizers: [User!]
-    
   }
   
   input SeminarInput {
@@ -35,14 +34,30 @@ const Seminar = `
     picture_path: String
     website: String
   }
+  
+  input SeminarUpdateInput {
+    name: String
+    description: String
+    
+    start_time: String!
+    end_time: String!
+    
+    capacity_type: capacity_type!
+    max_capacity: Int
+    
+    organizer_ids: [Int!]!
+    
+    location: String
+    location_link: String
+    picture_path: String
+    website: String
+  }
 
-input SeminarParticipationInput {
-  userid: Int!
-  seminarid: Int!
-  participationType: participation_type!
-
-}
-
+  input SeminarParticipationInput {
+    userid: Int!
+    seminarid: Int!
+    participationType: participation_type!
+  }
 `;
 
 module.exports = { Seminar };

@@ -17,7 +17,7 @@ export default {
 	},
 	methods: {
 		createSeminar() {
-			this.$store.commit('resetEditState','Seminar')
+			this.$store.commit("setEdit",{editMode: false})
 			this.$router.push('CreateSeminar')
 		},
 	},
