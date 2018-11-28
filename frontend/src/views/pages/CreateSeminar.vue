@@ -69,16 +69,9 @@
 				<el-radio v-model="capacityType" label="FFA">Free for all</el-radio>
 				
 				<div class="capacity-box-fcfsp">
-					<el-radio v-model="capacityType" label="FCFS_P">First come first serve (physically)</el-radio>
+					<el-radio v-model="capacityType" @click="capacityVisibleFCFSP=true" label="FCFS_P">First come first serve (physically)</el-radio>
 					<el-input-number
-						v-if="capacityType=='FFA'|| capacityType=='FCFS_E'"
-						disabled
-						v-model="capacityNum" 
-						:precision="0"
-						:min="1" 
-						:max="9999">
-					</el-input-number>
-					<el-input-number
+						:visible.sync="capacityVisibleFCFSP"
 						v-if="capacityType=='FCFS_P'"
 						v-model="capacityNum" 
 						:precision="0"
@@ -88,16 +81,9 @@
 				</div>
 				
 				<div class="capacity-box-fcfse">
-					<el-radio v-model="capacityType" label="FCFS_E">First come first serve (electronically)</el-radio>
+					<el-radio v-model="capacityType" @click="capacityVisibleFCFSE=true" label="FCFS_E">First come first serve (electronically)</el-radio>
 					<el-input-number
-						v-if="capacityType=='FFA' || capacityType=='FCFS_P'"
-						disabled
-						v-model="capacityNum" 
-						:precision="0"
-						:min="1" 
-						:max="9999">
-					</el-input-number>
-					<el-input-number
+						:visible.sync="capacityVisibleFCFSP"
 						v-if="capacityType=='FCFS_E'"
 						v-model="capacityNum" 
 						:precision="0"
@@ -174,7 +160,9 @@ export default {
 				managingEvents: [],
 				eventSelected: null,
 				editEvent: this.$store.state.editMode,
-				locationLink: ''
+				locationLink: '',
+				capacityVisibleFCFSP: false,
+				capacityVisibleFCFSE: false
 			};
 		},
 		mounted() {
