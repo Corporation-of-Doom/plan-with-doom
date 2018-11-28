@@ -1,8 +1,43 @@
 -- User INSERTion
-INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Vivian','Ng','vng05@uoguelph.ca', 'Private','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
+-- CREATE TABLE
+-- IF NOT EXISTS Doom_User
+-- (
+--   ID          		      SERIAL,
+--   first_name 			      TEXT                NOT NULL,
+--   middle_name 		      TEXT,
+--   last_name 			      TEXT                NOT NULL,
+--   email 				        VARCHAR
+-- (254)        UNIQUE  NOT NULL,
+--   organization		      TEXT,
+--   linked_in	 		        TEXT,
+--   facebook			        TEXT,
+--   instagram			        TEXT,
+--   twitter	  		        TEXT,
+--   phone_number		      VARCHAR
+-- (15),
+--   privacy_settings	    TEXT                NOT NULL,
+--   picture_path		      TEXT,
+--   password_hash         TEXT                NOT NULL,
+--   confirmed             BOOL                DEFAULT FALSE,
+--   about_me              TEXT,
+--   website	  		        TEXT,
+--   landing_page          TEXT                DEFAULT 'myevents',
+--   menu_orientation      Menu_Orientation    DEFAULT 'LEFT',
+--   PRIMARY KEY
+-- (ID)
+-- );
+-- https://www.linkedin.com/in/vivian-ng-3401b1151/
+
+INSERT INTO doom_user (
+password_hash, privacy_settings, first_name, middle_name, last_name, email, organization, linked_in, facebook, instagram, twitter, phone_number, about_me, website) 
+VALUES 
+('$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2','Private','Vivian','Victoria','Ng','vng05@uoguelph.ca','Corporation of Doom','https://www.linkedin.com/in/vivian-ng-3401b1151/','https://www.facebook.com/vivian.ng.330467','https://www.instagram.com/vivian.vng/',NULL,'9057852424','I enjoy naps and only green toothpaste','https://github.com/bhavanthy' );
+
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Bhavanthy','Mod','bmodchal@uoguelph.ca', 'Public','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Alliyya','Mo','alliyya@uoguelph.ca', 'Public','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Tamara','Charchoghlyan','tamaracharch@gmail.com', 'Private','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
+
+
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Denis','Nikitenko','dnikiten@uoguelph.ca', 'Public','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Tom','Riddle','alliyyamo.dev@gmail.com', 'Private','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
 INSERT INTO doom_user (first_name, last_name, email, privacy_settings, password_hash) VALUES ('Tony','Stark','ironman@avengers.ca', 'Public','$2b$12$rF.modokh7SuBpRHdg/xA.KN/zYvx0HmaxasTXmzWIiWcLPlhfWH2');
