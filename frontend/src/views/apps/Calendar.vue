@@ -68,14 +68,14 @@ export default {
 
 		fetch({
 			query: `query {
-						getMyEventsAndSeminars(userID: 3, participationType: ATTENDING) {
+						getMyEventsAndSeminars(userID: ${this.user.id}, participationType: ATTENDING) {
 							__typename
 							...on Event {
 								id
 								name
 								start_time
 								end_time
-							} 
+							}
 							...on Seminar {
 								id
 								name
@@ -101,20 +101,20 @@ export default {
 
 					var event = {
 						id: res.data.getMyEventsAndSeminars[i].id + "_" + res.data.getMyEventsAndSeminars[i].__typename,
-						title: res.data.getMyEventsAndSeminars[i].name, 
+						title: res.data.getMyEventsAndSeminars[i].name,
 						start: res.data.getMyEventsAndSeminars[i].start_time,
 						end: res.data.getMyEventsAndSeminars[i].end_time,
 						color: colourLabel
 					}
 
-					console.log(event); 
+					console.log(event);
 					this.cal.fullCalendar( 'renderEvent', event, true);
 				}
-				
+
 
 			} else {
 				console.log(res.errors)
-			}		
+			}
 		}).catch(err => {
 			console.log(err);
 		});
