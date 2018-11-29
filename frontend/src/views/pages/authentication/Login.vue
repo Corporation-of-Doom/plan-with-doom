@@ -78,6 +78,12 @@ export default {
             landing_page
             menu_orientation
             phone_number
+            followers {
+              id
+            }
+            following {
+              id
+            }
           }
         }`
       })
@@ -102,6 +108,7 @@ export default {
               if (res.data){
                 user.follow = res.data.getMyEventsAndSeminars
               }
+              console.log(user.follow)
               fetch({
                 query: `{
                   getMyEventsAndSeminars(userID:${user.id}, participationType:ATTENDING){

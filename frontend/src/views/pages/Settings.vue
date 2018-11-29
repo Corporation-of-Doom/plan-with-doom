@@ -1,12 +1,6 @@
 <template>
   <vue-scroll class="page-dashboard">
     <div class="timeline-box card-base card-shadow--medium" style="height: 65%; padding: 20px">
-      <!-- Privacy Settings:<br>
-      <el-select placeholder="TBD">
-          <el-option :key="TBD" :label="TBD" :value="TBD">
-        TBD
-          </el-option>
-      </el-select> <br> -->
       
       <font size="+1" style="padding:10px">Autosave </font> <br>
       <hr>
@@ -21,6 +15,12 @@
           <el-select v-model="landingPageValue" @change="onChangeLandingPage">
             <el-option v-for="item in home" :key="item.text" :label="item.text" :value="item.value" />
           </el-select><br>
+      </div>
+      <div style="padding:20px; content-align:center">
+        Privacy Settings:<br>
+        <el-select v-model="privacySettingsValue" @change="onChangePrivacySettings">
+            <el-option el-option v-for="item in privacySettings" :key="item.text" :label="item.text" :value="item.value" />
+        </el-select> <br>
       </div>
     </div>
   </vue-scroll>
@@ -85,15 +85,29 @@ export default {
           settings: {
             text:'Settings',
             value: 'settings'
-          },          
+          }, 
+          users: {
+            text:'Users',
+            value: 'usersearch'
+          },         
+        },
+        privacySettings: {
+          private: {
+            text:'Private',
+            value: 'Private'
+          },
+          public: {
+            text:'Public',
+            value: 'Public'
+          },
         },
         sidebarValue: capitialLetter(this.$store.state.user.menu_orientation),
         landingPageValue: getLandingPage(this.$store.state.user.landing_page),
+        privacySettingsValue: this.$store.state.user.privacy_settings,
         user: this.$store.state.user,
         showAddSeminar: false,
         dialog: false,
         message: "",
-        TBD: 'TBD'
       };
     },
   mounted() {
@@ -132,6 +146,28 @@ export default {
         } else {
           this.$message({
             message: 'Something went wrong when updating your landing page. :(',
+            type: 'error'
+          });
+        }
+      })
+    }, 
+    onChangePrivacySettings(event){
+      console.log(event)
+      fetch({query:`mutation {
+        editProfile(userID: ${this.user.id}, user: {privacy_settings: "${event}"}) {
+          first_name
+        }
+      }`})
+      .then(res => {
+        if (res.data){ 
+          this.$store.commit("setUser", {privacy_settings: event})
+          this.$message({
+            message: 'Your privacy settings has been changed! :)',
+            type: 'success'
+          });
+        } else {
+          this.$message({
+            message: 'Something went wrong when updating your privacy settings. :(',
             type: 'error'
           });
         }

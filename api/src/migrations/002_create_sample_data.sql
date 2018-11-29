@@ -35,11 +35,10 @@ VALUES(10, 'Loki', NULL, 'Laufeyson', 'mischief@jotunheim.ca', 'Avengers', NULL,
 
 
 
-
 -- 3 events
 INSERT INTO Event (creator_id, name, start_time, end_time, capacity_type, max_capacity, current_capacity, website, location_link) VALUES (3,'CUSEC',TIMESTAMP '2019-10-23 8:30:00+02', TIMESTAMP '2019-11-27 10:30:00+02', 'FCFS_E',6,0,'http://2018.cusec.net/','https://goo.gl/maps/w38KNq2BNLB2');
 INSERT INTO Event (creator_id, name, start_time, end_time, capacity_type, max_capacity) VALUES (2,'Animefest',TIMESTAMP '2019-10-21 12:30:00+02', TIMESTAMP '2019-11-29 10:30:00+02', 'FCFS_P',3);
-INSERT INTO Event (creator_id, name, start_time, end_time, capacity_type) VALUES (1,'Doomsday convention',TIMESTAMP '2018-10-30 1:00:00', TIMESTAMP '2018-11-02 10:30:00', 'FFA');
+INSERT INTO Event (creator_id, name, start_time, end_time, capacity_type) VALUES (1,'Doomsday convention',TIMESTAMP '2018-09-04 1:00:00', TIMESTAMP '2018-12-13 10:30:00', 'FFA');
 INSERT INTO Event (creator_id, name, start_time, end_time, capacity_type,max_capacity) VALUES (6,'Avenger Meetup',TIMESTAMP '2019-05-03 10:30:00', TIMESTAMP '2019-11-24 10:30:00', 'FCFS_E',5);
 INSERT INTO Event (creator_id, name, start_time, end_time, capacity_type,max_capacity) VALUES (5,'Wizarding War',TIMESTAMP '2018-11-03 10:30:00', TIMESTAMP '2019-12-24 10:30:00', 'FCFS_P',10);
 
@@ -95,8 +94,7 @@ insert into Event_Organizer (user_id, event_id) values (10,8);
 insert into Event_Organizer (user_id, event_id) values (7,9);
 
 
-
-INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type) VALUES (3,'Preparing for your doom',TIMESTAMP '2019-10-20 10:30:00+02', TIMESTAMP '2019-11-20 12:30:00+02', 'FFA');
+INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type) VALUES (3,'Preparing for your doom',TIMESTAMP '2018-09-10 10:30:00+02', TIMESTAMP '2018-10-22 12:30:00+02', 'FFA');
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity) VALUES (2,'How to Weeb',TIMESTAMP '2019-10-22 12:30:00+02', TIMESTAMP '2019-11-22 13:30:00+02', 'FCFS_E',2);
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity) VALUES (1,'Hackathon',TIMESTAMP '2019-10-24 8:30:00+02', TIMESTAMP '2019-11-24 10:30:00+02', 'FCFS_P',6);
 INSERT INTO Seminar (event_id, name, start_time, end_time, capacity_type, max_capacity) VALUES (3,'Alpha Demo',TIMESTAMP '2018-10-31 14:50:00', TIMESTAMP '2018-10-31 15:00:00', 'FCFS_P',5);
@@ -346,7 +344,7 @@ INSERT INTO Event_Participation (user_id, event_id, attending) VALUES (9,4,True)
 INSERT INTO Event_Participation (user_id, event_id, following) VALUES (10,4,True);
 
 -- Adding users to seminars
-INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (2,2,True);
+INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (1,2,True);
 INSERT INTO Seminar_Participation (user_id, seminar_id, following) VALUES (3,2,True);
 INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (5,2,True);
 
@@ -361,13 +359,11 @@ INSERT INTO Seminar_Participation (user_id, seminar_id, attending) VALUES (5,5,T
 INSERT INTO Seminar_Wait_list (user_id, seminar_id,date_added) VALUES (3,2, TIMESTAMP '2019-10-23 8:30:00+02');
 INSERT INTO Event_Wait_list (user_id, event_id,date_added) VALUES (10,2, TIMESTAMP '2019-10-29 8:30:00+02');
 
-
 -- 2 Annoucements
 INSERT INTO Event_Announcement (event_id, message, date_created, date_modified) VALUES (3,'The end is nigh, remember your wallet',TIMESTAMP '2018-10-31 8:30:00', TIMESTAMP '2018-10-31 19:00:00');
 INSERT INTO Event_Announcement (event_id, message, date_created, date_modified) VALUES (3,'Remember your doom',TIMESTAMP '2018-10-31 8:30:00', TIMESTAMP '2018-11-01 8:45:00');
 INSERT INTO Seminar_Announcement (seminar_id, message, date_created, date_modified) VALUES (4,'Bug Fixing Party',TIMESTAMP '2018-10-31 8:30:00', TIMESTAMP '2018-10-13 8:30:00');
 INSERT INTO Seminar_Announcement (seminar_id, message, date_created, date_modified) VALUES (3,'Reminder to participants to bring laptops',TIMESTAMP '2018-10-23 8:30:00+02', TIMESTAMP '2018-10-23 8:30:00+02');
-
 
 -- One user following
 INSERT INTO User_Following (user_id, following_user_id) VALUES (4,1);
@@ -394,9 +390,6 @@ BEGIN
             FROM seminar_participation
             WHERE seminar_id = i AND attending = true) AS subquery
         WHERE seminar.id=i;
-
-
-
    END LOOP;
 END
 $do$;

@@ -217,7 +217,7 @@ export default {
           // get cards for the "All" section of the search page
           fetch({
             query: `{
-              searchByName(searchString: "", limit: 10, offset: 0) {
+              searchByName(searchString: "") {
                 ... on Event {
                   id
                   start_time
@@ -317,7 +317,7 @@ export default {
           // gets all the events for thr "Events" tb on search
           fetch({
             query: `{
-              searchByName(searchString: "", type:"event", limit: 10, offset: 0) {
+              searchByName(searchString: "", type:"event") {
                 ... on Event {
                   id
                   start_time
@@ -391,7 +391,7 @@ export default {
           // gets all the seminars
           fetch({
             query: `{
-              searchByName(searchString: "", type:"seminar", limit: 10, offset: 0) {
+              searchByName(searchString: "", type:"seminar") {
                 ... on Seminar {
                   id
                   start_time

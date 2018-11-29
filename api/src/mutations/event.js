@@ -1,5 +1,5 @@
 const { db } = require("../db");
-const { queryEventByID } = require("../resolvers/event");
+const { queryEventByID, getEventByID } = require("../resolvers/event");
 const { querySeminarsByEventID } = require("../resolvers/seminar");
 const { alreadyAttendingEvent } = require("../resolvers/user");
 const {
@@ -102,6 +102,165 @@ async function insertNewEvent(eventInput) {
   };
 }
 
+/* 
+NOTE: Remember she'll always give me the whole object
+*/
+async function updateEvent(eventid, event) {
+  let {
+    name,
+    description,
+    location,
+    picture_path,
+    website,
+    location_link,
+    start_time,
+    end_time,
+    capacity_type,
+    max_capacity,
+    organizer_ids
+  } = event;
+
+  let simpleEvent = {
+    name,
+    description,
+    location,
+    picture_path,
+    website,
+    location_link
+  };
+
+  if (Object.keys(simpleEvent).length === 0) return;
+
+  let queryString = `UPDATE event SET`;
+  let first = 1;
+  const vals = [];
+  // Adding basic properties of simpleEvent to queryString
+  for (var key in simpleEvent) {
+    if (simpleEvent[key] !== null && simpleEvent[key] !== undefined) {
+      if (!first) queryString = `${queryString}, `;
+      first = 0;
+      queryString = `${queryString} ${key} = ?`;
+      vals.push(simpleEvent[key]);
+    }
+  }
+  originalEvent = await getEventByID(eventid);
+
+  // Validating the event start time with its end time
+  const event_start_time = new Date(start_time);
+  const event_end_time = new Date(end_time);
+
+  if (event_start_time > event_end_time) {
+    console.log("Invalid Start Time: Event cannot start after Event ends");
+    return new Error(
+      "Unable to create a Event: Invalid Start Time: Event cannot start after Event ends"
+    );
+  }
+  // Validating the event start time/end time with its seminar's start/end
+  earliestStart = null;
+  latestEnd = null;
+  firstSem = null;
+  lastSem = null;
+  originalEvent["seminars"].forEach(seminar => {
+    if (
+      earliestStart == null ||
+      Date.parse(seminar.start_time) < earliestStart
+    ) {
+      earliestStart = seminar.start_time;
+      firstSem = seminar.name;
+    }
+    if (latestEnd == null || Date.parse(seminar.end_time) > latestEnd) {
+      latestEnd = seminar.end_time;
+      lastSem = seminar.name;
+    }
+  });
+
+  if (!earliestStart || !latestEnd) {
+    console.log("Life is a scam");
+  } else if (event_start_time > Date.parse(earliestStart)) {
+    return new Error(
+      "Invalid Event start date: First Seminar: ",
+      firstSem,
+      " starts at ",
+      earliestStart,
+      ", event must start prior"
+    );
+  } else if (event_end_time < Date.parse(latestEnd)) {
+    return new Error(
+      "Invalid Event end date: Last Seminar: " +
+        lastSem +
+        " ends at " +
+        latestEnd +
+        "+ event must end after"
+    );
+  }
+  if (max_capacity && max_capacity < originalEvent["current_capacity"]) {
+    return new Error("Max Capacity cannot be less than Current Capacity");
+  }
+  queryString = `${queryString}, start_time = '${event_start_time.toISOString()}'`;
+  queryString = `${queryString}, end_time = '${event_end_time.toISOString()}'`;
+  queryString = `${queryString}, capacity_type = '${capacity_type}'`;
+
+  if (capacity_type == "FFA") {
+    max_capacity = null;
+    queryString = `${queryString}, max_capacity = ${max_capacity}`;
+  } else {
+    queryString = `${queryString}, max_capacity = '${max_capacity}'`;
+  }
+  queryString = `${queryString} WHERE id = ? RETURNING *;`;
+  vals.push(eventid);
+  await db.raw(queryString, vals);
+
+  // Check if there are people on the waitlist and updates accordingly
+  if (
+    max_capacity == null ||
+    (max_capacity > originalEvent["max_capacity"] &&
+      originalEvent["max_capacity"] == originalEvent["current_capacity"])
+  ) {
+    var top = await getWaitlistTop(eventid);
+    var newCapacity = await updateCurrentCapacity(eventid);
+    while (
+      (top && max_capacity == null) ||
+      (top && newCapacity < max_capacity)
+    ) {
+      if (top) {
+        await updateEventWaitlist(top, eventid, false);
+        await updateEventParticipation({
+          userid: top,
+          participationType: "ATTENDING",
+          eventid: eventid
+        });
+      }
+      top = await getWaitlistTop(eventid);
+      newCapacity = await updateCurrentCapacity(eventid);
+    }
+  }
+  await updateCurrentCapacity(eventid);
+
+  var oldOrganizerIDs = [];
+  originalEvent["organizers"].forEach(organizer => {
+    oldOrganizerIDs.push(organizer.id);
+  });
+
+  // NOTE: revise this method to make use of set operations
+  // Simplest sol'n atm was remove all organizers then add them all back
+  // Cannot remove creator of event
+  for (var i = 0; i < oldOrganizerIDs.length; i++) {
+    const queryString = `delete from event_organizer where user_id = ? and event_id = ?; `;
+    if (originalEvent["creator_id"] != oldOrganizerIDs[i]) {
+      await db.raw(`${queryString}`, [oldOrganizerIDs[i], eventid]);
+    }
+  }
+
+  for (var i = 0; i < organizer_ids.length; i++) {
+    const queryString = `INSERT INTO Event_Organizer
+    (user_id,event_id) VALUES (?, ?); `;
+    if (originalEvent["creator_id"] != organizer_ids[i]) {
+      await db.raw(`${queryString}`, [organizer_ids[i], eventid]);
+    }
+  }
+  return;
+}
+
 async function updateCurrentCapacity(eventid) {
   // Will recalculate and update the table's current capacity
   var queryString = `UPDATE "event" 
@@ -118,7 +277,6 @@ async function updateCurrentCapacity(eventid) {
 async function getWaitlistTop(eventid) {
   // Returns the id of the user who's at the top of the waitlist given an eventid
   var queryString = null;
-  var userid = null;
   queryString = `SELECT user_id FROM event_wait_list WHERE event_id=? ORDER BY date_added LIMIT 1;`;
   vals = [eventid];
   const res = await db.raw(`${queryString}`, vals);
@@ -245,5 +403,6 @@ async function updateEventParticipation(
 module.exports = {
   insertNewEvent,
   updateEventParticipation,
-  updateEventWaitlist
+  updateEventWaitlist,
+  updateEvent
 };

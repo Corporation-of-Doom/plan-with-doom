@@ -1,15 +1,23 @@
 const {
   insertNewEvent,
   updateEventParticipation,
-  updateEventWaitlist
+  updateEventWaitlist,
+  updateEvent
 } = require("./event");
 const {
   insertNewSeminar,
   updateSeminarParticipation,
-  updateSeminarWaitlist
+  updateSeminarWaitlist,
+  updateSeminar
 } = require("./seminar");
-const { registerUser, editUserProfile } = require("./user");
+const {
+  registerUser,
+  editUserProfile,
+  updateUserFollowing
+} = require("./user");
 const { insertNewAnnouncement } = require("./announcement");
+const { getEventByID } = require("../resolvers/event");
+const { getSeminarByID } = require("../resolvers/seminar");
 
 const mutations = {
   Mutation: {
@@ -145,6 +153,46 @@ const mutations = {
       } catch (err) {
         console.log(err);
         return new Error("Unable to update user profile");
+      }
+    },
+    async editEvent(_, args) {
+      const { eventID, event } = args;
+      try {
+        errors = await updateEvent(eventID, event);
+        if (errors) return errors;
+        return await getEventByID(eventID);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to update event");
+      }
+    },
+    async editSeminar(_, args) {
+      const { seminarID, seminar } = args;
+      try {
+        errors = await updateSeminar(seminarID, seminar);
+        if (errors) return errors;
+        return await getSeminarByID(seminarID);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to update seminar");
+      }
+    },
+    async followUser(_, args) {
+      try {
+        const { userID, followingID } = args;
+        return await updateUserFollowing(userID, followingID);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to follow user");
+      }
+    },
+    async unfollowUser(_, args) {
+      try {
+        const { userID, followingID } = args;
+        return await updateUserFollowing(userID, followingID, false);
+      } catch (err) {
+        console.log(err);
+        return new Error("Unable to unfollow user");
       }
     }
   }

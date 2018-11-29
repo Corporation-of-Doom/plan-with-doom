@@ -6,7 +6,7 @@
 
     <el-row type="flex" class="row-bg">
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="text-align:right;margin-right:10px">
-        <el-button v-if="manageInfo.status" title="Edit" type="primary"> {{manageInfo.edit}} Seminar </el-button>
+        <el-button v-if="manageInfo.status" title="Edit" type="primary" @click="onEdit"> {{manageInfo.edit}} Seminar </el-button>
         <el-button v-else-if="followInfo.status" @click="unfollow" type="primary" plain title="Unfollow">{{followInfo.following}}</el-button>
         <el-button v-else @click="follow" type="primary" title="Follow">{{followInfo.follow}}</el-button>
       </el-col>
@@ -45,10 +45,15 @@
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
         <el-button v-else-if="waitlist" title="Unwaitlist" @click="unlist" plain type="primary"> Waitlisted </el-button>
         <el-button v-else-if="info.current_capacity === info.max_capacity" @click="list" title="Waitlist" type="primary"> Add to Waitlist </el-button>
-        <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
+        <el-button v-else @click="conflict" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
     </el-row>
     <el-row type="flex" class="row-bg">
+    <div class="tooltip">
+     <big> <i v-if="locationLink" @click='onLocation' class="mdi md-48 mdi-google-maps"></i> </big>
+      <span class="tooltiptext">Click for Google maps location</span>
+      </div>
+
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin:10px">
       Location: {{info.location}}
       </el-col>
@@ -59,7 +64,8 @@
     </el-row>
     <hr>
     <p>Description<p>
-    <p> {{info.discription}} </p>
+    <div v-if="info.website"> Website: {{info.website}} <br> </div>
+    <p> {{info.description}} </p>
     <el-tabs v-model="activeName" @tab-click="changeTab">
       <el-tab-pane label="News" name="news">
         <el-card v-for="(announcement,key) in info.announcements" :key="key" class="box-card" style="margin:10px" shadow="never">
@@ -138,9 +144,22 @@ export default {
       conflictDialog: false,
       waitlist: this.$store.state.seminar.waitlist,
       fullDialog: false,
+      locationLink: this.$store.state.event.location_link
+
     };
   },
+  mounted() {
+    console.log("LOCATION LINK: " + this.locationLink);
+  },
   methods: {
+    onLocation() {
+      if(this.locationLink != null)
+        window.open(this.locationLink, '_blank');
+    },
+    onEdit() {
+      this.$store.commit("setEdit", {editMode: true})    
+      this.$router.push('CreateSeminar')
+    },
     onCancel() {
       this.dialogVisible = false
       this.postMessage = ''
@@ -301,6 +320,24 @@ export default {
 }
 .el-icon-arrow-down {
   font-size: 12px;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
 }
 </style>
 

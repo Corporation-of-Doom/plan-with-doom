@@ -122,11 +122,15 @@ export default {
               phone_number
               privacy_settings
               about_me
+              id
             } 
           }`
         })
         .then(res => {
           if(res.data.getUserById){
+            var info = res.data.getUserById
+            info.following = this.user.following.filter(user => user.id === id).length>0
+            
             this.$store.commit("loadUser",res.data.getUserById)
             this.$router.push("userprofile")
           } else {

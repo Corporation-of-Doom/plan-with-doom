@@ -6,7 +6,8 @@
                     <font size="+2">{{user.first_name}} {{user.middle_name}} {{user.last_name}}</font>
                 </el-col>
                 <el-col v-if="user.privacy_settings !== 'Private'" :xs="24" :sm="12" :md="6" :lg="6" :xl="1" style="text-align:right">
-                    <el-button type="primary" title="Follow">Follow</el-button>                    
+                    <el-button v-if="!following" type="primary" @click="follow" title="Follow">Follow</el-button>  
+                    <el-button v-else-if="following" type="primary" @click="unfollow" plain title="Following">Following</el-button>                    
                 </el-col>
             </el-row>
             <el-col v-if="user.privacy_settings !== 'Private'">
@@ -32,6 +33,12 @@
                     <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" style="text-align:right">
                         <p placeholder="+1 xxx xxx xxxx">Phone: {{user.phone_number}}</p>
                     </el-col>	
+                </el-row>
+                <el-row v-else-if ="user.email">
+                  <p placeholder="email@email.com">Email: {{user.email}}</p>
+                </el-row>
+                <el-row v-else-if="user.phone_number">
+                  <p placeholder="+1 xxx xxx xxxx">Phone: {{user.phone_number}}</p>
                 </el-row>
             </el-col>
             <el-col v-else>
@@ -66,14 +73,90 @@ export default {
 			color: 'white',
 			activeTab: 'profile',
 			affixEnabled: true,
+			following: this.$store.state.otherUser.following
 		}
     },
     mounted(){
         console.log(this.$store.state.otherUser)
     },
 	methods: {
-		onClick(id){
-			console.log(id)
+		follow(){
+			fetch({
+				query: `mutation { followUser(userID: ${this.$store.state.user.id}, followingID:${this.user.id}) {
+					id
+					email
+					first_name
+					middle_name
+					last_name
+					privacy_settings
+					linked_in
+					twitter
+					facebook
+					instagram
+					organization
+					about_me
+					landing_page
+					menu_orientation
+					phone_number
+					followers {
+					id
+					}
+					following {
+					id
+					}
+				}}`
+			})
+			.then(res => {
+				console.log(res)
+				if(res.data){
+					this.following = true;
+					this.$store.commit("setUser",res.data.followUser)
+				} else {
+					this.$message({
+						message: "Something went wrong following the user",
+						type: "error"
+					})
+				}
+			})
+		},
+		unfollow(){
+			fetch({
+				query: `mutation { unfollowUser(userID: ${this.$store.state.user.id}, followingID:${this.user.id}) {
+					id
+					email
+					first_name
+					middle_name
+					last_name
+					privacy_settings
+					linked_in
+					twitter
+					facebook
+					instagram
+					organization
+					about_me
+					landing_page
+					menu_orientation
+					phone_number
+					followers {
+					id
+					}
+					following {
+					id
+					}
+				}}`
+			})
+			.then(res => {
+				console.log(res)
+				if(res.data){
+					this.following = false;
+					this.$store.commit("setUser",res.data.unfollowUser)
+				} else {
+					this.$message({
+						message: "Something went wrong following the user",
+						type: "error"
+					})
+				}
+			})
 		}
 	},
 	components: {

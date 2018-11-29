@@ -14,8 +14,11 @@ export function loadEvents(id) {
           start_time
           end_time
           location
+          location_link
+          website
+          capacity_type
           max_capacity
-		  current_capacity
+		      current_capacity
           announcements{
             date_modified
             message
@@ -131,9 +134,12 @@ export function loadSeminars(id) {
             description
             start_time
             end_time
-						location
+            location
+            website
+            capacity_type
 						max_capacity
-						current_capacity
+            current_capacity
+            location_link
             organizers{
               id
               first_name
@@ -383,7 +389,11 @@ export function getLandingPage(value){
     settings: {
       text:'Settings',
       value: 'settings'
-    }
+    },
+    users: {
+      text:'Users',
+      value: 'usersearch'
+    },   
   }
   for (var property in home){
     if(value === home[property].value) return home[property].text

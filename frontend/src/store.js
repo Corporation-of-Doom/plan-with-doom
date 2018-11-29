@@ -21,6 +21,7 @@ export default new Vuex.Store({
     user: {},
     event: {},
     seminar: {},
+    editMode: false,
     otherUser: {},
   },
   mutations: {
@@ -134,12 +135,8 @@ export default new Vuex.Store({
         });
       }
     },
-    resetEditState(state, payload) {
-      if (payload === "Event") {
-        state.event.manage = false;
-      } else if (payload === "Seminar") {
-        state.seminar.manage = false;
-      }
+    setEdit(state, payload) {
+      state.editMode = payload.editMode
     },
 
     addToWaitlist(state, payload) {
@@ -171,7 +168,7 @@ export default new Vuex.Store({
     },
     loadUser(state, payload){
       state.otherUser = payload
-    }
+    },
   },
   getters: {
     layout(state, getters) {

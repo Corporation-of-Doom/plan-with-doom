@@ -42,10 +42,14 @@
         <el-button v-else-if="attendInfo.status" @click="unattend" type="primary" plain title="Unattend">{{attendInfo.attending}}</el-button>
         <el-button v-else-if="waitlist" title="Unwaitlist" @click="unlist" plain type="primary"> Waitlisted </el-button>
         <el-button v-else-if="info.current_capacity === info.max_capacity" @click="list" title="Waitlist" type="primary"> Add to Waitlist </el-button>
-        <el-button v-else @click="attend" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
+        <el-button v-else @click="conflict" type="primary" title="Attend">{{attendInfo.attend}}</el-button>
       </el-col>
     </el-row>
     <el-row type="flex" class="row-bg">
+      <div class="tooltip">
+     <big> <i v-if="locationLink" @click='onLocation' class="mdi md-48 mdi-google-maps too"></i> </big>
+      <span class="tooltiptext">Click for Google maps location</span>
+      </div>
       <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12" style="margin:10px">
       Location: {{info.location}}
       </el-col>
@@ -56,6 +60,7 @@
     </el-row>
     <hr>
     <p>Description<p>
+      <div v-if="info.website"> Website: {{info.website}} <br> </div>
     <p> {{info.description}} </p>
     <el-tabs v-model="activeName">
       <el-tab-pane label="News" name="news">
@@ -159,12 +164,21 @@ export default {
       dialogVisible: false,
       postMessage: '',
       conflictDialog: false,
-      fullDialog: false
+      fullDialog: false,
+      locationLink: this.$store.state.event.location_link
     };
   },
+  mounted() {
+    console.log("LOCATION LINK: " + this.locationLink);
+  },
   methods: {
+    onLocation() {
+      if(this.locationLink != null)
+        window.open(this.locationLink, '_blank');
+    },
     onEdit() {
-      this.$router.push('CreateEvent')    
+      this.$store.commit("setEdit", {editMode: true})    
+      this.$router.push('CreateEvent')
     },
     cancelConflictDialog(){
       this.conflictDialog = false
@@ -175,6 +189,7 @@ export default {
     },
     onPost() {
       console.clear()
+      console.log(typeof(this.$store.state.event.id));
       if (this.postMessage) {
         fetch({
             query: ` mutation createEventAnnoucement($announcement: AnnouncementInput!) {
@@ -223,6 +238,7 @@ export default {
       }`
       })
       .then(res => {
+        console.log(res.data)
         if (res.data.checkCalendarConflicts) {
           this.conflictDialog = true
         } else {
@@ -234,6 +250,7 @@ export default {
       console.log(this.info.current_capacity !== this.info.max_capacity)
       console.log(this.info.current_capacity, this.info.max_capacity)
       console.log(this.info)
+      this.conflictDialog = false
       if (this.info.current_capacity !== this.info.max_capacity) {
         followAndAttend('Event', 'ATTENDING').then(function(result) {
           if (result){
@@ -339,5 +356,24 @@ export default {
 .el-icon-arrow-down {
   font-size: 12px;
 }
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+
 </style>
 
